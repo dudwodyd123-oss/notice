@@ -14,7 +14,7 @@ notifiers:
   console:
     enabled: true
   windows:
-    enabled: true
+    enabled: false
   kakao:
     enabled: true
     rest_api_key: ''
