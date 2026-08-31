@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+import json
 import subprocess
 import sys
 import tempfile
@@ -16,15 +17,19 @@ from .base import Notifier, NotifierUnavailable, group_by_site
 
 MAX_TOASTS = 5  # 이보다 많으면 요약 한 통으로 묶는다
 
-PS_HEADER = """\
+# 알림 내용은 스크립트에 글자로 끼워 넣지 않고 별도 파일에서 읽는다.
+# 게시글 제목은 남의 사이트에서 가져온 값이라, 스크립트 안에 그대로 넣으면
+# 제목에 줄바꿈과 따옴표를 섞어 PowerShell 명령을 실행시킬 수 있다.
+PS_SCRIPT = """\
 $ErrorActionPreference = 'Stop'
 $null = [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType=WindowsRuntime]
 $null = [Windows.Data.Xml.Dom.XmlDocument, Windows.Data.Xml.Dom, ContentType=WindowsRuntime]
 $notifier = [Windows.UI.Notifications.ToastNotificationManager]::CreateToastNotifier('Microsoft.Windows.Computer')
 
-function Show-Toast([string]$Xml) {
+$payload = Get-Content -LiteralPath $args[0] -Raw -Encoding UTF8 | ConvertFrom-Json
+foreach ($item in $payload) {
     $doc = New-Object Windows.Data.Xml.Dom.XmlDocument
-    $doc.LoadXml($Xml)
+    $doc.LoadXml($item)
     $notifier.Show((New-Object Windows.UI.Notifications.ToastNotification $doc))
     Start-Sleep -Milliseconds 400
 }
@@ -42,10 +47,7 @@ class WindowsNotifier(Notifier):
         self.timeout = timeout
 
     def send(self, posts: list[Post]) -> None:
-        script = PS_HEADER + "\n".join(
-            f"Show-Toast @'\n{xml}\n'@" for xml in self._toasts(posts)
-        )
-        _run_powershell(script, self.timeout)
+        _run_powershell(self._toasts(posts), self.timeout)
 
     def _toasts(self, posts: list[Post]) -> list[str]:
         if len(posts) > MAX_TOASTS:
@@ -77,17 +79,27 @@ def _toast_xml(heading: str, body: str, launch: str, footer: str = "") -> str:
     )
 
 
-def _run_powershell(script: str, timeout: int) -> None:
+def _run_powershell(toasts: list[str], timeout: int) -> None:
+    """알림 XML 은 JSON 파일로 건네고, 스크립트는 고정된 내용만 실행한다."""
     # 한글이 깨지지 않도록 BOM 붙은 UTF-8 파일로 넘긴다.
     with tempfile.NamedTemporaryFile(
         "w", suffix=".ps1", delete=False, encoding="utf-8-sig"
     ) as handle:
-        handle.write(script)
-        path = handle.name
+        handle.write(PS_SCRIPT)
+        script_path = handle.name
+
+    with tempfile.NamedTemporaryFile(
+        "w", suffix=".json", delete=False, encoding="utf-8-sig"
+    ) as handle:
+        json.dump(toasts, handle, ensure_ascii=False)
+        data_path = handle.name
 
     try:
         result = subprocess.run(
-            ["powershell", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass", "-File", path],
+            [
+                "powershell", "-NoProfile", "-NonInteractive",
+                "-ExecutionPolicy", "Bypass", "-File", script_path, data_path,
+            ],
             capture_output=True,
             text=True,
             timeout=timeout,
@@ -96,4 +108,5 @@ def _run_powershell(script: str, timeout: int) -> None:
         if result.returncode != 0:
             raise RuntimeError(f"윈도우 알림 실패: {(result.stderr or result.stdout).strip()[:300]}")
     finally:
-        Path(path).unlink(missing_ok=True)
+        Path(script_path).unlink(missing_ok=True)
+        Path(data_path).unlink(missing_ok=True)

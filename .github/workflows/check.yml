@@ -78,6 +78,10 @@ jobs:
           cp dashboard.html public/index.html
 
       - name: 바뀐 기록 되커밋
+        # 표현식을 쉘 명령에 직접 붙이지 않고 환경변수로 넘긴다.
+        # 값에 따옴표나 세미콜론이 섞이면 명령이 조작될 수 있기 때문이다.
+        env:
+          BRANCH: ${{ github.ref_name }}
         run: |
           # 새 글이 없으면 내보낸 내용이 한 글자도 안 바뀌므로 커밋도 생기지 않는다.
           if git diff --quiet -- data/state.json; then
@@ -89,8 +93,8 @@ jobs:
           git add data/state.json
           git commit -m "공지 기록 갱신 $(date -u '+%Y-%m-%d %H:%M') UTC"
           # 그 사이 다른 커밋이 올라왔을 수 있으니 한 번 맞춰본 뒤 올린다.
-          git pull --rebase --autostash origin "${{ github.ref_name }}" || true
-          git push origin "HEAD:${{ github.ref_name }}"
+          git pull --rebase --autostash origin "$BRANCH" || true
+          git push origin "HEAD:$BRANCH"
 
       # Pages 는 저장소 Settings → Pages → Source 를 "GitHub Actions" 로
       # 한 번 바꿔두어야 한다. 워크플로 토큰으로는 사이트를 새로 만들 권한이 없다.

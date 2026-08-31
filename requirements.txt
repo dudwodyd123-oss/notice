@@ -1,3 +1,4 @@
-requests>=2.31
-beautifulsoup4>=4.12
-PyYAML>=6.0
+# 상한을 두어 예고 없는 주요 버전 변경이 그대로 들어오지 않게 한다.
+requests>=2.31,<3
+beautifulsoup4>=4.12,<5
+PyYAML>=6.0,<7
