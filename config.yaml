@@ -15,17 +15,17 @@ notifiers:
     enabled: true
   windows:
     enabled: true
-  telegram:
-    enabled: true
-    bot_token: ${TELEGRAM_BOT_TOKEN}
-    chat_id: ${TELEGRAM_CHAT_ID}
-  discord:
-    enabled: true
-    webhook_url: ${DISCORD_WEBHOOK_URL}
   kakao:
     enabled: true
-    rest_api_key: ${KAKAO_REST_API_KEY}
-    refresh_token: ${KAKAO_REFRESH_TOKEN}
+    rest_api_key: ''
+    refresh_token: ''
+  telegram:
+    enabled: true
+    bot_token: ''
+    chat_id: ''
+  discord:
+    enabled: true
+    webhook_url: ''
 sites:
 - name: 정컴 학부 공지사항
   url: https://cse.pusan.ac.kr/bbs/cse/2055/artclList.do
@@ -69,3 +69,7 @@ sites:
   author_selector: td:nth-child(3)
   id_regex: /boardview/\d+/(\d+)
   key: 9872521de15b
+- name: 국제처 공지사항
+  url: https://international.pusan.ac.kr/bbs/international/2080/artclList.do
+  parser: pnu
+  key: aa28cd59ae6d
