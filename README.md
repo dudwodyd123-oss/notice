@@ -4,21 +4,75 @@
 
 ---
 
-## 지금 상태 — 설정이 이미 끝나 있습니다
+## 지금 상태
 
-바탕화면의 **`공지 모아보기`** 아이콘만 열면 됩니다. 그 밖에 할 일은 없습니다.
+**내 PC** — 바탕화면의 `공지 모아보기` 아이콘만 열면 됩니다.
 
-- 작업 스케줄러에 `notice_tap` 작업이 등록되어 **30분마다 자동으로** 확인합니다 (창 안 뜸)
+- 작업 스케줄러에 `notice_tap` 작업이 등록되어 **1시간마다 자동으로** 확인합니다 (창 안 뜸)
 - 새 글이 생기면 **윈도우 알림**이 뜨고, 알림을 클릭하면 해당 글이 바로 열립니다
 - 게시판이 **2일 넘게 계속 확인 실패**하면 그것도 알림으로 알려줍니다 (조용히 고장나는 걸 막습니다)
 - 감시 중인 게시판 5개: 학부 공지사항 · 졸업과제 · 채용게시판 · 경진대회 안내 · 기타행사 안내
 - 실행 기록은 `data/notice_tap.log` 에 쌓입니다
 
-되돌리려면:
+**GitHub** — 아래 4단계를 마치면 PC를 꺼둬도 돌아가고, 폰에서 주소로 대시보드를 볼 수 있습니다.
+
+---
+
+## GitHub 으로 옮기기
+
+PC 를 켜두지 않아도 GitHub 서버가 1시간마다 확인하고, 대시보드를 인터넷 주소로 띄워줍니다.
+무료이고, 준비는 이미 다 되어 있습니다. 남은 건 내 계정에 올리는 일뿐입니다.
+
+**1. GitHub 에서 빈 저장소를 만듭니다** — <https://github.com/new>
+
+- 이름: 아무거나 (예: `notice-tap`)
+- **Public** 을 고르세요. Private 은 GitHub Pages 를 쓰려면 유료 요금제가 필요합니다
+- README, .gitignore, license 는 **체크하지 마세요** (이미 있습니다)
+
+**2. 내 PC 에서 올립니다** — `<내계정>` 과 저장소 이름만 바꿔서:
 
 ```bash
-powershell -ExecutionPolicy Bypass -File install_task.ps1 -Remove
+git remote add origin https://github.com/<내계정>/notice-tap.git
 ```
+
+```bash
+git push -u origin main
+```
+
+**3. Actions 에 쓰기 권한을 줍니다**
+
+저장소 **Settings → Actions → General → Workflow permissions** 에서
+**Read and write permissions** 를 고르고 저장합니다.
+(확인 기록을 저장소에 되커밋해야 하기 때문입니다.)
+
+**4. 첫 실행**
+
+저장소 **Actions** 탭 → 왼쪽 `공지 확인` → **Run workflow** 를 누릅니다.
+1~2분 뒤 초록 체크가 뜨면, 대시보드 주소는 이렇게 됩니다:
+
+```
+https://<내계정>.github.io/notice-tap/
+```
+
+이 주소를 폰 홈 화면에 추가해두면 앱처럼 쓸 수 있습니다.
+
+> GitHub 쪽이 잘 도는 걸 확인한 뒤에는, 내 PC 의 작업 스케줄러는 꺼도 됩니다:
+> `powershell -ExecutionPolicy Bypass -File install_task.ps1 -Remove`
+> (PC 알림을 계속 받고 싶으면 그냥 두셔도 됩니다.)
+
+### 폰으로 알림까지 받으려면
+
+GitHub 서버에서는 윈도우 알림을 띄울 수 없으니, 채팅 앱으로 받아야 합니다.
+저장소 **Settings → Secrets and variables → Actions → New repository secret** 에
+아래 중 원하는 것만 등록하면 그 채널이 자동으로 켜집니다.
+
+| Secret 이름 | 값 |
+|---|---|
+| `DISCORD_WEBHOOK_URL` | 디스코드 채널 설정 → 연동 → 웹후크 주소 |
+| `TELEGRAM_BOT_TOKEN` / `TELEGRAM_CHAT_ID` | @BotFather 봇 토큰 / @userinfobot 이 알려주는 내 ID |
+| `KAKAO_REST_API_KEY` / `KAKAO_REFRESH_TOKEN` | `python kakao_auth.py` 가 알려주는 두 값 |
+
+아무것도 등록하지 않으면 알림 없이 대시보드만 갱신됩니다.
 
 ---
 
@@ -175,7 +229,7 @@ sites:
 
 | 키 | 기본값 | 설명 |
 |---|---|---|
-| `poll_interval_minutes` | `30` | `watch` 의 확인 주기(분) |
+| `poll_interval_minutes` | `60` | `watch` 의 확인 주기(분) |
 | `database` | `data/notices.db` | 본 글을 기억하는 SQLite 파일 |
 | `dashboard_path` | `dashboard.html` | 모아보기 페이지 경로 |
 | `notify_on_pinned` | `true` | 상단 고정 공지가 새로 올라와도 알릴지 |
