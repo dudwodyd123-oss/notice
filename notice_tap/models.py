@@ -29,13 +29,23 @@ class Post:
         return to_iso_date(self.posted_at)
 
     @property
+    def display_date(self) -> str:
+        """화면과 알림에 보여줄 날짜.
+
+        게시판마다 2026.08.31 / 2026-08-31 / 2026.08.31 09:15 처럼 표기가 달라
+        여러 곳의 글을 나란히 놓으면 지저분하다. 통일된 값을 쓰되,
+        알아볼 수 없는 표기는 원문 그대로 둔다.
+        """
+        return self.posted_on or self.posted_at
+
+    @property
     def uid(self) -> str:
         return f"{self.site_key}:{self.post_id}"
 
     def summary_line(self) -> str:
         bits = [self.title]
-        if self.posted_at:
-            bits.append(f"({self.posted_at})")
+        if self.display_date:
+            bits.append(f"({self.display_date})")
         return " ".join(bits)
 
 

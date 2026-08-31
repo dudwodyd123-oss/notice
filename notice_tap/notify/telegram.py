@@ -46,7 +46,7 @@ def _render(posts: list[Post]) -> str:
     for site_name, group in group_by_site(posts).items():
         lines = [f"<b>📢 {html.escape(site_name)}</b> — 새 글 {len(group)}건"]
         for post in group:
-            date = f" <i>{html.escape(post.posted_at)}</i>" if post.posted_at else ""
+            date = f" <i>{html.escape(post.display_date)}</i>" if post.display_date else ""
             lines.append(f'• <a href="{html.escape(post.url, quote=True)}">{html.escape(post.title)}</a>{date}')
         blocks.append("\n".join(lines))
     return "\n\n".join(blocks)

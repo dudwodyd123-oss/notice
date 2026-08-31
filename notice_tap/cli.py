@@ -304,7 +304,7 @@ def _report(result: CheckResult) -> None:
         elif outcome.new_posts:
             print(f"  새글  {name} — {len(outcome.new_posts)}건")
             for post in outcome.new_posts:
-                date = f"{post.posted_at}  " if post.posted_at else ""
+                date = f"{post.display_date}  " if post.display_date else ""
                 print(f"          {date}{post.title}")
                 print(f"          {post.url}")
         else:

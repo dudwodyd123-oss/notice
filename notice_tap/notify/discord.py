@@ -30,7 +30,7 @@ class DiscordNotifier(Notifier):
                             "title": post.title[:250],
                             "url": post.url,
                             "description": " · ".join(
-                                filter(None, [post.site_name, post.posted_at, post.author])
+                                filter(None, [post.site_name, post.display_date, post.author])
                             )[:300],
                             "color": 0x0B5ED7,
                         }

@@ -134,8 +134,9 @@ def _item(row, cutoff: str) -> str:
     badge = '<span class="badge">NEW</span> ' if is_new else ""
     pin = '<span class="pin">고정</span>' if row["pinned"] else ""
     bits = [site_name]
-    if row["posted_at"]:
-        bits.append(html.escape(row["posted_at"]))
+    # 저장할 때 통일해 둔 날짜를 쓴다. 해석 못 한 것만 원문을 보여준다.
+    if shown_date := (row["posted_on"] or row["posted_at"]):
+        bits.append(html.escape(shown_date))
     if row["author"]:
         bits.append(html.escape(row["author"]))
     if row["category"]:

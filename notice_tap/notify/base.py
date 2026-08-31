@@ -58,7 +58,7 @@ def plain_text(posts: list[Post], limit: int = 10) -> str:
     for site_name, group in group_by_site(posts).items():
         lines.append(f"[{site_name}] 새 글 {len(group)}건")
         for post in group[:limit]:
-            date = f" ({post.posted_at})" if post.posted_at else ""
+            date = f" ({post.display_date})" if post.display_date else ""
             lines.append(f"  · {post.title}{date}")
             lines.append(f"    {post.url}")
         if len(group) > limit:

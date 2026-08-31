@@ -124,7 +124,7 @@ def _messages(posts: list[Post], max_messages: int) -> list[tuple[str, str]]:
 
     out: list[tuple[str, str]] = []
     for post in posts:
-        date = f"\n{post.posted_at}" if post.posted_at else ""
+        date = f"\n{post.display_date}" if post.display_date else ""
         out.append((_truncate(f"📢 [{post.site_name}]\n{post.title}{date}"), post.url))
     return out
 

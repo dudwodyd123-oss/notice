@@ -56,7 +56,7 @@ class WindowsNotifier(Notifier):
             return [_toast_xml("새 공지 " + str(len(posts)) + "건", detail, self._dashboard_uri())]
 
         return [
-            _toast_xml(post.site_name, post.title, post.url, post.posted_at) for post in posts
+            _toast_xml(post.site_name, post.title, post.url, post.display_date) for post in posts
         ]
 
     def _dashboard_uri(self) -> str:
