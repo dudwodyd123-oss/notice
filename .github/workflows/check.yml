@@ -5,6 +5,11 @@ on:
     # 매시 17분. 정각은 전 세계 작업이 몰려 밀리기 쉬워 일부러 비켜 놓았다.
     - cron: '17 * * * *'
   workflow_dispatch:        # 저장소 Actions 탭에서 손으로도 돌릴 수 있다
+    inputs:
+      test_notify:
+        description: '알림 채널 시험 전송 (새 글이 없어도 한 통 보내본다)'
+        type: boolean
+        default: false
   push:
     branches: [main]
 
@@ -35,6 +40,18 @@ jobs:
           cache: pip
 
       - run: pip install -r requirements.txt
+
+      # 새 글이 없으면 알림이 안 나가서, 채널 설정이 맞는지 확인할 방법이 없다.
+      # Run workflow 에서 이 항목을 켜면 시험 삼아 한 통 보내본다.
+      - name: 알림 시험 전송
+        if: ${{ inputs.test_notify }}
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          KAKAO_REST_API_KEY: ${{ secrets.KAKAO_REST_API_KEY }}
+          KAKAO_REFRESH_TOKEN: ${{ secrets.KAKAO_REFRESH_TOKEN }}
+        run: python -m notice_tap test-notify
 
       - name: 지난 기록 불러오기
         run: python -m notice_tap import --path data/state.json
