@@ -17,6 +17,7 @@ from .discover import DiscoveryError, discover
 from .fetcher import Fetcher
 from .models import Site
 from .notify import build_notifiers
+from .parsers import PARSERS
 from .store import Store
 
 SAMPLE_COMMENT = """\
@@ -311,7 +312,7 @@ def build_parser() -> argparse.ArgumentParser:
     p = subs.add_parser("add", help="게시판 주소를 등록한다 (구조는 자동으로 파악)")
     p.add_argument("urls", nargs="+", help="게시판 주소. 여러 개를 한 번에 넣어도 된다")
     p.add_argument("--name", help="표시할 이름 (생략하면 자동)")
-    p.add_argument("--parser", choices=["pnu", "generic", "rss"], help="파서를 직접 지정")
+    p.add_argument("--parser", choices=sorted(PARSERS), help="파서를 직접 지정")
     p.set_defaults(func=cmd_add)
 
     p = subs.add_parser("list", help="등록된 게시판을 보여준다")

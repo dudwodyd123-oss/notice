@@ -6,6 +6,8 @@ import hashlib
 from dataclasses import dataclass, field
 from typing import Any
 
+from .dates import to_iso_date
+
 
 @dataclass(frozen=True)
 class Post:
@@ -20,6 +22,11 @@ class Post:
     posted_at: str = ""
     category: str = ""
     pinned: bool = False
+
+    @property
+    def posted_on(self) -> str:
+        """게시판마다 다른 날짜 표기를 YYYY-MM-DD 로 맞춘 값. 정렬에 쓴다."""
+        return to_iso_date(self.posted_at)
 
     @property
     def uid(self) -> str:

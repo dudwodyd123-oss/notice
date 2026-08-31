@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import Callable
 
 from ..models import Post, Site
+from .bi_pusan import parse_bi_pusan
 from .generic import parse_generic
 from .pnu import parse_pnu
 from .rss import parse_rss
@@ -15,6 +16,7 @@ PARSERS: dict[str, Parser] = {
     "pnu": parse_pnu,
     "generic": parse_generic,
     "rss": parse_rss,
+    "bi_pusan": parse_bi_pusan,
 }
 
 
@@ -26,4 +28,12 @@ def get_parser(name: str) -> Parser:
         raise ValueError(f"알 수 없는 파서 '{name}'. 사용 가능: {known}") from None
 
 
-__all__ = ["PARSERS", "Parser", "get_parser", "parse_generic", "parse_pnu", "parse_rss"]
+__all__ = [
+    "PARSERS",
+    "Parser",
+    "get_parser",
+    "parse_bi_pusan",
+    "parse_generic",
+    "parse_pnu",
+    "parse_rss",
+]

@@ -47,3 +47,25 @@ sites:
   url: https://cse.pusan.ac.kr/bbs/cse/2061/artclList.do
   parser: pnu
   key: 9a9cc23bc9b6
+- name: 부산대 대표 공지사항
+  url: https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095
+  parser: generic
+  row_selector: table.board-list-table tbody tr
+  title_selector: td.subject a
+  date_selector: td.date
+  author_selector: td.writer
+  id_param: board_seq
+  key: 95390426e921
+- name: 창업지원단 공지사항
+  url: https://bi.pusan.ac.kr/community/notice
+  parser: bi_pusan
+  key: 0e920dac2b3c
+- name: 산학협력단 공지사항
+  url: https://sanhak.pusan.ac.kr/sanhak/board/4
+  parser: generic
+  row_selector: table#tablelist tbody tr
+  title_selector: td.text-left a
+  date_selector: td:nth-child(4)
+  author_selector: td:nth-child(3)
+  id_regex: /boardview/\d+/(\d+)
+  key: 9872521de15b

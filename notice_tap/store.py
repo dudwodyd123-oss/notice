@@ -6,6 +6,7 @@ import sqlite3
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
+from .dates import to_iso_date
 from .models import Post
 
 SCHEMA = """
@@ -18,6 +19,7 @@ CREATE TABLE IF NOT EXISTS posts (
     url        TEXT NOT NULL,
     author     TEXT DEFAULT '',
     posted_at  TEXT DEFAULT '',
+    posted_on  TEXT DEFAULT '',
     category   TEXT DEFAULT '',
     pinned     INTEGER DEFAULT 0,
     first_seen TEXT NOT NULL,
@@ -53,11 +55,22 @@ class Store:
         posts_columns = {row["name"] for row in self.conn.execute("PRAGMA table_info(posts)")}
         if "baseline" not in posts_columns:
             self.conn.execute("ALTER TABLE posts ADD COLUMN baseline INTEGER DEFAULT 0")
+        if "posted_on" not in posts_columns:
+            self.conn.execute("ALTER TABLE posts ADD COLUMN posted_on TEXT DEFAULT ''")
+            self._backfill_posted_on()
 
         state_columns = {row["name"] for row in self.conn.execute("PRAGMA table_info(sites_state)")}
         for column in ("fail_since", "last_alert"):
             if column not in state_columns:
                 self.conn.execute(f"ALTER TABLE sites_state ADD COLUMN {column} TEXT DEFAULT ''")
+
+    def _backfill_posted_on(self) -> None:
+        """예전에 저장한 글에도 정규화된 날짜를 채워 넣는다."""
+        rows = list(self.conn.execute("SELECT uid, posted_at FROM posts"))
+        self.conn.executemany(
+            "UPDATE posts SET posted_on = ? WHERE uid = ?",
+            [(to_iso_date(row["posted_at"]), row["uid"]) for row in rows],
+        )
 
     # --- 신규 글 판별 -------------------------------------------------
 
@@ -86,12 +99,12 @@ class Store:
         self.conn.executemany(
             """INSERT OR IGNORE INTO posts
                (uid, site_key, site_name, post_id, title, url, author,
-                posted_at, category, pinned, first_seen, notified, baseline)
-               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)""",
+                posted_at, posted_on, category, pinned, first_seen, notified, baseline)
+               VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)""",
             [
                 (
                     p.uid, p.site_key, p.site_name, p.post_id, p.title, p.url,
-                    p.author, p.posted_at, p.category, int(p.pinned), now,
+                    p.author, p.posted_at, p.posted_on, p.category, int(p.pinned), now,
                     int(notified), int(baseline),
                 )
                 for p in posts
@@ -182,7 +195,8 @@ class Store:
         if site_key:
             sql += " WHERE site_key = ?"
             params.append(site_key)
-        sql += " ORDER BY first_seen DESC, posted_at DESC, post_id DESC LIMIT ?"
+        # 게시일을 먼저 본다. 발견 시각을 앞에 두면 게시판별로 뭉쳐 버린다.
+        sql += " ORDER BY posted_on DESC, first_seen DESC, post_id DESC LIMIT ?"
         params.append(limit)
         return list(self.conn.execute(sql, params))
 

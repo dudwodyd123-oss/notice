@@ -48,7 +48,12 @@ class Checker:
     def check_site(self, site: Site, notify_first_run: bool = False) -> SiteResult:
         outcome = SiteResult(site=site)
         try:
-            posts = get_parser(site.parser)(site, self.fetcher.get_text(site.url))
+            parser = get_parser(site.parser)
+            # 일부 사이트는 HTML 에 목록이 없어 파서가 직접 API 를 불러야 한다.
+            if getattr(parser, "needs_fetcher", False):
+                posts = parser(site, self.fetcher)
+            else:
+                posts = parser(site, self.fetcher.get_text(site.url))
         except Exception as exc:
             outcome.error = str(exc)
             self.store.mark_check(site.key, error=str(exc))
