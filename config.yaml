@@ -17,15 +17,15 @@ notifiers:
     enabled: false
   kakao:
     enabled: true
-    rest_api_key: ''
-    refresh_token: ''
+    rest_api_key: ${KAKAO_REST_API_KEY}
+    refresh_token: ${KAKAO_REFRESH_TOKEN}
   telegram:
     enabled: true
-    bot_token: ''
-    chat_id: ''
+    bot_token: ${TELEGRAM_BOT_TOKEN}
+    chat_id: ${TELEGRAM_CHAT_ID}
   discord:
     enabled: true
-    webhook_url: ''
+    webhook_url: ${DISCORD_WEBHOOK_URL}
 sites:
 - name: 정컴 학부 공지사항
   url: https://cse.pusan.ac.kr/bbs/cse/2055/artclList.do

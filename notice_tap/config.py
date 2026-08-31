@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import os
 import re
+from copy import deepcopy
 from pathlib import Path
 from typing import Any
 
@@ -22,18 +23,30 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "notifiers": {
         "console": {"enabled": True},
         "windows": {"enabled": True},
-        "kakao": {"enabled": False, "rest_api_key": "", "refresh_token": ""},
-        "telegram": {"enabled": False, "bot_token": "", "chat_id": ""},
-        "discord": {"enabled": False, "webhook_url": ""},
+        "kakao": {
+            "enabled": True,
+            "rest_api_key": "${KAKAO_REST_API_KEY}",
+            "refresh_token": "${KAKAO_REFRESH_TOKEN}",
+        },
+        "telegram": {
+            "enabled": True,
+            "bot_token": "${TELEGRAM_BOT_TOKEN}",
+            "chat_id": "${TELEGRAM_CHAT_ID}",
+        },
+        "discord": {"enabled": True, "webhook_url": "${DISCORD_WEBHOOK_URL}"},
     },
     "sites": [],
 }
 
 
 class Config:
-    def __init__(self, data: dict[str, Any], path: Path):
-        self.data = data
+    def __init__(self, data: dict[str, Any], path: Path, raw: dict[str, Any] | None = None):
+        self.data = data  # 환경변수가 치환된 값. 실제로 동작할 때 쓴다.
         self.path = path
+        # 파일에 적힌 그대로의 값. `${DISCORD_WEBHOOK_URL}` 같은 자리표시자가 살아 있다.
+        # 저장할 때는 반드시 이쪽을 쓴다. 치환된 값을 되쓰면 자리표시자가
+        # 빈 문자열로 덮여 알림 채널이 조용히 꺼져 버린다.
+        self._raw = deepcopy(data) if raw is None else raw
 
     # --- 파일 입출력 ----------------------------------------------------
 
@@ -43,17 +56,14 @@ class Config:
         if not path.exists():
             raise FileNotFoundError(f"{path} 가 없습니다. 먼저 `python -m notice_tap init` 을 실행하세요.")
         raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
-        return cls(_merge(DEFAULT_CONFIG, _expand_env(raw)), path)
+        return cls(_merge(DEFAULT_CONFIG, _expand_env(raw)), path, raw=raw)
 
     @classmethod
     def create_default(cls, path: str | Path = DEFAULT_PATH) -> "Config":
         return cls(_merge(DEFAULT_CONFIG, {}), Path(path))
 
     def save(self) -> None:
-        self.data["sites"] = [
-            site if isinstance(site, dict) else site.to_dict() for site in self.data.get("sites", [])
-        ]
-        body = yaml.safe_dump(self.data, allow_unicode=True, sort_keys=False, width=200)
+        body = yaml.safe_dump(self._raw, allow_unicode=True, sort_keys=False, width=200)
         self.path.write_text(self._leading_comments() + body, encoding="utf-8")
 
     def _leading_comments(self) -> str:
@@ -82,13 +92,20 @@ class Config:
         """이미 등록된 URL이면 False."""
         if any(existing.key == site.key for existing in self.sites):
             return False
-        self.data.setdefault("sites", []).append(site.to_dict())
+        entry = site.to_dict()
+        self.data.setdefault("sites", []).append(entry)
+        self._raw.setdefault("sites", []).append(deepcopy(entry))
         return True
 
     def remove_site(self, needle: str) -> Site | None:
         for index, site in enumerate(self.sites):
             if needle in (site.key, site.name, site.url):
                 self.data["sites"].pop(index)
+                self._raw["sites"] = [
+                    entry
+                    for entry in self._raw.get("sites", [])
+                    if entry.get("url") != site.url
+                ]
                 return site
         return None
 
