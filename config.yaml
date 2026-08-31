@@ -1,0 +1,49 @@
+# notice_tap 설정 파일
+#
+#  게시판은 `python -m notice_tap add <게시판 주소>` 로 추가합니다.
+#
+#  알림 채널의 ${...} 는 환경변수(GitHub Actions 의 Secrets)에서 값을 가져옵니다.
+#  값이 없으면 그 채널은 조용히 꺼지므로, 쓰지 않는 채널은 그대로 두면 됩니다.
+#  토큰을 이 파일에 직접 적지 마세요 - 이 파일은 GitHub 에 올라갑니다.
+poll_interval_minutes: 60
+database: data/notices.db
+dashboard_path: dashboard.html
+notify_on_pinned: true
+stale_alert_days: 2
+notifiers:
+  console:
+    enabled: true
+  windows:
+    enabled: true
+  telegram:
+    enabled: true
+    bot_token: ${TELEGRAM_BOT_TOKEN}
+    chat_id: ${TELEGRAM_CHAT_ID}
+  discord:
+    enabled: true
+    webhook_url: ${DISCORD_WEBHOOK_URL}
+  kakao:
+    enabled: true
+    rest_api_key: ${KAKAO_REST_API_KEY}
+    refresh_token: ${KAKAO_REFRESH_TOKEN}
+sites:
+- name: 정컴 학부 공지사항
+  url: https://cse.pusan.ac.kr/bbs/cse/2055/artclList.do
+  parser: pnu
+  key: 374945f5c2db
+- name: 정컴 졸업과제
+  url: https://cse.pusan.ac.kr/bbs/cse/2056/artclList.do
+  parser: pnu
+  key: 10062ffd1f9d
+- name: 정컴 채용게시판
+  url: https://cse.pusan.ac.kr/bbs/cse/2060/artclList.do
+  parser: pnu
+  key: 488205947b84
+- name: 정컴 경진대회 안내
+  url: https://cse.pusan.ac.kr/bbs/cse/2052/artclList.do
+  parser: pnu
+  key: 32530b1606ef
+- name: 정컴 기타행사 안내
+  url: https://cse.pusan.ac.kr/bbs/cse/2061/artclList.do
+  parser: pnu
+  key: 9a9cc23bc9b6

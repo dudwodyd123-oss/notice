@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+
+# 로컬 상태 - GitHub 에는 data/state.json 만 올린다
+data/notices.db
+data/notice_tap.log
+data/kakao_token.json
+
+# 생성물
+dashboard.html
+public/

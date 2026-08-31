@@ -1,0 +1,4 @@
+# 리눅스(GitHub Actions)에서 실행되는 파일들이 CRLF 로 깨지지 않게 한다.
+* text=auto eol=lf
+*.bat text eol=crlf
+*.ps1 text eol=crlf
