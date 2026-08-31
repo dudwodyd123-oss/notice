@@ -71,9 +71,9 @@ jobs:
           git pull --rebase --autostash origin "${{ github.ref_name }}" || true
           git push origin "HEAD:${{ github.ref_name }}"
 
+      # Pages 는 저장소 Settings → Pages → Source 를 "GitHub Actions" 로
+      # 한 번 바꿔두어야 한다. 워크플로 토큰으로는 사이트를 새로 만들 권한이 없다.
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - uses: actions/upload-pages-artifact@v3
         with:

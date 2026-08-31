@@ -25,14 +25,14 @@ PC 를 켜두지 않아도 GitHub 서버가 1시간마다 확인하고, 대시�
 
 **1. GitHub 에서 빈 저장소를 만듭니다** — <https://github.com/new>
 
-- 이름: 아무거나 (예: `notice-tap`)
+- 이름: 아무거나 (예: `notice`)
 - **Public** 을 고르세요. Private 은 GitHub Pages 를 쓰려면 유료 요금제가 필요합니다
 - README, .gitignore, license 는 **체크하지 마세요** (이미 있습니다)
 
 **2. 내 PC 에서 올립니다** — `<내계정>` 과 저장소 이름만 바꿔서:
 
 ```bash
-git remote add origin https://github.com/<내계정>/notice-tap.git
+git remote add origin https://github.com/<내계정>/notice.git
 ```
 
 ```bash
@@ -42,16 +42,25 @@ git push -u origin main
 **3. Actions 에 쓰기 권한을 줍니다**
 
 저장소 **Settings → Actions → General → Workflow permissions** 에서
-**Read and write permissions** 를 고르고 저장합니다.
+**Read and write permissions** 를 고르고 **Save**.
 (확인 기록을 저장소에 되커밋해야 하기 때문입니다.)
 
-**4. 첫 실행**
+**4. Pages 를 켭니다**
+
+저장소 **Settings → Pages → Build and deployment → Source** 를
+**GitHub Actions** 로 바꿉니다.
+
+이 단계를 빼먹으면 워크플로가 마지막에 `Create Pages site failed —
+Resource not accessible by integration` 오류로 끝납니다. 워크플로 토큰에는
+Pages 사이트를 새로 만들 권한이 없어서, 이것만은 손으로 켜줘야 합니다.
+
+**5. 첫 실행**
 
 저장소 **Actions** 탭 → 왼쪽 `공지 확인` → **Run workflow** 를 누릅니다.
 1~2분 뒤 초록 체크가 뜨면, 대시보드 주소는 이렇게 됩니다:
 
 ```
-https://<내계정>.github.io/notice-tap/
+https://dudwodyd123-oss.github.io/notice/
 ```
 
 이 주소를 폰 홈 화면에 추가해두면 앱처럼 쓸 수 있습니다.
