@@ -134,22 +134,44 @@ def cmd_check(args) -> int:
     result = checker.check_all(notify_first_run=args.notify_first_run)
     _report(result)
 
-    new_posts = result.new_posts
-    if new_posts and not args.no_notify:
-        for notifier in notifiers:
-            if notifier.name == "console":
-                continue  # 위에서 이미 화면에 출력했다
-            try:
-                notifier.send(new_posts)
-                print(f"  알림 전송 완료 → {notifier.name}")
-            except Exception as exc:
-                print(f"  알림 실패 ({notifier.name}): {exc}")
+    if not args.no_notify:
+        _deliver(config, checker, notifiers)
 
     path = render_dashboard(checker.store, config.get("dashboard_path", "dashboard.html"))
     _alert_stale(config, checker, notifiers, muted=args.no_notify, dashboard=path)
     print(f"\n모아보기 페이지: {path.resolve()}")
     checker.close()
     return 0
+
+
+def _deliver(config: Config, checker: Checker, notifiers) -> None:
+    """아직 못 보낸 글을 알린다. 모든 채널이 성공했을 때만 '보냄' 으로 표시한다.
+
+    전송에 실패한 글은 표시하지 않고 남겨두어 다음 실행에서 다시 시도한다.
+    알림이 조용히 사라지는 것보다 늦게라도 도착하는 편이 낫다.
+    """
+    channels = [n for n in notifiers if n.name != "console"]  # 콘솔은 이미 출력했다
+    pending = checker.store.pending_posts([site.key for site in config.enabled_sites])
+    if not pending:
+        return
+
+    if not channels:
+        print(f"  보낼 채널이 없어 {len(pending)}건을 보류합니다 (다음 실행에서 다시 시도)")
+        return
+
+    delivered = True
+    for notifier in channels:
+        try:
+            notifier.send(pending)
+            print(f"  알림 전송 완료 → {notifier.name} ({len(pending)}건)")
+        except Exception as exc:
+            delivered = False
+            print(f"  알림 실패 ({notifier.name}): {exc}")
+
+    if delivered:
+        checker.store.mark_notified(pending)
+    else:
+        print(f"  {len(pending)}건을 보류합니다 — 다음 실행에서 다시 보냅니다")
 
 
 def _alert_stale(config: Config, checker: Checker, notifiers, muted: bool, dashboard: Path) -> None:

@@ -81,6 +81,11 @@ class Checker:
             fresh = [post for post in fresh if not post.pinned]
 
         outcome.new_posts = sorted(fresh, key=_chronological)
+        # 알릴 글은 '아직 안 보냄' 으로 먼저 저장한다. 전송이 실패해도 기록이
+        # 남아 다음 실행 때 다시 시도할 수 있다. (예전에는 보내기 전에 이미
+        # '보냄' 으로 적어버려서, 한 번 실패한 알림은 영영 사라졌다.)
+        self.store.record(outcome.new_posts, notified=False)
+        # 나머지(고정글 제외 설정으로 걸러진 것 등)는 알릴 대상이 아니다.
         self.store.record(posts, notified=True)
         self.store.mark_check(site.key)
         return outcome

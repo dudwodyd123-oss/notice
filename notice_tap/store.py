@@ -175,6 +175,40 @@ class Store:
             )
         )
 
+    # --- 아직 보내지 못한 알림 ------------------------------------------
+
+    def pending_posts(self, site_keys: list[str]) -> list[Post]:
+        """저장은 됐지만 아직 전송하지 못한 글. 지난 회차에 실패한 것도 함께 나온다."""
+        if not site_keys:
+            return []
+        marks = ",".join("?" * len(site_keys))
+        rows = self.conn.execute(
+            f"""SELECT * FROM posts
+                 WHERE notified = 0 AND baseline = 0 AND site_key IN ({marks})
+                 ORDER BY posted_on, post_id""",
+            site_keys,
+        )
+        return [
+            Post(
+                site_key=row["site_key"],
+                site_name=row["site_name"],
+                post_id=row["post_id"],
+                title=row["title"],
+                url=row["url"],
+                author=row["author"] or "",
+                posted_at=row["posted_at"] or "",
+                category=row["category"] or "",
+                pinned=bool(row["pinned"]),
+            )
+            for row in rows
+        ]
+
+    def mark_notified(self, posts: list[Post]) -> None:
+        self.conn.executemany(
+            "UPDATE posts SET notified = 1 WHERE uid = ?", [(p.uid,) for p in posts]
+        )
+        self.conn.commit()
+
     def mark_alerted(self, site_key: str) -> None:
         self.conn.execute(
             "UPDATE sites_state SET last_alert = ? WHERE site_key = ?", (_now(), site_key)
