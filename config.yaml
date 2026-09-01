@@ -12,10 +12,6 @@ stale_alert_days: 2
 notifiers:
   console:
     enabled: true
-  telegram:
-    enabled: true
-    bot_token: ${TELEGRAM_BOT_TOKEN}
-    chat_id: ${TELEGRAM_CHAT_ID}
   discord:
     enabled: true
     webhook_url: ${DISCORD_WEBHOOK_URL}

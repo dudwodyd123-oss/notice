@@ -21,11 +21,6 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "stale_alert_days": 2,
     "notifiers": {
         "console": {"enabled": True},
-        "telegram": {
-            "enabled": True,
-            "bot_token": "${TELEGRAM_BOT_TOKEN}",
-            "chat_id": "${TELEGRAM_CHAT_ID}",
-        },
         "discord": {"enabled": True, "webhook_url": "${DISCORD_WEBHOOK_URL}"},
     },
     "sites": [],

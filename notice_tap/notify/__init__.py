@@ -7,13 +7,9 @@ from typing import Any
 from .base import Notifier, NotifierUnavailable, group_by_site
 from .console import ConsoleNotifier
 from .discord import DiscordNotifier
-from .telegram import TelegramNotifier
 
 BUILDERS = {
     "console": lambda cfg: ConsoleNotifier(),
-    "telegram": lambda cfg: TelegramNotifier(
-        bot_token=cfg.get("bot_token", ""), chat_id=cfg.get("chat_id", "")
-    ),
     "discord": lambda cfg: DiscordNotifier(webhook_url=cfg.get("webhook_url", "")),
 }
 
@@ -47,7 +43,6 @@ __all__ = [
     "DiscordNotifier",
     "Notifier",
     "NotifierUnavailable",
-    "TelegramNotifier",
     "build_notifiers",
     "group_by_site",
 ]
