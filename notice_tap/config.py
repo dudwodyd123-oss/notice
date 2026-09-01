@@ -25,6 +25,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "discord": {"enabled": True, "webhook_url": "${DISCORD_WEBHOOK_URL}"},
     },
     "sites": [],
+    "shortcuts": [],
 }
 
 
@@ -76,6 +77,15 @@ class Config:
     @property
     def enabled_sites(self) -> list[Site]:
         return [site for site in self.sites if site.enabled]
+
+    @property
+    def shortcuts(self) -> list[dict[str, str]]:
+        """공지를 긁어오지 않고 링크만 걸어두는 사이트."""
+        return [
+            {"name": item["name"], "url": item["url"]}
+            for item in self.data.get("shortcuts", [])
+            if item.get("name") and item.get("url")
+        ]
 
     def add_site(self, site: Site) -> bool:
         """이미 등록된 URL이면 False."""

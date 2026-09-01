@@ -46,6 +46,11 @@ TEMPLATE = """<!doctype html>
   .chip:hover {{ border-color: var(--accent); color: var(--accent); }}
   .chip.on {{ background: var(--accent); border-color: var(--accent); color: #fff; }}
   .chip.on:hover {{ color: #fff; }}
+  /* 공지를 모으지 않고 링크만 걸어둔 곳. 색으로 구분한다. */
+  .chip.shortcut {{ background: var(--accent-soft); border-color: #cfe3d6;
+    color: #1f6b42; }}
+  .chip.shortcut:hover {{ border-color: var(--accent); }}
+  .chip.shortcut.on {{ background: var(--accent); border-color: var(--accent); color: #fff; }}
   .board-link {{ display: none; align-items: center; gap: 8px; margin-bottom: 14px;
     padding: 11px 14px; border: 1px solid var(--line); border-radius: 10px;
     background: var(--card); color: var(--accent); text-decoration: none;
@@ -75,16 +80,18 @@ TEMPLATE = """<!doctype html>
     <input type="search" id="q" placeholder="제목 검색…">
     <button class="chip on" data-site="">전체</button>
     {chips}
+    {shortcut_chips}
   </div>
 
   <a class="board-link" id="boardLink" href="#" target="_blank" rel="noopener"></a>
 
   <ul id="list">{items}</ul>
-  <div class="empty" id="empty" hidden>조건에 맞는 글이 없습니다.</div>
+  <div class="empty" id="empty" hidden></div>
 </div>
 
 <script>
 const homes = {homes};
+const shortcutNames = {shortcut_names};
 const boardLink = document.getElementById('boardLink');
 const list = document.getElementById('list');
 const empty = document.getElementById('empty');
@@ -102,6 +109,9 @@ function render() {{
     if (visible) shown++;
   }}
   empty.hidden = shown > 0;
+  empty.textContent = shortcutNames.includes(site)
+    ? '이곳은 바로가기만 등록되어 있습니다. 위 링크로 이동하세요.'
+    : '조건에 맞는 글이 없습니다.';
 }}
 
 function showBoardLink() {{
@@ -109,7 +119,8 @@ function showBoardLink() {{
   if (!url) {{ boardLink.classList.remove('show'); return; }}
   boardLink.href = url;
   boardLink.innerHTML = '';
-  boardLink.append(site + ' 공지사항 페이지로 이동');
+  const label = shortcutNames.includes(site) ? ' 사이트로 이동' : ' 공지사항 페이지로 이동';
+  boardLink.append(site + label);
   const arrow = document.createElement('span');
   arrow.className = 'arrow';
   arrow.textContent = '↗';
@@ -171,20 +182,35 @@ def render_dashboard(
     limit: int = 300,
     sites=None,
     days: int = 7,
+    shortcuts=None,
 ) -> Path:
-    """sites 를 주면 분류마다 실제 게시판으로 가는 링크가 함께 붙는다."""
+    """sites 를 주면 분류마다 실제 게시판으로 가는 링크가 함께 붙는다.
+
+    shortcuts 는 공지를 모으지 않고 링크만 걸어두는 곳이다.
+    """
     since = (date.today() - timedelta(days=days)).isoformat() if days else ""
     rows = store.recent(limit=limit, since=since)
     # 같은 분류를 여러 게시판이 공유하므로 먼저 등록된 쪽 주소를 대표로 쓴다.
     homes: dict[str, str] = {}
     for site in sites or []:
         homes.setdefault(site.name, site.home)
+
+    shortcut_names = []
+    for item in shortcuts or []:
+        homes.setdefault(item["name"], item["url"])
+        shortcut_names.append(item["name"])
     cutoff = (datetime.now().astimezone() - timedelta(hours=24)).isoformat()
 
     site_names = sorted({row["site_name"] for row in rows})
     chips = "\n    ".join(
         f'<button class="chip" data-site="{html.escape(name, quote=True)}">{html.escape(name)}</button>'
         for name in site_names
+    )
+
+    shortcut_chips = "\n    ".join(
+        f'<button class="chip shortcut" data-site="{html.escape(name, quote=True)}">'
+        f"{html.escape(name)}</button>"
+        for name in shortcut_names
     )
 
     items = "\n".join(_item(row, cutoff) for row in rows)
@@ -201,6 +227,8 @@ def render_dashboard(
             icon192=_icon("icon-192.png"),
             manifest=_manifest(),
             chips=chips,
+            shortcut_chips=shortcut_chips,
+            shortcut_names=json.dumps(shortcut_names, ensure_ascii=False),
             items=items or "",
             homes=json.dumps(homes, ensure_ascii=False),
         ),

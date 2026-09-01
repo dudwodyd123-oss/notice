@@ -141,6 +141,7 @@ def cmd_check(args) -> int:
         checker.store, config.get("dashboard_path", "dashboard.html"),
         sites=config.sites,
         days=config.get("retention_days", 7),
+        shortcuts=config.shortcuts,
     )
     _alert_stale(config, checker, notifiers, muted=args.no_notify, dashboard=path)
     print(f"\n모아보기 페이지: {path.resolve()}")
@@ -229,6 +230,7 @@ def cmd_dashboard(args) -> int:
         store, config.get("dashboard_path", "dashboard.html"),
         sites=config.sites,
         days=config.get("retention_days", 7),
+        shortcuts=config.shortcuts,
     )
     store.close()
     print(f"모아보기 페이지: {path.resolve()}")

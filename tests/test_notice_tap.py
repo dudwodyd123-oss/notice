@@ -17,6 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from notice_tap.checker import Checker  # noqa: E402
 from notice_tap.config import Config  # noqa: E402
+from notice_tap.dashboard import render_dashboard  # noqa: E402
 from notice_tap.dates import to_iso_date  # noqa: E402
 from notice_tap.models import Post, Site  # noqa: E402
 from notice_tap.parsers import get_parser  # noqa: E402
@@ -106,6 +107,45 @@ class ConfigTest(TempDirCase):
         text = path.read_text(encoding="utf-8")
         self.assertIn("${TEST_HOOK}", text)
         self.assertNotIn("지울 게시판", text)
+
+
+class ShortcutTest(TempDirCase):
+    """공지를 모으지 않고 링크만 걸어두는 항목."""
+
+    def _config(self, body):
+        path = self.tmp / "config.yaml"
+        path.write_text(body, encoding="utf-8")
+        return Config.load(path)
+
+    def test_이름과_주소가_있는_것만_읽는다(self):
+        config = self._config(
+            "sites: []\n"
+            "shortcuts:\n"
+            "- name: 학생성공개발원\n"
+            "  url: https://job.example.ac.kr/\n"
+            "- name: 주소가 없는 곳\n"
+        )
+        self.assertEqual(
+            config.shortcuts,
+            [{"name": "학생성공개발원", "url": "https://job.example.ac.kr/"}],
+        )
+
+    def test_바로가기가_없으면_빈_목록(self):
+        self.assertEqual(self._config("sites: []\n").shortcuts, [])
+
+    def test_대시보드에_바로가기_칩과_주소가_들어간다(self):
+        store = Store(self.tmp / "t.db")
+        store.record([make_post("1")], notified=True)
+        out = render_dashboard(
+            store,
+            self.tmp / "d.html",
+            shortcuts=[{"name": "학생성공개발원", "url": "https://job.example.ac.kr/"}],
+        )
+        store.close()
+
+        page = out.read_text(encoding="utf-8")
+        self.assertIn('class="chip shortcut" data-site="학생성공개발원"', page)
+        self.assertIn("https://job.example.ac.kr/", page)
 
 
 # --- 알림 전달 -------------------------------------------------------------
