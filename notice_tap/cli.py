@@ -138,7 +138,9 @@ def cmd_check(args) -> int:
         _deliver(config, checker, notifiers)
 
     path = render_dashboard(
-        checker.store, config.get("dashboard_path", "dashboard.html"), sites=config.sites
+        checker.store, config.get("dashboard_path", "dashboard.html"),
+        sites=config.sites,
+        days=config.get("retention_days", 7),
     )
     _alert_stale(config, checker, notifiers, muted=args.no_notify, dashboard=path)
     print(f"\n모아보기 페이지: {path.resolve()}")
@@ -224,7 +226,9 @@ def cmd_dashboard(args) -> int:
     config = Config.load(args.config)
     store = Store(config.get("database"))
     path = render_dashboard(
-        store, config.get("dashboard_path", "dashboard.html"), sites=config.sites
+        store, config.get("dashboard_path", "dashboard.html"),
+        sites=config.sites,
+        days=config.get("retention_days", 7),
     )
     store.close()
     print(f"모아보기 페이지: {path.resolve()}")

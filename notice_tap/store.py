@@ -9,6 +9,9 @@ from pathlib import Path
 from .dates import to_iso_date
 from .models import Post
 
+# 글의 "날짜". 게시일이 비어 있는 게시판도 있어 그럴 때는 발견 날짜를 쓴다.
+EFFECTIVE_DATE = "COALESCE(NULLIF(posted_on, ''), substr(first_seen, 1, 10))"
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS posts (
     uid        TEXT PRIMARY KEY,
@@ -223,16 +226,40 @@ class Store:
 
     # --- 읽기 ---------------------------------------------------------
 
-    def recent(self, limit: int = 200) -> list[sqlite3.Row]:
-        # 게시일을 먼저 본다. 발견 시각을 앞에 두면 게시판별로 뭉쳐 버린다.
+    def recent(self, limit: int = 200, since: str = "") -> list[sqlite3.Row]:
+        """since(YYYY-MM-DD) 이후 글만. 게시일을 먼저 보고 정렬한다.
+
+        발견 시각을 앞에 두면 게시판별로 뭉쳐 버려서 최신순이 되지 않는다.
+        """
         return list(
             self.conn.execute(
-                """SELECT * FROM posts
-                    ORDER BY posted_on DESC, first_seen DESC, post_id DESC
-                    LIMIT ?""",
-                (limit,),
+                f"""SELECT * FROM posts
+                     WHERE {EFFECTIVE_DATE} >= ?
+                     ORDER BY posted_on DESC, first_seen DESC, post_id DESC
+                     LIMIT ?""",
+                (since, limit),
             )
         )
+
+    def prune(self, site_key: str, live_uids: set[str], before: str) -> int:
+        """오래됐고 게시판에도 더 이상 없는 글을 지운다.
+
+        게시판에 아직 걸려 있는 글은 아무리 오래돼도 남긴다. 지워버리면
+        다음 확인 때 '처음 보는 글' 이 되어 알림이 다시 나가기 때문이다.
+        학과 게시판 첫 페이지에는 몇 해 전 고정공지가 그대로 걸려 있다.
+        """
+        if not live_uids:
+            return 0  # 목록을 제대로 못 읽은 회차에는 손대지 않는다
+        marks = ",".join("?" * len(live_uids))
+        cur = self.conn.execute(
+            f"""DELETE FROM posts
+                 WHERE site_key = ?
+                   AND {EFFECTIVE_DATE} < ?
+                   AND uid NOT IN ({marks})""",
+            (site_key, before, *live_uids),
+        )
+        self.conn.commit()
+        return cur.rowcount
 
     def site_states(self) -> dict[str, sqlite3.Row]:
         return {row["site_key"]: row for row in self.conn.execute("SELECT * FROM sites_state")}

@@ -19,6 +19,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "dashboard_path": "dashboard.html",
     "notify_on_pinned": True,
     "stale_alert_days": 2,
+    "retention_days": 7,
     "notifiers": {
         "console": {"enabled": True},
         "discord": {"enabled": True, "webhook_url": "${DISCORD_WEBHOOK_URL}"},

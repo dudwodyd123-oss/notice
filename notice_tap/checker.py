@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from datetime import date, timedelta
 
 from .config import Config
 from .fetcher import Fetcher
@@ -88,7 +89,16 @@ class Checker:
         # 나머지(고정글 제외 설정으로 걸러진 것 등)는 알릴 대상이 아니다.
         self.store.record(posts, notified=True)
         self.store.mark_check(site.key)
+        self._prune(site, posts)
         return outcome
+
+    def _prune(self, site: Site, live_posts: list[Post]) -> None:
+        """화면에 안 보일 만큼 오래됐고 게시판에도 없는 기록을 버린다."""
+        days = self.config.get("retention_days", 7)
+        if not days:
+            return
+        cutoff = (date.today() - timedelta(days=days)).isoformat()
+        self.store.prune(site.key, {p.uid for p in live_posts}, cutoff)
 
     def close(self) -> None:
         self.fetcher.close()

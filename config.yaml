@@ -9,6 +9,7 @@ database: data/notices.db
 dashboard_path: dashboard.html
 notify_on_pinned: true
 stale_alert_days: 2
+retention_days: 7
 notifiers:
   console:
     enabled: true

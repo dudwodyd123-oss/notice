@@ -98,3 +98,37 @@ jobs:
 
       - id: deploy
         uses: actions/deploy-pages@v4
+
+      # 여기까지 오지 못하고 앞 단계에서 죽으면 확인 자체가 안 돌아간다.
+      # 그러면 실패 기록도 안 남아 '며칠째 실패' 알림도 뜨지 않는다.
+      # 조용히 멈추는 상황을 막기 위해 실패했을 때 직접 알린다.
+      - name: 전체 실패 알림
+        if: failure()
+        env:
+          WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "$WEBHOOK" ]; then
+            echo "웹훅이 없어 실패를 알리지 못했습니다."
+            exit 0
+          fi
+          python - <<'PY'
+          import json, os, urllib.request
+
+          payload = {
+              "content": "⚠️ 공지 확인이 실패했습니다",
+              "embeds": [{
+                  "title": "실행 기록 보기",
+                  "url": os.environ["RUN_URL"],
+                  "description": "새 글 확인이 돌지 못했습니다. 확인이 멈춘 동안에는 공지 알림도 오지 않습니다.",
+                  "color": 0xD92D20,
+              }],
+          }
+          request = urllib.request.Request(
+              os.environ["WEBHOOK"],
+              data=json.dumps(payload).encode("utf-8"),
+              headers={"Content-Type": "application/json"},
+          )
+          with urllib.request.urlopen(request, timeout=15) as response:
+              print("실패 알림 전송:", response.status)
+          PY

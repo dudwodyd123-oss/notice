@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
+import base64
 import html
 import json
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 from .store import Store
@@ -15,6 +16,12 @@ TEMPLATE = """<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#2e8b57">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="공지 모아보기">
+<link rel="icon" type="image/png" href="data:image/png;base64,{favicon}">
+<link rel="apple-touch-icon" href="data:image/png;base64,{icon192}">
+<link rel="manifest" href="data:application/manifest+json;charset=utf-8;base64,{manifest}">
 <title>공지 모아보기 — notice_tap</title>
 <style>
   /* 기기 설정과 상관없이 항상 밝은 화면으로 고정한다. */
@@ -62,7 +69,7 @@ TEMPLATE = """<!doctype html>
 <body>
 <div class="wrap">
   <h1>공지 모아보기</h1>
-  <div class="meta">{site_count}개 게시판 · 글 {post_count}건 · 갱신 {generated}</div>
+  <div class="meta">최근 {days}일 · {site_count}개 게시판 · 글 {post_count}건 · 갱신 {generated}</div>
 
   <div class="controls">
     <input type="search" id="q" placeholder="제목 검색…">
@@ -126,14 +133,48 @@ document.querySelectorAll('.chip').forEach(chip => {{
 """
 
 
+ICON_DIR = Path(__file__).parent / "icons"
+
+
+def _icon(name: str) -> str:
+    return base64.b64encode((ICON_DIR / name).read_bytes()).decode("ascii")
+
+
+def _manifest() -> str:
+    """홈 화면에 추가했을 때 앱처럼 보이게 하는 설명서."""
+    body = {
+        "name": "공지 모아보기",
+        "short_name": "공지",
+        "start_url": ".",
+        "display": "standalone",
+        "background_color": "#f6f7f9",
+        "theme_color": "#2e8b57",
+        "icons": [
+            {
+                "src": f"data:image/png;base64,{_icon('icon-192.png')}",
+                "sizes": "192x192",
+                "type": "image/png",
+            },
+            {
+                "src": f"data:image/png;base64,{_icon('icon-512.png')}",
+                "sizes": "512x512",
+                "type": "image/png",
+            },
+        ],
+    }
+    return base64.b64encode(json.dumps(body, ensure_ascii=False).encode("utf-8")).decode("ascii")
+
+
 def render_dashboard(
     store: Store,
     path: str | Path = "dashboard.html",
     limit: int = 300,
     sites=None,
+    days: int = 7,
 ) -> Path:
     """sites 를 주면 분류마다 실제 게시판으로 가는 링크가 함께 붙는다."""
-    rows = store.recent(limit=limit)
+    since = (date.today() - timedelta(days=days)).isoformat() if days else ""
+    rows = store.recent(limit=limit, since=since)
     # 같은 분류를 여러 게시판이 공유하므로 먼저 등록된 쪽 주소를 대표로 쓴다.
     homes: dict[str, str] = {}
     for site in sites or []:
@@ -155,6 +196,10 @@ def render_dashboard(
             site_count=len(site_names),
             post_count=len(rows),
             generated=datetime.now().strftime("%Y-%m-%d %H:%M"),
+            days=days,
+            favicon=_icon("favicon.png"),
+            icon192=_icon("icon-192.png"),
+            manifest=_manifest(),
             chips=chips,
             items=items or "",
             homes=json.dumps(homes, ensure_ascii=False),
