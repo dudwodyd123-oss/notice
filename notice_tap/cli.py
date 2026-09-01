@@ -137,7 +137,9 @@ def cmd_check(args) -> int:
     if not args.no_notify:
         _deliver(config, checker, notifiers)
 
-    path = render_dashboard(checker.store, config.get("dashboard_path", "dashboard.html"))
+    path = render_dashboard(
+        checker.store, config.get("dashboard_path", "dashboard.html"), sites=config.sites
+    )
     _alert_stale(config, checker, notifiers, muted=args.no_notify, dashboard=path)
     print(f"\n모아보기 페이지: {path.resolve()}")
     checker.close()
@@ -180,16 +182,19 @@ def _alert_stale(config: Config, checker: Checker, notifiers, muted: bool, dashb
     파싱이 깨지면 겉으로는 '새 글 없음'과 구분되지 않아 조용히 방치되기 쉽다.
     """
     days = config.get("stale_alert_days", 2)
-    known = {site.key: site.name for site in config.sites}
+    # 여러 게시판이 같은 이름(분류)을 쓰므로 주소까지 있어야 어느 쪽인지 안다.
+    known = {site.key: site for site in config.sites}
     stale = [row for row in checker.store.stale_sites(days) if row["site_key"] in known]
     if not stale:
         return
 
     lines = []
     for row in stale:
+        site = known[row["site_key"]]
         since = (row["fail_since"] or "")[:10]
         reason = (row["last_error"] or "").splitlines()[0][:90]
-        lines.append(f"{known[row['site_key']]} — {since}부터 실패")
+        lines.append(f"{site.name} — {since}부터 실패")
+        lines.append(f"  {site.url}")
         lines.append(f"  {reason}")
 
     heading = f"공지 확인이 {days}일 넘게 실패 중 ({len(stale)}곳)"
@@ -233,7 +238,9 @@ def cmd_watch(args) -> int:
 def cmd_dashboard(args) -> int:
     config = Config.load(args.config)
     store = Store(config.get("database"))
-    path = render_dashboard(store, config.get("dashboard_path", "dashboard.html"))
+    path = render_dashboard(
+        store, config.get("dashboard_path", "dashboard.html"), sites=config.sites
+    )
     store.close()
     print(f"모아보기 페이지: {path.resolve()}")
     if args.open:

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import html
+import json
 from datetime import datetime, timedelta
 from pathlib import Path
 
@@ -38,6 +39,13 @@ TEMPLATE = """<!doctype html>
   .chip {{ border: 1px solid var(--line); background: var(--chip); color: var(--text);
     border-radius: 999px; padding: 6px 12px; font-size: 13px; cursor: pointer; }}
   .chip.on {{ background: var(--accent); border-color: var(--accent); color: #fff; }}
+  .board-link {{ display: none; align-items: center; gap: 8px; margin-bottom: 14px;
+    padding: 11px 14px; border: 1px solid var(--line); border-radius: 10px;
+    background: var(--card); color: var(--accent); text-decoration: none;
+    font-size: 14px; font-weight: 600; }}
+  .board-link.show {{ display: flex; }}
+  .board-link:hover {{ border-color: var(--accent); }}
+  .board-link .arrow {{ margin-left: auto; color: var(--muted); font-weight: 400; }}
   ul {{ list-style: none; margin: 0; padding: 0; }}
   li.post {{ background: var(--card); border: 1px solid var(--line); border-radius: 10px;
     padding: 12px 14px; margin-bottom: 8px; }}
@@ -62,11 +70,15 @@ TEMPLATE = """<!doctype html>
     {chips}
   </div>
 
+  <a class="board-link" id="boardLink" href="#" target="_blank" rel="noopener"></a>
+
   <ul id="list">{items}</ul>
   <div class="empty" id="empty" hidden>조건에 맞는 글이 없습니다.</div>
 </div>
 
 <script>
+const homes = {homes};
+const boardLink = document.getElementById('boardLink');
 const list = document.getElementById('list');
 const empty = document.getElementById('empty');
 const q = document.getElementById('q');
@@ -85,12 +97,26 @@ function render() {{
   empty.hidden = shown > 0;
 }}
 
+function showBoardLink() {{
+  const url = site ? homes[site] : null;
+  if (!url) {{ boardLink.classList.remove('show'); return; }}
+  boardLink.href = url;
+  boardLink.innerHTML = '';
+  boardLink.append(site + ' 공지사항 페이지로 이동');
+  const arrow = document.createElement('span');
+  arrow.className = 'arrow';
+  arrow.textContent = '↗';
+  boardLink.append(arrow);
+  boardLink.classList.add('show');
+}}
+
 q.addEventListener('input', render);
 document.querySelectorAll('.chip').forEach(chip => {{
   chip.addEventListener('click', () => {{
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
     chip.classList.add('on');
     site = chip.dataset.site;
+    showBoardLink();
     render();
   }});
 }});
@@ -100,8 +126,18 @@ document.querySelectorAll('.chip').forEach(chip => {{
 """
 
 
-def render_dashboard(store: Store, path: str | Path = "dashboard.html", limit: int = 300) -> Path:
+def render_dashboard(
+    store: Store,
+    path: str | Path = "dashboard.html",
+    limit: int = 300,
+    sites=None,
+) -> Path:
+    """sites 를 주면 분류마다 실제 게시판으로 가는 링크가 함께 붙는다."""
     rows = store.recent(limit=limit)
+    # 같은 분류를 여러 게시판이 공유하므로 먼저 등록된 쪽 주소를 대표로 쓴다.
+    homes: dict[str, str] = {}
+    for site in sites or []:
+        homes.setdefault(site.name, site.home)
     cutoff = (datetime.now().astimezone() - timedelta(hours=24)).isoformat()
 
     site_names = sorted({row["site_name"] for row in rows})
@@ -121,6 +157,7 @@ def render_dashboard(store: Store, path: str | Path = "dashboard.html", limit: i
             generated=datetime.now().strftime("%Y-%m-%d %H:%M"),
             chips=chips,
             items=items or "",
+            homes=json.dumps(homes, ensure_ascii=False),
         ),
         encoding="utf-8",
     )

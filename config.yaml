@@ -27,27 +27,32 @@ notifiers:
     enabled: true
     webhook_url: ${DISCORD_WEBHOOK_URL}
 sites:
-- name: 정컴 학부 공지사항
+- name: 정보컴퓨터공학부
   url: https://cse.pusan.ac.kr/bbs/cse/2055/artclList.do
   parser: pnu
   key: 374945f5c2db
-- name: 정컴 졸업과제
+  home: https://cse.pusan.ac.kr/cse/14221/subview.do
+- name: 정보컴퓨터공학부
   url: https://cse.pusan.ac.kr/bbs/cse/2056/artclList.do
   parser: pnu
   key: 10062ffd1f9d
-- name: 정컴 채용게시판
+  home: https://cse.pusan.ac.kr/cse/14221/subview.do
+- name: 정보컴퓨터공학부
   url: https://cse.pusan.ac.kr/bbs/cse/2060/artclList.do
   parser: pnu
   key: 488205947b84
-- name: 정컴 경진대회 안내
+  home: https://cse.pusan.ac.kr/cse/14221/subview.do
+- name: 정보컴퓨터공학부
   url: https://cse.pusan.ac.kr/bbs/cse/2052/artclList.do
   parser: pnu
   key: 32530b1606ef
-- name: 정컴 기타행사 안내
+  home: https://cse.pusan.ac.kr/cse/14221/subview.do
+- name: 정보컴퓨터공학부
   url: https://cse.pusan.ac.kr/bbs/cse/2061/artclList.do
   parser: pnu
   key: 9a9cc23bc9b6
-- name: 부산대 대표 공지사항
+  home: https://cse.pusan.ac.kr/cse/14221/subview.do
+- name: 부산대학교
   url: https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095
   parser: generic
   row_selector: table.board-list-table tbody tr
@@ -56,11 +61,13 @@ sites:
   author_selector: td.writer
   id_param: board_seq
   key: 95390426e921
-- name: 창업지원단 공지사항
+  home: https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095
+- name: 창업지원단
   url: https://bi.pusan.ac.kr/community/notice
   parser: bi_pusan
   key: 0e920dac2b3c
-- name: 산학협력단 공지사항
+  home: https://bi.pusan.ac.kr/community/notice
+- name: 산학협력단
   url: https://sanhak.pusan.ac.kr/sanhak/board/4
   parser: generic
   row_selector: table#tablelist tbody tr
@@ -69,11 +76,14 @@ sites:
   author_selector: td:nth-child(3)
   id_regex: /boardview/\d+/(\d+)
   key: 9872521de15b
-- name: 국제처 공지사항
+  home: https://sanhak.pusan.ac.kr/sanhak/board/4
+- name: 국제처
   url: https://international.pusan.ac.kr/bbs/international/2080/artclList.do
   parser: pnu
   key: aa28cd59ae6d
-- name: AI융합교육원 공지사항
+  home: https://international.pusan.ac.kr/international/15225/subview.do
+- name: AI융합교육원
   url: https://swedu.pusan.ac.kr/bbs/swedu/2265/artclList.do
   parser: pnu
   key: 5287380eed4f
+  home: https://swedu.pusan.ac.kr/swedu/16156/subview.do

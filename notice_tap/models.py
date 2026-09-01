@@ -64,6 +64,15 @@ class Site:
         if not self.key:
             self.key = make_site_key(self.url)
 
+    @property
+    def home(self) -> str:
+        """사람이 브라우저로 열 게시판 주소.
+
+        감시에 쓰는 url 은 목록 데이터를 얻기 좋은 주소라 화면이 휑하게 나온다.
+        따로 적어두면 그쪽을, 없으면 감시 주소를 그대로 쓴다.
+        """
+        return self.options.get("home") or self.url
+
     @classmethod
     def from_dict(cls, raw: dict[str, Any]) -> "Site":
         known = {"name", "url", "parser", "enabled", "key"}
