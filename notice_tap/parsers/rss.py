@@ -7,6 +7,7 @@ import re
 import xml.etree.ElementTree as ET
 
 from ..models import Post, Site
+from ..text import collapse
 
 ATOM = "{http://www.w3.org/2005/Atom}"
 
@@ -60,6 +61,4 @@ def _stable_id(raw: str) -> str:
 
 
 def _text(node: ET.Element | None) -> str:
-    if node is None or node.text is None:
-        return ""
-    return re.sub(r"\s+", " ", node.text).strip()
+    return collapse(node.text) if node is not None else ""

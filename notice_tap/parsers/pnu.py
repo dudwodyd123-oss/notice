@@ -12,6 +12,7 @@ from urllib.parse import urljoin
 from bs4 import BeautifulSoup
 
 from ..models import Post, Site
+from ..text import collapse, node_text
 
 ARTCL_ID_RE = re.compile(r"/(\d+)/artclView\.do")
 # 목록에 붙는 장식용 배지("새글" 등)는 제목에서 떼어낸다.
@@ -33,7 +34,7 @@ def parse_pnu(site: Site, html: str) -> list[Post]:
         if not match:
             continue
 
-        title = _clean(link.get_text(" ", strip=True))
+        title = _clean(node_text(link))
         if not title:
             continue
 
@@ -55,9 +56,9 @@ def parse_pnu(site: Site, html: str) -> list[Post]:
 
 def _cell(row, selector: str) -> str:
     node = row.select_one(selector)
-    return _clean(node.get_text(" ", strip=True)) if node else ""
+    return _clean(node_text(node))
 
 
 def _clean(text: str) -> str:
-    text = re.sub(r"\s+", " ", text).strip()
-    return BADGE_RE.sub("", text).strip()
+    """목록에 붙는 장식용 배지까지 떼어낸다."""
+    return BADGE_RE.sub("", collapse(text)).strip()

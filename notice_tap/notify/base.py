@@ -50,17 +50,3 @@ def group_by_site(posts: list[Post]) -> dict[str, list[Post]]:
     for post in posts:
         grouped.setdefault(post.site_name, []).append(post)
     return grouped
-
-
-def plain_text(posts: list[Post], limit: int = 10) -> str:
-    """어느 채널에서나 쓸 수 있는 순수 텍스트 요약."""
-    lines: list[str] = []
-    for site_name, group in group_by_site(posts).items():
-        lines.append(f"[{site_name}] 새 글 {len(group)}건")
-        for post in group[:limit]:
-            date = f" ({post.display_date})" if post.display_date else ""
-            lines.append(f"  · {post.title}{date}")
-            lines.append(f"    {post.url}")
-        if len(group) > limit:
-            lines.append(f"  … 외 {len(group) - limit}건")
-    return "\n".join(lines)

@@ -8,13 +8,13 @@
 
 from __future__ import annotations
 
-import re
 from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 
 from ..fetcher import Fetcher
 from ..models import Post, Site
+from ..text import collapse
 
 PAGE_SIZE = 30
 
@@ -53,11 +53,11 @@ def parse_bi_pusan(site: Site, fetcher: Fetcher) -> list[Post]:
             site_key=site.key,
             site_name=site.name,
             post_id=str(item["id"]),
-            title=_clean(item.get("subject")),
+            title=collapse(item.get("subject")),
             url=f"{origin}/community/{board_id}/{item['id']}",
-            author=_clean(item.get("regIdName")),
-            posted_at=_clean(item.get("regDtText")),
-            category=_clean(item.get("articleCtgText")),
+            author=collapse(item.get("regIdName")),
+            posted_at=collapse(item.get("regDtText")),
+            category=collapse(item.get("articleCtgText")),
         )
         for item in items
         if item.get("id") is not None
@@ -86,6 +86,3 @@ def _csrf(html: str) -> tuple[str, str]:
         header.get("content", "") if header else "",
     )
 
-
-def _clean(value) -> str:
-    return re.sub(r"\s+", " ", str(value or "")).strip()

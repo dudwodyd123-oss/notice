@@ -220,21 +220,6 @@ def _alert_stale(config: Config, checker: Checker, notifiers, muted: bool, dashb
         checker.store.mark_alerted(row["site_key"])
 
 
-def cmd_watch(args) -> int:
-    config = Config.load(args.config)
-    interval = args.interval or config.get("poll_interval_minutes", 30)
-    print(f"{interval}분마다 확인합니다. 중단하려면 Ctrl+C.\n")
-
-    while True:
-        print(f"── {time.strftime('%Y-%m-%d %H:%M:%S')} ─────────────────────")
-        try:
-            cmd_check(args)
-        except Exception as exc:
-            print(f"  이번 회차 실패: {exc}")
-        print()
-        time.sleep(interval * 60)
-
-
 def cmd_dashboard(args) -> int:
     config = Config.load(args.config)
     store = Store(config.get("database"))
@@ -360,12 +345,6 @@ def build_parser() -> argparse.ArgumentParser:
         help="새로 등록한 게시판의 기존 글까지 전부 알린다 (기본은 조용히 기준점만 저장)",
     )
     p.set_defaults(func=cmd_check)
-
-    p = subs.add_parser("watch", help="주기적으로 계속 확인한다")
-    p.add_argument("--interval", type=int, help="확인 주기(분). 생략하면 설정값 사용")
-    p.add_argument("--no-notify", action="store_true")
-    p.add_argument("--notify-first-run", action="store_true")
-    p.set_defaults(func=cmd_watch)
 
     p = subs.add_parser("dashboard", help="모아보기 HTML 을 다시 만든다")
     p.add_argument("--open", action="store_true", help="만든 뒤 브라우저로 연다")

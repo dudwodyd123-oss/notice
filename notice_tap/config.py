@@ -15,19 +15,12 @@ from .models import Site
 DEFAULT_PATH = Path("config.yaml")
 
 DEFAULT_CONFIG: dict[str, Any] = {
-    "poll_interval_minutes": 30,
     "database": "data/notices.db",
     "dashboard_path": "dashboard.html",
     "notify_on_pinned": True,
     "stale_alert_days": 2,
     "notifiers": {
         "console": {"enabled": True},
-        "windows": {"enabled": True},
-        "kakao": {
-            "enabled": True,
-            "rest_api_key": "${KAKAO_REST_API_KEY}",
-            "refresh_token": "${KAKAO_REFRESH_TOKEN}",
-        },
         "telegram": {
             "enabled": True,
             "bot_token": "${TELEGRAM_BOT_TOKEN}",

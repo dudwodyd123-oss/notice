@@ -4,24 +4,13 @@ from __future__ import annotations
 
 from typing import Any
 
-from .base import Notifier, NotifierUnavailable, group_by_site, plain_text
+from .base import Notifier, NotifierUnavailable, group_by_site
 from .console import ConsoleNotifier
 from .discord import DiscordNotifier
-from .kakao import KakaoNotifier
 from .telegram import TelegramNotifier
-from .windows import WindowsNotifier
 
 BUILDERS = {
     "console": lambda cfg: ConsoleNotifier(),
-    "windows": lambda cfg: WindowsNotifier(
-        dashboard_path=cfg.get("dashboard_path", "dashboard.html")
-    ),
-    "kakao": lambda cfg: KakaoNotifier(
-        rest_api_key=cfg.get("rest_api_key", ""),
-        refresh_token=cfg.get("refresh_token", ""),
-        token_cache=cfg.get("token_cache", "data/kakao_token.json"),
-        max_messages=cfg.get("max_messages", 8),
-    ),
     "telegram": lambda cfg: TelegramNotifier(
         bot_token=cfg.get("bot_token", ""), chat_id=cfg.get("chat_id", "")
     ),
@@ -56,12 +45,9 @@ __all__ = [
     "BUILDERS",
     "ConsoleNotifier",
     "DiscordNotifier",
-    "KakaoNotifier",
     "Notifier",
     "NotifierUnavailable",
     "TelegramNotifier",
-    "WindowsNotifier",
     "build_notifiers",
     "group_by_site",
-    "plain_text",
 ]

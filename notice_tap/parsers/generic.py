@@ -21,6 +21,7 @@ from urllib.parse import parse_qs, urljoin, urlparse
 from bs4 import BeautifulSoup
 
 from ..models import Post, Site
+from ..text import node_text
 
 DIGITS_RE = re.compile(r"(\d{2,})")
 
@@ -41,7 +42,7 @@ def parse_generic(site: Site, html: str) -> list[Post]:
             continue
         link = node if node.name == "a" else node.select_one("a[href]")
         href = link.get("href", "") if link else ""
-        title = _text(node)
+        title = node_text(node)
         if not title or not href or href.startswith(("javascript:", "#")):
             continue
 
@@ -53,9 +54,9 @@ def parse_generic(site: Site, html: str) -> list[Post]:
                 post_id=_post_id(url, opts),
                 title=title,
                 url=url,
-                author=_text(row.select_one(opts["author_selector"])) if opts.get("author_selector") else "",
-                posted_at=_text(row.select_one(opts["date_selector"])) if opts.get("date_selector") else "",
-                category=_text(row.select_one(opts["category_selector"])) if opts.get("category_selector") else "",
+                author=node_text(row.select_one(opts["author_selector"])) if opts.get("author_selector") else "",
+                posted_at=node_text(row.select_one(opts["date_selector"])) if opts.get("date_selector") else "",
+                category=node_text(row.select_one(opts["category_selector"])) if opts.get("category_selector") else "",
             )
         )
     return posts
@@ -76,9 +77,3 @@ def _post_id(url: str, opts: dict) -> str:
         return match.group(1)
 
     return hashlib.sha1(url.encode("utf-8")).hexdigest()[:16]
-
-
-def _text(node) -> str:
-    if node is None:
-        return ""
-    return re.sub(r"\s+", " ", node.get_text(" ", strip=True)).strip()

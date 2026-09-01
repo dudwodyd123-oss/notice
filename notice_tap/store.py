@@ -223,16 +223,16 @@ class Store:
 
     # --- 읽기 ---------------------------------------------------------
 
-    def recent(self, limit: int = 200, site_key: str | None = None) -> list[sqlite3.Row]:
-        sql = "SELECT * FROM posts"
-        params: list = []
-        if site_key:
-            sql += " WHERE site_key = ?"
-            params.append(site_key)
+    def recent(self, limit: int = 200) -> list[sqlite3.Row]:
         # 게시일을 먼저 본다. 발견 시각을 앞에 두면 게시판별로 뭉쳐 버린다.
-        sql += " ORDER BY posted_on DESC, first_seen DESC, post_id DESC LIMIT ?"
-        params.append(limit)
-        return list(self.conn.execute(sql, params))
+        return list(
+            self.conn.execute(
+                """SELECT * FROM posts
+                    ORDER BY posted_on DESC, first_seen DESC, post_id DESC
+                    LIMIT ?""",
+                (limit,),
+            )
+        )
 
     def site_states(self) -> dict[str, sqlite3.Row]:
         return {row["site_key"]: row for row in self.conn.execute("SELECT * FROM sites_state")}

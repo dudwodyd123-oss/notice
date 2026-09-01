@@ -42,11 +42,6 @@ class Post:
     def uid(self) -> str:
         return f"{self.site_key}:{self.post_id}"
 
-    def summary_line(self) -> str:
-        bits = [self.title]
-        if self.display_date:
-            bits.append(f"({self.display_date})")
-        return " ".join(bits)
 
 
 @dataclass

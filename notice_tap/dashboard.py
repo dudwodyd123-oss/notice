@@ -17,15 +17,12 @@ TEMPLATE = """<!doctype html>
 <meta name="robots" content="noindex, nofollow">
 <title>공지 모아보기 — notice_tap</title>
 <style>
+  /* 기기 설정과 상관없이 항상 밝은 화면으로 고정한다. */
   :root {{
+    color-scheme: light;
     --bg: #f6f7f9; --card: #ffffff; --text: #16181d; --muted: #6b7280;
-    --line: #e4e7ec; --accent: #0b5ed7; --new: #d92d20; --chip: #eef2f7;
-  }}
-  @media (prefers-color-scheme: dark) {{
-    :root {{
-      --bg: #14161a; --card: #1c1f25; --text: #e8eaed; --muted: #9aa1ad;
-      --line: #2c313a; --accent: #7aa7ff; --new: #ff7b72; --chip: #262b33;
-    }}
+    --line: #e4e7ec; --accent: #2e8b57; --accent-soft: #e8f3ec;
+    --new: #d92d20; --chip: #eef2f7;
   }}
   * {{ box-sizing: border-box; }}
   body {{ margin: 0; background: var(--bg); color: var(--text);
@@ -36,15 +33,18 @@ TEMPLATE = """<!doctype html>
   .controls {{ display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; align-items: center; }}
   input[type=search] {{ flex: 1 1 240px; padding: 9px 12px; border: 1px solid var(--line);
     border-radius: 8px; background: var(--card); color: var(--text); font-size: 14px; }}
+  input[type=search]:focus {{ outline: none; border-color: var(--accent); }}
   .chip {{ border: 1px solid var(--line); background: var(--chip); color: var(--text);
     border-radius: 999px; padding: 6px 12px; font-size: 13px; cursor: pointer; }}
+  .chip:hover {{ border-color: var(--accent); color: var(--accent); }}
   .chip.on {{ background: var(--accent); border-color: var(--accent); color: #fff; }}
+  .chip.on:hover {{ color: #fff; }}
   .board-link {{ display: none; align-items: center; gap: 8px; margin-bottom: 14px;
     padding: 11px 14px; border: 1px solid var(--line); border-radius: 10px;
     background: var(--card); color: var(--accent); text-decoration: none;
     font-size: 14px; font-weight: 600; }}
   .board-link.show {{ display: flex; }}
-  .board-link:hover {{ border-color: var(--accent); }}
+  .board-link:hover {{ background: var(--accent-soft); }}
   .board-link .arrow {{ margin-left: auto; color: var(--muted); font-weight: 400; }}
   ul {{ list-style: none; margin: 0; padding: 0; }}
   li.post {{ background: var(--card); border: 1px solid var(--line); border-radius: 10px;

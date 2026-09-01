@@ -5,7 +5,6 @@
 #  알림 채널의 ${...} 는 환경변수(GitHub Actions 의 Secrets)에서 값을 가져옵니다.
 #  값이 없으면 그 채널은 조용히 꺼지므로, 쓰지 않는 채널은 그대로 두면 됩니다.
 #  토큰을 이 파일에 직접 적지 마세요 - 이 파일은 GitHub 에 올라갑니다.
-poll_interval_minutes: 60
 database: data/notices.db
 dashboard_path: dashboard.html
 notify_on_pinned: true
@@ -13,12 +12,6 @@ stale_alert_days: 2
 notifiers:
   console:
     enabled: true
-  windows:
-    enabled: false
-  kakao:
-    enabled: true
-    rest_api_key: ${KAKAO_REST_API_KEY}
-    refresh_token: ${KAKAO_REFRESH_TOKEN}
   telegram:
     enabled: true
     bot_token: ${TELEGRAM_BOT_TOKEN}
