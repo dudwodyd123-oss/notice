@@ -269,8 +269,16 @@ list.addEventListener('click', ev => {{
   if (!btn) return;
   const li = btn.closest('li.post');
   const uid = li.dataset.uid;
-  if (isPinned(uid)) delete pins[uid];
-  else pins[uid] = snapshot(li);
+  if (isPinned(uid)) {{
+    // 실수로 눌러서 보관해 둔 글을 놓치는 일이 없도록 한 번 물어본다.
+    const warn = li.dataset.restored
+      ? '\\n보관 기간이 지난 글이라 목록에서 바로 사라집니다.'
+      : '';
+    if (!confirm('핀을 뽑을까요?' + warn)) return;
+    delete pins[uid];
+  }} else {{
+    pins[uid] = snapshot(li);
+  }}
   savePins();
   refresh();
 }});

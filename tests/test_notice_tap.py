@@ -201,6 +201,14 @@ class PinTest(TempDirCase):
         self.assertEqual(re.findall(r'data-title="([^"]*)"', page), ["가", "나", "다"])
         self.assertIn("Number(a.dataset.rank) - Number(b.dataset.rank)", TEMPLATE)
 
+    def test_핀을_뽑기_전에_한_번_물어본다(self):
+        page = self._page(make_post("5"))
+        self.assertIn("confirm('핀을 뽑을까요?'", page)
+        # 줄바꿈은 자바스크립트 쪽 이스케이프로 남아야 한다. 파이썬에서 진짜
+        # 줄바꿈으로 새어 나가면 따옴표가 끊겨 페이지 전체가 죽는다.
+        self.assertNotIn("? " + chr(39) + chr(10), page)
+        self.assertIn(chr(92) + "n보관 기간이 지난 글이라", page)
+
     def test_핀은_숨기기가_먹도록_display를_되살린다(self):
         # li.post 에 display:flex 를 준 뒤로 hidden 속성이 무시될 뻔했다.
         self.assertIn("li.post[hidden] {{ display: none; }}", TEMPLATE)
