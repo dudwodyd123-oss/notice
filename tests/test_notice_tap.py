@@ -7,6 +7,7 @@
 
 import json
 import os
+import re
 import sys
 import tempfile
 import unittest
@@ -174,6 +175,31 @@ class PinTest(TempDirCase):
         self.assertNotIn('data-title=""장학"', page)
         self.assertIn("&quot;", page)
         self.assertNotIn("<b>안내</b>", page)
+
+    def test_원래_자리로_돌아갈_순번이_박혀_있다(self):
+        """핀을 뽑으면 제자리로 가야 한다.
+
+        순번 없이 화면 차례만 바꾸면, 한 번 위로 올라간 글이 핀을 뽑은
+        뒤에도 맨 위에 눌러앉는다. 실제로 그렇게 나갔다가 고쳤다.
+        """
+        store = Store(self.tmp / "t.db")
+        store.record(
+            [
+                make_post("1", title="가", posted_at="2026-08-31"),
+                make_post("2", title="나", posted_at="2026-08-30"),
+                make_post("3", title="다", posted_at="2026-08-29"),
+            ],
+            notified=True,
+        )
+        out = render_dashboard(store, self.tmp / "d.html")
+        store.close()
+
+        page = out.read_text(encoding="utf-8")
+        ranks = re.findall(r'data-rank="(\d+)"', page)
+        self.assertEqual(ranks, ["0", "1", "2"])
+        # 순번은 화면에 그려진 차례와 같아야 한다.
+        self.assertEqual(re.findall(r'data-title="([^"]*)"', page), ["가", "나", "다"])
+        self.assertIn("Number(a.dataset.rank) - Number(b.dataset.rank)", TEMPLATE)
 
     def test_핀은_숨기기가_먹도록_display를_되살린다(self):
         # li.post 에 display:flex 를 준 뒤로 hidden 속성이 무시될 뻔했다.

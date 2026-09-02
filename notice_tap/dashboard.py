@@ -162,6 +162,7 @@ function buildItem(data) {{
   li.dataset.bp = data.bp || '0';
   li.dataset.order = data.order || '';
   li.dataset.restored = '1';
+  li.dataset.rank = '999999';
   li.dataset.search = ((data.title || '') + ' ' + (data.site || '')).toLowerCase();
 
   const body = document.createElement('div');
@@ -215,14 +216,16 @@ function refresh() {{
     btn.title = on ? '핀 뽑기 (보관 기간이 지났으면 사라집니다)' : '맨 위에 고정해 두기';
   }}
 
-  // 핀만 위로 끌어올린다. 나머지 차례는 서버가 정렬해 준 그대로 둔다.
+  // 핀만 위로 끌어올리고, 나머지는 서버가 매겨 준 순번(rank)대로 되돌린다.
+  // 여기서 순번을 안 보고 현재 차례를 그대로 두면, 한 번 위로 올라간 글이
+  // 핀을 뽑은 뒤에도 그 자리에 눌러앉는다.
   const rows = Array.from(list.children);
   rows.sort((a, b) => {{
     const pa = a.classList.contains('pinned') ? 1 : 0;
     const pb = b.classList.contains('pinned') ? 1 : 0;
     if (pa !== pb) return pb - pa;
     if (pa) return (b.dataset.order || '').localeCompare(a.dataset.order || '');
-    return 0;
+    return Number(a.dataset.rank) - Number(b.dataset.rank);
   }});
   for (const li of rows) list.append(li);
 
@@ -358,7 +361,7 @@ def render_dashboard(
         for name in shortcut_names
     )
 
-    items = "\n".join(_item(row, cutoff) for row in rows)
+    items = "\n".join(_item(row, cutoff, rank) for rank, row in enumerate(rows))
 
     out = Path(path)
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -382,7 +385,7 @@ def render_dashboard(
     return out
 
 
-def _item(row, cutoff: str) -> str:
+def _item(row, cutoff: str, rank: int) -> str:
     is_new = row["first_seen"] >= cutoff and not row["baseline"]
     badge = '<span class="badge">NEW</span> ' if is_new else ""
     board_pin = '<span class="pin">고정</span>' if row["pinned"] else ""
@@ -409,6 +412,9 @@ def _item(row, cutoff: str) -> str:
             ("data-sub", sub),
             ("data-bp", "1" if row["pinned"] else "0"),
             ("data-order", (row["posted_on"] or "") + "|" + row["first_seen"]),
+            # 핀을 뽑았을 때 돌아갈 자리. 이 값이 없으면 위로 끌어올린 글이
+            # 그 자리에 눌러앉는다.
+            ("data-rank", str(rank)),
             ("data-search", (row["title"] + " " + row["site_name"]).lower()),
         )
     )
