@@ -60,7 +60,11 @@ TEMPLATE = """<!doctype html>
   .board-link .arrow {{ margin-left: auto; color: var(--muted); font-weight: 400; }}
   ul {{ list-style: none; margin: 0; padding: 0; }}
   li.post {{ background: var(--card); border: 1px solid var(--line); border-radius: 10px;
-    padding: 12px 14px; margin-bottom: 8px; }}
+    padding: 12px 14px; margin-bottom: 8px;
+    display: flex; align-items: flex-start; gap: 10px; }}
+  /* display 를 지정했으므로 hidden 이 먹도록 따로 되살려 준다. */
+  li.post[hidden] {{ display: none; }}
+  .body {{ flex: 1; min-width: 0; }}
   li.post a {{ color: var(--text); text-decoration: none; font-weight: 600; }}
   li.post a:hover {{ color: var(--accent); text-decoration: underline; }}
   .sub {{ color: var(--muted); font-size: 12.5px; margin-top: 4px;
@@ -68,6 +72,15 @@ TEMPLATE = """<!doctype html>
   .badge {{ color: var(--new); font-weight: 700; font-size: 11px; letter-spacing: .04em; }}
   .pin {{ color: var(--muted); font-size: 11px; border: 1px solid var(--line);
     border-radius: 4px; padding: 0 4px; }}
+  /* 내가 직접 꽂은 핀. 게시판이 붙여 놓은 '고정'(.pin) 과는 다른 것이다. */
+  .pinbtn {{ flex: none; width: 32px; height: 32px; padding: 0; cursor: pointer;
+    border: 1px solid var(--line); border-radius: 8px; background: var(--card);
+    font-size: 14px; line-height: 1; filter: grayscale(1); opacity: .45; }}
+  .pinbtn:hover {{ border-color: var(--accent); opacity: .8; }}
+  li.post.pinned {{ border-color: var(--accent); background: var(--accent-soft); }}
+  li.post.pinned .pinbtn {{ border-color: var(--accent); background: var(--card);
+    filter: none; opacity: 1; }}
+  .keep {{ color: var(--accent); font-size: 11px; font-weight: 600; }}
   .empty {{ color: var(--muted); text-align: center; padding: 48px 0; }}
 </style>
 </head>
@@ -97,6 +110,124 @@ const list = document.getElementById('list');
 const empty = document.getElementById('empty');
 const q = document.getElementById('q');
 let site = '';
+
+// 핀은 이 브라우저에만 저장된다. 정적 페이지라 서버에 적어 둘 곳이 없다.
+// 글 내용까지 통째로 담아두므로, 보관 기간이 지나 목록에서 빠진 글도
+// 핀을 뽑기 전까지는 여기 저장된 사본으로 계속 보여줄 수 있다.
+const PIN_KEY = 'notice_tap_pins';
+let pins = {{}};
+try {{ pins = JSON.parse(localStorage.getItem(PIN_KEY)) || {{}}; }} catch (e) {{ pins = {{}}; }}
+
+function savePins() {{
+  try {{ localStorage.setItem(PIN_KEY, JSON.stringify(pins)); }} catch (e) {{}}
+}}
+
+function isPinned(uid) {{
+  return Object.prototype.hasOwnProperty.call(pins, uid);
+}}
+
+function snapshot(li) {{
+  const d = li.dataset;
+  return {{ uid: d.uid, title: d.title, url: d.url, site: d.site,
+            sub: d.sub, bp: d.bp, order: d.order }};
+}}
+
+function pinButton() {{
+  const b = document.createElement('button');
+  b.className = 'pinbtn';
+  b.type = 'button';
+  b.textContent = '📌';
+  return b;
+}}
+
+// 되살릴 주소는 이 브라우저에 저장돼 있던 값이므로 형식을 한 번 확인하고 쓴다.
+function safeUrl(url) {{
+  try {{
+    const u = new URL(url, location.href);
+    return (u.protocol === 'http:' || u.protocol === 'https:') ? u.href : '';
+  }} catch (e) {{ return ''; }}
+}}
+
+// 서버에서 이미 지워진 글을 저장해 둔 사본으로 다시 그린다.
+function buildItem(data) {{
+  const href = data && data.uid ? safeUrl(data.url || '') : '';
+  if (!href) return null;
+  const li = document.createElement('li');
+  li.className = 'post';
+  li.dataset.uid = data.uid;
+  li.dataset.site = data.site || '';
+  li.dataset.url = href;
+  li.dataset.title = data.title || '';
+  li.dataset.sub = data.sub || '';
+  li.dataset.bp = data.bp || '0';
+  li.dataset.order = data.order || '';
+  li.dataset.restored = '1';
+  li.dataset.search = ((data.title || '') + ' ' + (data.site || '')).toLowerCase();
+
+  const body = document.createElement('div');
+  body.className = 'body';
+  const a = document.createElement('a');
+  a.href = href;
+  a.target = '_blank';
+  a.rel = 'noopener';
+  a.textContent = data.title || '(제목 없음)';
+  body.append(a);
+
+  const sub = document.createElement('div');
+  sub.className = 'sub';
+  sub.append(document.createTextNode(data.sub || ''));
+  if (data.bp === '1') {{
+    const bp = document.createElement('span');
+    bp.className = 'pin';
+    bp.textContent = '고정';
+    sub.append(bp);
+  }}
+  const keep = document.createElement('span');
+  keep.className = 'keep';
+  keep.textContent = '핀으로 보관 중';
+  sub.append(keep);
+  body.append(sub);
+
+  li.append(body, pinButton());
+  return li;
+}}
+
+function refresh() {{
+  const present = new Set();
+  for (const li of list.children) present.add(li.dataset.uid);
+
+  let dropped = false;
+  for (const uid of Object.keys(pins)) {{
+    if (present.has(uid)) continue;
+    const li = buildItem(pins[uid]);
+    if (li) list.append(li);
+    else {{ delete pins[uid]; dropped = true; }}
+  }}
+  if (dropped) savePins();
+
+  for (const li of Array.from(list.children)) {{
+    const on = isPinned(li.dataset.uid);
+    // 되살린 글은 핀을 뽑는 순간 남겨 둘 근거가 없어진다.
+    if (!on && li.dataset.restored) {{ li.remove(); continue; }}
+    li.classList.toggle('pinned', on);
+    const btn = li.querySelector('.pinbtn');
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.title = on ? '핀 뽑기 (보관 기간이 지났으면 사라집니다)' : '맨 위에 고정해 두기';
+  }}
+
+  // 핀만 위로 끌어올린다. 나머지 차례는 서버가 정렬해 준 그대로 둔다.
+  const rows = Array.from(list.children);
+  rows.sort((a, b) => {{
+    const pa = a.classList.contains('pinned') ? 1 : 0;
+    const pb = b.classList.contains('pinned') ? 1 : 0;
+    if (pa !== pb) return pb - pa;
+    if (pa) return (b.dataset.order || '').localeCompare(a.dataset.order || '');
+    return 0;
+  }});
+  for (const li of rows) list.append(li);
+
+  render();
+}}
 
 function render() {{
   const needle = q.value.trim().toLowerCase();
@@ -129,6 +260,18 @@ function showBoardLink() {{
 }}
 
 q.addEventListener('input', render);
+
+list.addEventListener('click', ev => {{
+  const btn = ev.target.closest('.pinbtn');
+  if (!btn) return;
+  const li = btn.closest('li.post');
+  const uid = li.dataset.uid;
+  if (isPinned(uid)) delete pins[uid];
+  else pins[uid] = snapshot(li);
+  savePins();
+  refresh();
+}});
+
 document.querySelectorAll('.chip').forEach(chip => {{
   chip.addEventListener('click', () => {{
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
@@ -138,6 +281,8 @@ document.querySelectorAll('.chip').forEach(chip => {{
     render();
   }});
 }});
+
+refresh();
 </script>
 </body>
 </html>
@@ -238,23 +383,43 @@ def render_dashboard(
 
 
 def _item(row, cutoff: str) -> str:
-    title = html.escape(row["title"])
-    site_name = html.escape(row["site_name"])
     is_new = row["first_seen"] >= cutoff and not row["baseline"]
     badge = '<span class="badge">NEW</span> ' if is_new else ""
-    pin = '<span class="pin">고정</span>' if row["pinned"] else ""
-    bits = [site_name]
+    board_pin = '<span class="pin">고정</span>' if row["pinned"] else ""
+
+    bits = [row["site_name"]]
     # 저장할 때 통일해 둔 날짜를 쓴다. 해석 못 한 것만 원문을 보여준다.
     if shown_date := (row["posted_on"] or row["posted_at"]):
-        bits.append(html.escape(shown_date))
+        bits.append(shown_date)
     if row["author"]:
-        bits.append(html.escape(row["author"]))
+        bits.append(row["author"])
     if row["category"]:
-        bits.append(html.escape(row["category"]))
+        bits.append(row["category"])
+    sub = " · ".join(bits)
 
-    search = html.escape((row["title"] + " " + row["site_name"]).lower(), quote=True)
-    return (
-        f'<li class="post" data-site="{site_name}" data-search="{search}">'
-        f'{badge}<a href="{html.escape(row["url"], quote=True)}" target="_blank" rel="noopener">{title}</a>'
-        f'<div class="sub">{" · ".join(bits)} {pin}</div></li>'
+    # 핀을 꽂아 둔 글은 보관 기간이 지나 서버에서 지워져도 브라우저가
+    # 아래 값들만 가지고 같은 모양으로 다시 그린다.
+    attrs = " ".join(
+        f'{name}="{esc(value)}"'
+        for name, value in (
+            ("data-uid", row["uid"]),
+            ("data-site", row["site_name"]),
+            ("data-title", row["title"]),
+            ("data-url", row["url"]),
+            ("data-sub", sub),
+            ("data-bp", "1" if row["pinned"] else "0"),
+            ("data-order", (row["posted_on"] or "") + "|" + row["first_seen"]),
+            ("data-search", (row["title"] + " " + row["site_name"]).lower()),
+        )
     )
+    return (
+        f'<li class="post" {attrs}><div class="body">'
+        f'{badge}<a href="{esc(row["url"])}" target="_blank" rel="noopener">'
+        f"{html.escape(row['title'])}</a>"
+        f'<div class="sub">{html.escape(sub)} {board_pin}</div></div>'
+        f'<button class="pinbtn" type="button">📌</button></li>'
+    )
+
+
+def esc(value: str) -> str:
+    return html.escape(value or "", quote=True)

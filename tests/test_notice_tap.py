@@ -17,7 +17,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from notice_tap.checker import Checker  # noqa: E402
 from notice_tap.config import Config  # noqa: E402
-from notice_tap.dashboard import render_dashboard  # noqa: E402
+from notice_tap.dashboard import TEMPLATE, render_dashboard  # noqa: E402
 from notice_tap.dates import to_iso_date  # noqa: E402
 from notice_tap.models import Post, Site  # noqa: E402
 from notice_tap.parsers import get_parser  # noqa: E402
@@ -146,6 +146,38 @@ class ShortcutTest(TempDirCase):
         page = out.read_text(encoding="utf-8")
         self.assertIn('class="chip shortcut" data-site="학생성공개발원"', page)
         self.assertIn("https://job.example.ac.kr/", page)
+
+
+class PinTest(TempDirCase):
+    """핀 기능은 브라우저가 저장한 사본으로 글을 되살린다.
+
+    되살리는 데 필요한 값이 하나라도 빠지면 보관 기간이 지난 순간
+    핀을 꽂아 둔 글이 조용히 사라진다. 그래서 표시를 못 박아 둔다.
+    """
+
+    def _page(self, post):
+        store = Store(self.tmp / "t.db")
+        store.record([post], notified=True)
+        out = render_dashboard(store, self.tmp / "d.html")
+        store.close()
+        return out.read_text(encoding="utf-8")
+
+    def test_글마다_핀_단추와_되살릴_값이_붙는다(self):
+        page = self._page(make_post("42", title="장학금 안내"))
+        self.assertIn('<button class="pinbtn" type="button">', page)
+        for attr in ("data-uid=", "data-title=", "data-url=", "data-sub=", "data-order="):
+            self.assertIn(attr, page)
+        self.assertIn('data-uid="s:42"', page)
+
+    def test_따옴표가_섞인_제목도_표시에_갇힌다(self):
+        page = self._page(make_post("7", title='"장학" <b>안내</b>'))
+        self.assertNotIn('data-title=""장학"', page)
+        self.assertIn("&quot;", page)
+        self.assertNotIn("<b>안내</b>", page)
+
+    def test_핀은_숨기기가_먹도록_display를_되살린다(self):
+        # li.post 에 display:flex 를 준 뒤로 hidden 속성이 무시될 뻔했다.
+        self.assertIn("li.post[hidden] {{ display: none; }}", TEMPLATE)
 
 
 # --- 알림 전달 -------------------------------------------------------------
