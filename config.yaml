@@ -77,6 +77,12 @@ sites:
   parser: pnu
   key: 5287380eed4f
   home: https://swedu.pusan.ac.kr/swedu/16156/subview.do
+- name: 도서관
+  url: https://lib.pusan.ac.kr/guide/notice
+  parser: pyxis
+  board_id: 2
+  key: ca53af7720c5
+  home: https://lib.pusan.ac.kr/guide/notice
 shortcuts:
 - name: 학생성공개발원
   url: https://job.pusan.ac.kr/

@@ -21,7 +21,7 @@ from notice_tap.config import Config  # noqa: E402
 from notice_tap.dashboard import TEMPLATE, render_dashboard  # noqa: E402
 from notice_tap.dates import to_iso_date  # noqa: E402
 from notice_tap.models import Post, Site  # noqa: E402
-from notice_tap.parsers import get_parser  # noqa: E402
+from notice_tap.parsers import get_parser, parse_pyxis  # noqa: E402
 from notice_tap.store import Store  # noqa: E402
 from notice_tap.text import collapse  # noqa: E402
 
@@ -428,6 +428,113 @@ class DateTest(unittest.TestCase):
     def test_화면에는_통일된_날짜를_쓰고_해석_실패시_원문을_쓴다(self):
         self.assertEqual(make_post(posted_at="2026.08.31").display_date, "2026-08-31")
         self.assertEqual(make_post(posted_at="곧 공지").display_date, "곧 공지")
+
+
+
+# --- 도서관 게시판 ---------------------------------------------------------
+
+
+class StubResponse:
+    def __init__(self, payload):
+        self._payload = payload
+
+    def raise_for_status(self):
+        pass
+
+    def json(self):
+        return self._payload
+
+
+class StubSession:
+    """도서관 API 를 흉내낸다. 어떤 조건으로 불렀는지도 기록해 둔다."""
+
+    def __init__(self, pinned, listing):
+        self.pinned = pinned
+        self.listing = listing
+        self.calls = []
+
+    def get(self, url, params=None, timeout=None):
+        params = params or {}
+        self.calls.append(params)
+        rows = self.pinned if params.get("onlyNoticableBulletin") else self.listing
+        return StubResponse({"success": True, "data": {"list": rows}})
+
+
+class StubFetcher:
+    def __init__(self, session):
+        self.session = session
+        self.timeout = 5
+
+
+def bulletin(post_id, title, created="2026-09-03 13:34:29", category="일반"):
+    return {
+        "id": post_id,
+        "title": title,
+        "writer": "도서관",
+        "dateCreated": created,
+        "bulletinCategory": {"name": category},
+    }
+
+
+class PyxisTest(unittest.TestCase):
+    """도서관은 화면에 목록이 없어 API 를 직접 부른다."""
+
+    def _site(self, **options):
+        return Site(
+            name="도서관",
+            url="https://lib.example.ac.kr/guide/notice",
+            parser="pyxis",
+            options={"board_id": 2, **options},
+        )
+
+    def _parse(self, pinned, listing):
+        session = StubSession(pinned, listing)
+        posts = parse_pyxis(self._site(), StubFetcher(session))
+        return posts, session
+
+    def test_목록을_글로_바꾼다(self):
+        posts, _ = self._parse([], [bulletin(57733, "  개관시간   공고 ")])
+        self.assertEqual(len(posts), 1)
+        post = posts[0]
+        self.assertEqual(post.post_id, "57733")
+        self.assertEqual(post.title, "개관시간 공고")
+        self.assertEqual(post.url, "https://lib.example.ac.kr/guide/notice/57733")
+        self.assertEqual(post.category, "일반")
+        # 시각까지 들어오지만 날짜만 쓴다.
+        self.assertEqual(post.posted_at, "2026-09-03")
+        self.assertEqual(post.display_date, "2026-09-03")
+
+    def test_고정공지를_따로_받아_합친다(self):
+        """오래된 고정공지는 최신 목록 밖으로 밀려나 있어 따로 받아야 한다."""
+        posts, session = self._parse(
+            [bulletin(100, "고정된 글", created="2026-04-10 09:00:00")],
+            [bulletin(200, "새 글")],
+        )
+        self.assertEqual({p.post_id for p in posts}, {"100", "200"})
+        self.assertTrue(next(p for p in posts if p.post_id == "100").pinned)
+        self.assertFalse(next(p for p in posts if p.post_id == "200").pinned)
+        self.assertEqual(len(session.calls), 2)
+
+    def test_양쪽에_겹치면_한_번만_고정으로_남는다(self):
+        """겹치는 글이 두 번 들어오면 알림도 두 번 나간다."""
+        posts, _ = self._parse([bulletin(100, "고정된 글")], [bulletin(100, "고정된 글")])
+        self.assertEqual(len(posts), 1)
+        self.assertTrue(posts[0].pinned)
+
+    def test_board_id_가_없으면_알아듣게_알려준다(self):
+        site = Site(name="도서관", url="https://lib.example.ac.kr/guide/notice",
+                    parser="pyxis", options={})
+        with self.assertRaises(ValueError) as caught:
+            parse_pyxis(site, StubFetcher(StubSession([], [])))
+        self.assertIn("board_id", str(caught.exception))
+
+    def test_API_가_실패를_돌려주면_예외로_올린다(self):
+        """조용히 빈 목록으로 넘어가면 '며칠째 실패' 알림도 안 뜬다."""
+        session = StubSession([], [])
+        session.get = lambda *a, **k: StubResponse({"success": False, "message": "권한 없음"})
+        with self.assertRaises(RuntimeError) as caught:
+            parse_pyxis(self._site(), StubFetcher(session))
+        self.assertIn("권한 없음", str(caught.exception))
 
 
 if __name__ == "__main__":

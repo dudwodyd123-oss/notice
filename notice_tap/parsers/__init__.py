@@ -8,6 +8,7 @@ from ..models import Post, Site
 from .bi_pusan import parse_bi_pusan
 from .generic import parse_generic
 from .pnu import parse_pnu
+from .pyxis import parse_pyxis
 from .rss import parse_rss
 
 Parser = Callable[[Site, str], list[Post]]
@@ -17,6 +18,7 @@ PARSERS: dict[str, Parser] = {
     "generic": parse_generic,
     "rss": parse_rss,
     "bi_pusan": parse_bi_pusan,
+    "pyxis": parse_pyxis,
 }
 
 
@@ -35,5 +37,6 @@ __all__ = [
     "parse_bi_pusan",
     "parse_generic",
     "parse_pnu",
+    "parse_pyxis",
     "parse_rss",
 ]
