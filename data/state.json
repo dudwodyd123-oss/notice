@@ -1761,22 +1761,6 @@
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510713"
   },
   {
-   "author": "인권센터",
-   "baseline": 1,
-   "category": "",
-   "first_seen": "2026-08-30T15:09:40+09:00",
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1510729",
-   "posted_at": "2026-08-30",
-   "posted_on": "2026-08-30",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "2026 부산광역시 인권공모전",
-   "uid": "95390426e921:1510729",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510729"
-  },
-  {
    "author": "한국민족문화연구소",
    "baseline": 0,
    "category": "",
@@ -2497,6 +2481,38 @@
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510898"
   },
   {
+   "author": "인권센터",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-07T00:54:05+00:00",
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1510903",
+   "posted_at": "2026-09-07",
+   "posted_on": "2026-09-07",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "[성평등가족부] 폭력피해 이주여성(유학생 포함) 지원 서비스 안내(필리핀어, 캄...",
+   "uid": "95390426e921:1510903",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510903"
+  },
+  {
+   "author": "인권센터",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-07T00:54:05+00:00",
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1510904",
+   "posted_at": "2026-09-07",
+   "posted_on": "2026-09-07",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "[성평등가족부] 폭력피해 이주여성(유학생 포함) 지원 서비스 안내(몽골어, 러시...",
+   "uid": "95390426e921:1510904",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510904"
+  },
+  {
    "author": "산학협력단 관리자",
    "baseline": 1,
    "category": "",
@@ -3063,22 +3079,6 @@
    "first_seen": "2026-09-03T12:34:45+00:00",
    "notified": 1,
    "pinned": 0,
-   "post_id": "57391",
-   "posted_at": "2026-07-24",
-   "posted_on": "2026-07-24",
-   "site_key": "ca53af7720c5",
-   "site_name": "도서관",
-   "title": "2026년 8월 졸업(수료)예정자 대출 중지 및 반납 기한 안내",
-   "uid": "ca53af7720c5:57391",
-   "url": "https://lib.pusan.ac.kr/guide/notice/57391"
-  },
-  {
-   "author": "",
-   "baseline": 1,
-   "category": "일반",
-   "first_seen": "2026-09-03T12:34:45+00:00",
-   "notified": 1,
-   "pinned": 0,
    "post_id": "57399",
    "posted_at": "2026-07-27",
    "posted_on": "2026-07-27",
@@ -3535,6 +3535,22 @@
    "title": "[당첨자 발표] 2026학년도 여름방학 효원인연구력강화워크숍 설문 이벤트",
    "uid": "ca53af7720c5:57733",
    "url": "https://lib.pusan.ac.kr/guide/notice/57733"
+  },
+  {
+   "author": "",
+   "baseline": 0,
+   "category": "학술DB",
+   "first_seen": "2026-09-07T00:54:17+00:00",
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "57772",
+   "posted_at": "2026-09-07",
+   "posted_on": "2026-09-07",
+   "site_key": "ca53af7720c5",
+   "site_name": "도서관",
+   "title": "2027년도 학술DB 구독 수요조사 안내 (9/7~9/13)",
+   "uid": "ca53af7720c5:57772",
+   "url": "https://lib.pusan.ac.kr/guide/notice/57772"
   }
  ],
  "sites_state": [
