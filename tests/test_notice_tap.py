@@ -11,7 +11,7 @@ import re
 import sys
 import tempfile
 import unittest
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
@@ -26,7 +26,14 @@ from notice_tap.store import Store  # noqa: E402
 from notice_tap.text import collapse  # noqa: E402
 
 
-def make_post(post_id="1", site_key="s", title="글", posted_at="2026-08-31", **kw):
+def _days_ago(days):
+    return (date.today() - timedelta(days=days)).isoformat()
+
+
+def make_post(post_id="1", site_key="s", title="글", posted_at=None, **kw):
+    # 날짜를 박아두면 시간이 지나면서 보관 기간 밖으로 밀려나 시험이 썩는다.
+    if posted_at is None:
+        posted_at = date.today().isoformat()
     return Post(
         site_key=site_key,
         site_name=kw.pop("site_name", "테스트 게시판"),
@@ -185,9 +192,9 @@ class PinTest(TempDirCase):
         store = Store(self.tmp / "t.db")
         store.record(
             [
-                make_post("1", title="가", posted_at="2026-08-31"),
-                make_post("2", title="나", posted_at="2026-08-30"),
-                make_post("3", title="다", posted_at="2026-08-29"),
+                make_post("1", title="가", posted_at=_days_ago(0)),
+                make_post("2", title="나", posted_at=_days_ago(1)),
+                make_post("3", title="다", posted_at=_days_ago(2)),
             ],
             notified=True,
         )
@@ -330,6 +337,12 @@ class PruneTest(TempDirCase):
         self.store.close()
         super().tearDown()
 
+    def _backdate(self, uid, days):
+        """그 글을 오래전에 처음 봤던 것으로 만든다."""
+        when = (datetime.now().astimezone() - timedelta(days=days)).isoformat(timespec="seconds")
+        self.store.conn.execute("UPDATE posts SET first_seen = ? WHERE uid = ?", (when, uid))
+        self.store.conn.commit()
+
     def test_게시판에_아직_있으면_오래돼도_남긴다(self):
         pinned = make_post("1", posted_at=self.old, pinned=True)
         self.store.record([pinned], notified=True)
@@ -339,8 +352,16 @@ class PruneTest(TempDirCase):
     def test_오래됐고_게시판에도_없으면_지운다(self):
         gone = make_post("1", posted_at=self.old)
         self.store.record([gone], notified=True)
+        self._backdate(gone.uid, 400)
         self.store.prune("s", {"s:9999"}, self.cutoff)
         self.assertEqual(self.store.count("s"), 0)
+
+    def test_최근에_처음_본_글은_게시일이_오래돼도_남긴다(self):
+        """화면에 보여줄 조건과 어긋나면, 떠 있어야 할 글이 먼저 지워진다."""
+        late = make_post("1", posted_at=self.old)
+        self.store.record([late], notified=True)  # 오늘 처음 봤다
+        self.store.prune("s", {"s:9999"}, self.cutoff)
+        self.assertEqual(self.store.count("s"), 1)
 
     def test_최근_글은_지우지_않는다(self):
         fresh = make_post("1", posted_at=date.today().isoformat())
@@ -353,6 +374,53 @@ class PruneTest(TempDirCase):
         self.store.record([gone], notified=True)
         self.store.prune("s", set(), self.cutoff)
         self.assertEqual(self.store.count("s"), 1)
+
+
+class WindowTest(TempDirCase):
+    """디스코드로는 알림이 갔는데 모아보기 화면에는 안 뜨던 사고.
+
+    몇 달 전에 올라온 고정공지가 뒤늦게 목록에 들어오면 우리한테는 새 글이라
+    알림이 나간다. 그런데 화면은 게시일만 보고 걸러내서, 알림을 받고 들어와도
+    그 글이 어디에도 없었다.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.store = Store(self.tmp / "t.db")
+        self.since = (date.today() - timedelta(days=7)).isoformat()
+        self.old = (date.today() - timedelta(days=40)).isoformat()
+
+    def tearDown(self):
+        self.store.close()
+        super().tearDown()
+
+    def _titles(self):
+        return [row["title"] for row in self.store.recent(since=self.since)]
+
+    def test_게시일이_오래돼도_방금_처음_봤으면_보여준다(self):
+        self.store.record([make_post("1", title="뒤늦게 들어온 고정공지",
+                                     posted_at=self.old)], notified=True)
+        self.assertEqual(self._titles(), ["뒤늦게 들어온 고정공지"])
+
+    def test_처음_등록할_때_잡아둔_기준점은_보여주지_않는다(self):
+        """이게 없으면 게시판을 새로 붙일 때마다 옛날 글이 화면을 덮는다."""
+        self.store.record([make_post("1", title="원래 있던 글", posted_at=self.old)],
+                          notified=True, baseline=True)
+        self.assertEqual(self._titles(), [])
+
+    def test_오래전에_본_오래된_글은_보여주지_않는다(self):
+        post = make_post("1", title="지나간 글", posted_at=self.old)
+        self.store.record([post], notified=True)
+        when = (datetime.now().astimezone() - timedelta(days=40)).isoformat(timespec="seconds")
+        self.store.conn.execute("UPDATE posts SET first_seen = ? WHERE uid = ?",
+                                (when, post.uid))
+        self.store.conn.commit()
+        self.assertEqual(self._titles(), [])
+
+    def test_최근_글은_그대로_보여준다(self):
+        self.store.record([make_post("1", title="새 글",
+                                     posted_at=date.today().isoformat())], notified=True)
+        self.assertEqual(self._titles(), ["새 글"])
 
 
 # --- 저장 기록 주고받기 -----------------------------------------------------

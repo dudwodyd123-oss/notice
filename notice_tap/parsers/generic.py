@@ -10,6 +10,7 @@ sites.yaml 에서 사이트별로 선택자를 적어주면 어떤 게시판이�
       date_selector: "td.date"
       author_selector: "td.writer"
       id_param: "nttId"        # 링크 쿼리스트링에서 글 번호를 뽑을 때
+      pinned_class: "isnotice" # 위에 고정된 공지 줄에 붙는 class
 """
 
 from __future__ import annotations
@@ -33,6 +34,8 @@ def parse_generic(site: Site, html: str) -> list[Post]:
         raise ValueError(f"[{site.name}] generic 파서에는 row_selector 설정이 필요합니다")
 
     title_selector = opts.get("title_selector", "a")
+    # 고정공지 줄에만 붙는 class. 적어두면 화면에 '고정' 표시가 붙는다.
+    pinned_class = opts.get("pinned_class", "")
     soup = BeautifulSoup(html, "html.parser")
 
     posts: list[Post] = []
@@ -57,6 +60,7 @@ def parse_generic(site: Site, html: str) -> list[Post]:
                 author=node_text(row.select_one(opts["author_selector"])) if opts.get("author_selector") else "",
                 posted_at=node_text(row.select_one(opts["date_selector"])) if opts.get("date_selector") else "",
                 category=node_text(row.select_one(opts["category_selector"])) if opts.get("category_selector") else "",
+                pinned=bool(pinned_class) and pinned_class in (row.get("class") or []),
             )
         )
     return posts

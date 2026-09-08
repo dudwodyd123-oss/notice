@@ -50,6 +50,7 @@ sites:
   date_selector: td.date
   author_selector: td.writer
   id_param: board_seq
+  pinned_class: isnotice
   key: 95390426e921
   home: https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095
 - name: 창업지원단

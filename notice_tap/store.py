@@ -11,6 +11,16 @@ from .models import Post
 
 # 글의 "날짜". 게시일이 비어 있는 게시판도 있어 그럴 때는 발견 날짜를 쓴다.
 EFFECTIVE_DATE = "COALESCE(NULLIF(posted_on, ''), substr(first_seen, 1, 10))"
+# 우리가 그 글을 처음 본 날. 게시일과 다를 수 있다.
+SEEN_DATE = "substr(first_seen, 1, 10)"
+
+# 보관 기간 안에 드는 글. 두 가지 중 하나만 만족해도 된다.
+#   1) 게시일이 최근이다
+#   2) 게시일은 오래됐지만 우리가 최근에 처음 봤다
+# 2번이 없으면, 몇 달 전에 올라온 고정공지가 뒤늦게 목록에 들어왔을 때
+# 디스코드로는 알림이 가는데 모아보기 화면에는 없는 일이 생긴다.
+# 처음 등록할 때 기준점으로 잡아둔 글(baseline)은 새로 본 것이 아니므로 뺀다.
+WITHIN_WINDOW = f"({EFFECTIVE_DATE} >= ? OR (baseline = 0 AND {SEEN_DATE} >= ?))"
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS posts (
@@ -234,10 +244,10 @@ class Store:
         return list(
             self.conn.execute(
                 f"""SELECT * FROM posts
-                     WHERE {EFFECTIVE_DATE} >= ?
+                     WHERE {WITHIN_WINDOW}
                      ORDER BY posted_on DESC, first_seen DESC, post_id DESC
                      LIMIT ?""",
-                (since, limit),
+                (since, since, limit),
             )
         )
 
@@ -247,6 +257,9 @@ class Store:
         게시판에 아직 걸려 있는 글은 아무리 오래돼도 남긴다. 지워버리면
         다음 확인 때 '처음 보는 글' 이 되어 알림이 다시 나가기 때문이다.
         학과 게시판 첫 페이지에는 몇 해 전 고정공지가 그대로 걸려 있다.
+
+        최근에 처음 본 글도 남긴다. 화면에 보여줄 조건과 어긋나면,
+        아직 화면에 떠 있어야 할 글이 먼저 지워져 버린다.
         """
         if not live_uids:
             return 0  # 목록을 제대로 못 읽은 회차에는 손대지 않는다
@@ -255,8 +268,9 @@ class Store:
             f"""DELETE FROM posts
                  WHERE site_key = ?
                    AND {EFFECTIVE_DATE} < ?
+                   AND {SEEN_DATE} < ?
                    AND uid NOT IN ({marks})""",
-            (site_key, before, *live_uids),
+            (site_key, before, before, *live_uids),
         )
         self.conn.commit()
         return cur.rowcount
