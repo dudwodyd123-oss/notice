@@ -376,6 +376,40 @@ class PruneTest(TempDirCase):
         self.assertEqual(self.store.count("s"), 1)
 
 
+class PinnedFlagTest(TempDirCase):
+    """게시판의 '고정' 표시가 저장된 값에 반영되지 않던 문제.
+
+    글은 INSERT OR IGNORE 로 넣어서 처음 저장할 때의 값이 굳는다. 그래서
+    나중에 고정을 알아보게 고쳐도, 이미 저장된 글은 계속 고정이 아닌 채였다.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.store = Store(self.tmp / "t.db")
+
+    def tearDown(self):
+        self.store.close()
+        super().tearDown()
+
+    def _pinned(self):
+        return bool(self.store.recent(limit=1)[0]["pinned"])
+
+    def test_나중에_고정이_붙으면_반영한다(self):
+        self.store.record([make_post("1", pinned=False)], notified=True)
+        self.assertFalse(self._pinned())
+        self.assertEqual(self.store.sync_pinned([make_post("1", pinned=True)]), 1)
+        self.assertTrue(self._pinned())
+
+    def test_고정이_떨어지면_되돌린다(self):
+        self.store.record([make_post("1", pinned=True)], notified=True)
+        self.store.sync_pinned([make_post("1", pinned=False)])
+        self.assertFalse(self._pinned())
+
+    def test_바뀐_것이_없으면_건드리지_않는다(self):
+        self.store.record([make_post("1", pinned=True)], notified=True)
+        self.assertEqual(self.store.sync_pinned([make_post("1", pinned=True)]), 0)
+
+
 class WindowTest(TempDirCase):
     """디스코드로는 알림이 갔는데 모아보기 화면에는 안 뜨던 사고.
 

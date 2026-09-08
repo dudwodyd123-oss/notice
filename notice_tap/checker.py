@@ -88,6 +88,7 @@ class Checker:
         self.store.record(outcome.new_posts, notified=False)
         # 나머지(고정글 제외 설정으로 걸러진 것 등)는 알릴 대상이 아니다.
         self.store.record(posts, notified=True)
+        self.store.sync_pinned(posts)
         self.store.mark_check(site.key)
         self._prune(site, posts)
         return outcome

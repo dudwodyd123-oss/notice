@@ -138,6 +138,23 @@ class Store:
         self.conn.commit()
         return cur.rowcount
 
+    def sync_pinned(self, posts: list[Post]) -> int:
+        """게시판에서 고정이 붙거나 떨어지면 저장해 둔 값도 맞춘다.
+
+        글은 INSERT OR IGNORE 로 넣기 때문에 처음 저장할 때의 값이 그대로
+        굳는다. 고정은 나중에 붙기도 하고 떨어지기도 하므로 확인할 때마다
+        맞춰주지 않으면 화면의 '고정' 표시가 계속 틀린 채로 남는다.
+        """
+        changed = 0
+        for post in posts:
+            cur = self.conn.execute(
+                "UPDATE posts SET pinned = ? WHERE uid = ? AND pinned <> ?",
+                (int(post.pinned), post.uid, int(post.pinned)),
+            )
+            changed += cur.rowcount
+        self.conn.commit()
+        return changed
+
     def mark_check(self, site_key: str, error: str = "") -> None:
         """확인 결과를 기록한다. 연속 실패가 언제 시작됐는지도 함께 남긴다."""
         now = _now()
