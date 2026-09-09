@@ -19,6 +19,9 @@ class SiteResult:
     total_seen: int = 0
     baseline: bool = False  # 첫 등록이라 알림 없이 기준점만 잡은 경우
     error: str = ""
+    # 이번에 읽은 글이 전부 처음 보는 것이면, 지난번 이후 목록이 통째로
+    # 갈렸다는 뜻이다. 그 사이에 밀려난 글이 있어도 알 방법이 없다.
+    gap_suspected: bool = False
 
 
 @dataclass
@@ -32,6 +35,10 @@ class CheckResult:
     @property
     def errors(self) -> list[SiteResult]:
         return [result for result in self.sites if result.error]
+
+    @property
+    def gaps(self) -> list[SiteResult]:
+        return [result for result in self.sites if result.gap_suspected]
 
 
 class Checker:
@@ -78,6 +85,8 @@ class Checker:
             outcome.baseline = True
             return outcome
 
+        outcome.gap_suspected = _turned_over(posts, fresh)
+
         if not self.config.get("notify_on_pinned", True):
             fresh = [post for post in fresh if not post.pinned]
 
@@ -104,6 +113,24 @@ class Checker:
     def close(self) -> None:
         self.fetcher.close()
         self.store.close()
+
+
+def _turned_over(posts: list[Post], fresh: list[Post]) -> bool:
+    """목록이 지난번 이후 통째로 갈렸는지 본다.
+
+    읽어온 글 중 하나라도 이미 알던 것이 있으면, 그 글과 지금 사이에는
+    빠진 것이 없다. 반대로 전부 처음 보는 글이라면 지난번 확인 이후
+    목록이 한 바퀴 넘게 돌았다는 뜻이라, 그 사이에 올라왔다 밀려난 글이
+    있어도 우리는 영영 알 수 없다.
+
+    위에 고정된 공지는 몇 달씩 그대로 걸려 있어 늘 '아는 글'로 잡힌다.
+    그것까지 세면 어떤 게시판도 갈렸다고 판정되지 않으므로 빼고 본다.
+    """
+    rotating = [post for post in posts if not post.pinned]
+    if not rotating:
+        return False
+    fresh_ids = {post.uid for post in fresh}
+    return all(post.uid in fresh_ids for post in rotating)
 
 
 def _chronological(post: Post) -> tuple[int, str]:

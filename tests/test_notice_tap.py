@@ -16,7 +16,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from notice_tap.checker import Checker  # noqa: E402
+from notice_tap.checker import Checker, _turned_over  # noqa: E402
 from notice_tap.config import Config  # noqa: E402
 from notice_tap.dashboard import TEMPLATE, render_dashboard  # noqa: E402
 from notice_tap.dates import to_iso_date  # noqa: E402
@@ -322,6 +322,49 @@ class CheckerTest(TempDirCase):
 
 
 # --- 보관 기간 -------------------------------------------------------------
+
+
+class GapTest(TempDirCase):
+    """놓친 글을 알아채는 유일한 단서.
+
+    확인 사이에 목록이 통째로 갈리면, 그 사이에 올라왔다 밀려난 글은
+    오류도 알림도 남기지 않고 사라진다. 하나라도 겹치는 글이 있으면
+    그 사이엔 빠진 것이 없다는 뜻이다.
+    """
+
+    def _check(self, first, second):
+        """첫 번째 목록을 본 뒤 두 번째 목록을 봤을 때의 판정."""
+        store = Store(self.tmp / "t.db")
+        verdict = None
+        for posts in (first, second):
+            verdict = _turned_over(posts, store.filter_new(posts))
+            store.record(posts, notified=True)
+        store.close()
+        return verdict
+
+    def _posts(self, ids, site_key="s", pinned_ids=()):
+        return [make_post(str(i), site_key=site_key, pinned=(i in pinned_ids))
+                for i in ids]
+
+    def test_하나라도_겹치면_빈틈이_없다(self):
+        self.assertFalse(self._check(self._posts([1, 2, 3]), self._posts([2, 3, 4])))
+
+    def test_전부_새_글이면_놓쳤을_수_있다고_본다(self):
+        self.assertTrue(self._check(self._posts([1, 2, 3]), self._posts([7, 8, 9])))
+
+    def test_고정공지는_세지_않는다(self):
+        """고정공지는 몇 달씩 그대로라 늘 '아는 글'이다.
+
+        그것까지 세면 어떤 게시판도 갈렸다고 판정되지 않아, 감시 장치가
+        켜져 있어도 아무 일도 하지 않는 채로 남는다.
+        """
+        first = self._posts([1, 2, 3], pinned_ids={1})
+        second = self._posts([1, 7, 8], pinned_ids={1})
+        self.assertTrue(self._check(first, second))
+
+    def test_고정공지밖에_없으면_판단하지_않는다(self):
+        only_pinned = self._posts([1, 2], pinned_ids={1, 2})
+        self.assertFalse(_turned_over(only_pinned, only_pinned))
 
 
 class PruneTest(TempDirCase):

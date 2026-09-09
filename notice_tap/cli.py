@@ -143,6 +143,7 @@ def cmd_check(args) -> int:
         days=config.get("retention_days", 7),
         shortcuts=config.shortcuts,
     )
+    _alert_gap(result, notifiers, muted=args.no_notify, dashboard=path)
     _alert_stale(config, checker, notifiers, muted=args.no_notify, dashboard=path)
     print(f"\n모아보기 페이지: {path.resolve()}")
     checker.close()
@@ -177,6 +178,43 @@ def _deliver(config: Config, checker: Checker, notifiers) -> None:
         checker.store.mark_notified(pending)
     else:
         print(f"  {len(pending)}건을 보류합니다 — 다음 실행에서 다시 보냅니다")
+
+
+def _alert_gap(result, notifiers, muted: bool, dashboard: Path) -> None:
+    """읽어온 글이 전부 처음 보는 것이면 그 사이에 놓친 글이 있을 수 있다.
+
+    놓친 글은 오류도 남지 않고 알림도 없어, 놓쳤다는 사실 자체를 알 수 없다.
+    이 신호만이 유일한 단서다.
+    """
+    gaps = result.gaps
+    if not gaps:
+        return
+
+    lines = []
+    for outcome in gaps:
+        lines.append(f"{outcome.site.name} — 읽은 {outcome.total_seen}건이 전부 새 글")
+        lines.append(f"  {outcome.site.home}")
+    heading = f"글을 놓쳤을 수 있습니다 ({len(gaps)}곳)"
+    tail = (
+        "확인 사이에 목록이 통째로 갈렸습니다. 밀려난 글이 있는지"
+        " 게시판을 직접 확인해 보세요. 자주 뜨면 읽는 페이지 수를 늘려야 합니다."
+    )
+    body = "\n".join(lines) + "\n\n" + tail
+
+    print(f"\n  ⚠ {heading}")
+    for line in lines:
+        print(f"    {line}")
+    if muted:
+        return
+
+    link = dashboard.resolve().as_uri()
+    for notifier in notifiers:
+        if notifier.name == "console":
+            continue
+        try:
+            notifier.send_alert(heading, body, link)
+        except Exception as exc:
+            print(f"  경고 알림 실패 ({notifier.name}): {exc}")
 
 
 def _alert_stale(config: Config, checker: Checker, notifiers, muted: bool, dashboard: Path) -> None:
