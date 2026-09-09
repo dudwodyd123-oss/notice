@@ -21,7 +21,7 @@ from notice_tap.config import Config  # noqa: E402
 from notice_tap.dashboard import TEMPLATE, render_dashboard  # noqa: E402
 from notice_tap.dates import to_iso_date  # noqa: E402
 from notice_tap.models import Post, Site  # noqa: E402
-from notice_tap.parsers import get_parser, parse_pyxis  # noqa: E402
+from notice_tap.parsers import get_parser, parse_generic, parse_pyxis  # noqa: E402
 from notice_tap.store import Store  # noqa: E402
 from notice_tap.text import collapse  # noqa: E402
 
@@ -576,6 +576,75 @@ def bulletin(post_id, title, created="2026-09-03 13:34:29", category="일반"):
         "dateCreated": created,
         "bulletinCategory": {"name": category},
     }
+
+
+class PagedFetcher:
+    """페이지마다 다른 HTML 을 돌려주는 흉내용 Fetcher."""
+
+    def __init__(self, pages):
+        self.pages = pages
+        self.urls = []
+
+    def get_text(self, url):
+        self.urls.append(url)
+        return self.pages.get(url, "")
+
+
+def board_html(*titles):
+    rows = "".join(
+        f'<tr><td class="subject"><a href="/view?seq={n}">{t}</a></td>'
+        f'<td class="date">2026-09-01</td></tr>'
+        for n, t in titles
+    )
+    return f"<table><tbody>{rows}</tbody></table>"
+
+
+class PagedBoardTest(unittest.TestCase):
+    """한 페이지만 읽으면, 글이 몰리는 날 목록 밖으로 밀려난 글을 놓친다.
+
+    부산대학교 게시판은 스무 칸 중 열다섯 칸이 고정공지라 실제로 돌아가는
+    자리가 다섯 칸뿐이었다. 실제로 하루치 글이 통째로 새어 나갔다.
+    """
+
+    def _site(self, **options):
+        return Site(
+            name="게시판",
+            url="https://example.ac.kr/list?mCode=MN095",
+            parser="generic",
+            options={"row_selector": "tbody tr", "title_selector": "td.subject a",
+                     "id_param": "seq", **options},
+        )
+
+    def test_설정한_페이지_수만큼_읽어_합친다(self):
+        base = "https://example.ac.kr/list?mCode=MN095"
+        fetcher = PagedFetcher({
+            base: board_html((1, "첫째"), (2, "둘째")),
+            "https://example.ac.kr/list?mCode=MN095&page=2": board_html((3, "셋째")),
+        })
+        posts = parse_generic(self._site(pages=2), fetcher)
+        self.assertEqual([p.title for p in posts], ["첫째", "둘째", "셋째"])
+
+    def test_기본은_한_페이지만_읽는다(self):
+        base = "https://example.ac.kr/list?mCode=MN095"
+        fetcher = PagedFetcher({base: board_html((1, "첫째"))})
+        parse_generic(self._site(), fetcher)
+        self.assertEqual(fetcher.urls, [base])
+
+    def test_페이지가_겹쳐도_한_번만_센다(self):
+        base = "https://example.ac.kr/list?mCode=MN095"
+        same = board_html((1, "첫째"))
+        fetcher = PagedFetcher({base: same,
+                                "https://example.ac.kr/list?mCode=MN095&page=2": same})
+        posts = parse_generic(self._site(pages=2), fetcher)
+        self.assertEqual(len(posts), 1)
+
+    def test_원래_쿼리스트링을_잃지_않는다(self):
+        """mCode 가 떨어지면 엉뚱한 게시판을 읽게 된다."""
+        base = "https://example.ac.kr/list?mCode=MN095"
+        fetcher = PagedFetcher({base: board_html((1, "첫째"))})
+        parse_generic(self._site(pages=2), fetcher)
+        self.assertIn("mCode=MN095", fetcher.urls[1])
+        self.assertIn("page=2", fetcher.urls[1])
 
 
 class PyxisTest(unittest.TestCase):

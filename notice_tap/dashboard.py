@@ -5,10 +5,15 @@ from __future__ import annotations
 import base64
 import html
 import json
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from .store import Store
+
+# 실행은 GitHub 의 서버(UTC)에서 도는데 화면은 한국에서 본다.
+# 그냥 두면 "갱신 01:10" 처럼 아홉 시간 전으로 찍혀, 하루에 한두 번밖에
+# 안 도는 것처럼 보인다. 표시하는 시각만 한국 시간으로 맞춘다.
+KST = timezone(timedelta(hours=9))
 
 TEMPLATE = """<!doctype html>
 <html lang="ko">
@@ -377,7 +382,7 @@ def render_dashboard(
         TEMPLATE.format(
             site_count=len(site_names),
             post_count=len(rows),
-            generated=datetime.now().strftime("%Y-%m-%d %H:%M"),
+            generated=datetime.now(KST).strftime("%Y-%m-%d %H:%M"),
             days=days,
             favicon=_icon("favicon.png"),
             icon192=_icon("icon-192.png"),

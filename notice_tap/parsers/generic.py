@@ -11,23 +11,54 @@ sites.yaml 에서 사이트별로 선택자를 적어주면 어떤 게시판이�
       author_selector: "td.writer"
       id_param: "nttId"        # 링크 쿼리스트링에서 글 번호를 뽑을 때
       pinned_class: "isnotice" # 위에 고정된 공지 줄에 붙는 class
+      pages: 2                 # 몇 페이지까지 읽을지 (기본 1)
+      page_param: "page"       # 페이지 번호를 넘길 쿼리스트링 이름
 """
 
 from __future__ import annotations
 
 import hashlib
 import re
-from urllib.parse import parse_qs, urljoin, urlparse
+from urllib.parse import parse_qs, urlencode, urljoin, urlparse, urlunparse
 
 from bs4 import BeautifulSoup
 
+from ..fetcher import Fetcher
 from ..models import Post, Site
 from ..text import node_text
 
 DIGITS_RE = re.compile(r"(\d{2,})")
 
 
-def parse_generic(site: Site, html: str) -> list[Post]:
+def parse_generic(site: Site, fetcher: Fetcher) -> list[Post]:
+    """설정한 페이지 수만큼 목록을 읽어 합친다.
+
+    첫 페이지만 읽으면, 고정공지가 자리를 많이 차지하는 게시판에서는 실제로
+    돌아가는 자리가 몇 칸 안 남는다. 그 사이에 글이 몰리면 확인하기도 전에
+    목록 밖으로 밀려나고, 그렇게 놓친 글은 영영 알 수 없다.
+    """
+    pages = max(int(site.options.get("pages", 1)), 1)
+    param = site.options.get("page_param", "page")
+
+    posts: dict[str, Post] = {}
+    for number in range(1, pages + 1):
+        url = site.url if number == 1 else _with_page(site.url, param, number)
+        for post in _parse_page(site, fetcher.get_text(url)):
+            posts.setdefault(post.post_id, post)  # 페이지가 겹쳐도 한 번만
+    return list(posts.values())
+
+
+parse_generic.needs_fetcher = True  # 여러 페이지를 직접 받아와야 한다
+
+
+def _with_page(url: str, param: str, number: int) -> str:
+    parsed = urlparse(url)
+    query = parse_qs(parsed.query)
+    query[param] = [str(number)]
+    return urlunparse(parsed._replace(query=urlencode(query, doseq=True)))
+
+
+def _parse_page(site: Site, html: str) -> list[Post]:
     opts = site.options
     row_selector = opts.get("row_selector")
     if not row_selector:

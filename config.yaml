@@ -51,6 +51,10 @@ sites:
   author_selector: td.writer
   id_param: board_seq
   pinned_class: isnotice
+  # 20칸 중 15칸이 고정공지라 실제로 돌아가는 자리가 다섯 칸뿐이다.
+  # 한 페이지만 읽으면 글이 몰리는 날 놓친다.
+  pages: 3
+  page_param: page
   key: 95390426e921
   home: https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095
 - name: 창업지원단
