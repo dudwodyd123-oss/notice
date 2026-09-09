@@ -3807,9 +3807,9 @@
    "site_key": "aa28cd59ae6d"
   },
   {
-   "fail_since": "",
+   "fail_since": "2026-09-09T19:24:59+00:00",
    "last_alert": "",
-   "last_error": "",
+   "last_error": "HTTPSConnectionPool(host='error.inek.kr', port=18999): Max retries exceeded with url: /error.html (Caused by NameResolutionError(\"HTTPSConnection(host='error.inek.kr', port=18999): Failed to resolve 'error.inek.kr' ([Errno -2] Name or service not known)\"))",
    "site_key": "ca53af7720c5"
   }
  ],
