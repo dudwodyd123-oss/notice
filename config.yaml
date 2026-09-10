@@ -88,8 +88,40 @@ sites:
   board_id: 2
   key: ca53af7720c5
   home: https://lib.pusan.ac.kr/guide/notice
-shortcuts:
+- name: 정보컴퓨터공학부
+  url: https://cse.pusan.ac.kr/bbs/cse/2064/artclList.do
+  parser: pnu
+  key: 7e4c933f44ff
+  home: https://cse.pusan.ac.kr/cse/14223/subview.do
+# 첫 페이지가 통째로 고정공지 스무 건이라 새 글은 두 번째 장부터 나온다.
+# 하루 열 건 넘게 올라오는 곳이라 세 장까지 읽어야 놓치지 않는다.
 - name: 학생성공개발원
-  url: https://job.pusan.ac.kr/
+  url: https://job.pusan.ac.kr/ko/notice/notice/list/1
+  parser: generic
+  row_selector: li.tbody
+  title_selector: span.title a
+  date_selector: span.reg_date time
+  id_regex: /view/(\d+)
+  pinned_class: notice
+  pages: 3
+  page_url: https://job.pusan.ac.kr/ko/notice/notice/list/{page}
+  key: 51f3de4349e0
+  home: https://job.pusan.ac.kr/ko/notice
+# 강의 사이트(PLATO)의 학교 전체 공지. 로그인 없이 열린다.
+# 화면에 보이는 주소(article.php)는 자바스크립트로 목록을 그려서 읽히지 않는다.
+# view.php 는 목록이 HTML 에 그대로 들어 있다.
+- name: PLATO
+  url: https://plato.pusan.ac.kr/mod/ubboard/view.php?id=2624
+  parser: generic
+  row_selector: div.grid-row
+  title_selector: div.grid-cell-subject a
+  date_selector: div.grid-cell-date
+  # 작성자 칸에는 머리글자 동그라미가 함께 들어 있어 이름만 집어낸다.
+  author_selector: div.grid-cell-writer div.text-truncate
+  id_param: bwid
+  pinned_class: row-fixed
+  key: 716a7db65e89
+  home: https://plato.pusan.ac.kr/mod/ubboard/view.php?id=2624
+shortcuts:
 - name: AI역량지원시스템
   url: https://swcss.pusan.ac.kr/

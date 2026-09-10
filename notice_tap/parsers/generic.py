@@ -13,6 +13,7 @@ sites.yaml 에서 사이트별로 선택자를 적어주면 어떤 게시판이�
       pinned_class: "isnotice" # 위에 고정된 공지 줄에 붙는 class
       pages: 2                 # 몇 페이지까지 읽을지 (기본 1)
       page_param: "page"       # 페이지 번호를 넘길 쿼리스트링 이름
+      page_url: ".../list/{page}"  # 쿼리가 아니라 주소 자체가 바뀌는 게시판일 때
 """
 
 from __future__ import annotations
@@ -39,10 +40,15 @@ def parse_generic(site: Site, fetcher: Fetcher) -> list[Post]:
     """
     pages = max(int(site.options.get("pages", 1)), 1)
     param = site.options.get("page_param", "page")
+    # 페이지 번호가 쿼리가 아니라 주소 경로에 들어가는 게시판도 있다.
+    template = site.options.get("page_url")
 
     posts: dict[str, Post] = {}
     for number in range(1, pages + 1):
-        url = site.url if number == 1 else _with_page(site.url, param, number)
+        if template:
+            url = template.replace("{page}", str(number))
+        else:
+            url = site.url if number == 1 else _with_page(site.url, param, number)
         for post in _parse_page(site, fetcher.get_text(url)):
             posts.setdefault(post.post_id, post)  # 페이지가 겹쳐도 한 번만
     return list(posts.values())

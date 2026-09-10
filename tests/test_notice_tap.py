@@ -681,6 +681,22 @@ class PagedBoardTest(unittest.TestCase):
         posts = parse_generic(self._site(pages=2), fetcher)
         self.assertEqual(len(posts), 1)
 
+    def test_주소_경로로_페이지가_바뀌는_게시판도_읽는다(self):
+        """학생성공개발원은 쿼리가 아니라 주소 자체가 /list/2 로 바뀐다.
+
+        첫 장이 통째로 고정공지라 두 번째 장부터 읽지 못하면 새 글을
+        하나도 못 가져온다.
+        """
+        fetcher = PagedFetcher({
+            "https://example.ac.kr/list/1": board_html((1, "고정")),
+            "https://example.ac.kr/list/2": board_html((2, "새 글")),
+        })
+        site = self._site(pages=2, page_url="https://example.ac.kr/list/{page}")
+        posts = parse_generic(site, fetcher)
+        self.assertEqual([p.title for p in posts], ["고정", "새 글"])
+        self.assertEqual(fetcher.urls,
+                         ["https://example.ac.kr/list/1", "https://example.ac.kr/list/2"])
+
     def test_원래_쿼리스트링을_잃지_않는다(self):
         """mCode 가 떨어지면 엉뚱한 게시판을 읽게 된다."""
         base = "https://example.ac.kr/list?mCode=MN095"
