@@ -58,7 +58,10 @@ class Checker:
         try:
             parser = get_parser(site.parser)
             # 일부 사이트는 HTML 에 목록이 없어 파서가 직접 API 를 불러야 한다.
-            if getattr(parser, "needs_fetcher", False):
+            # 목록 자체가 없어 글 번호를 짚어가는 파서는 저장소까지 필요하다.
+            if getattr(parser, "needs_store", False):
+                posts = parser(site, self.fetcher, self.store)
+            elif getattr(parser, "needs_fetcher", False):
                 posts = parser(site, self.fetcher)
             else:
                 posts = parser(site, self.fetcher.get_text(site.url))

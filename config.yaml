@@ -122,6 +122,15 @@ sites:
   pinned_class: row-fixed
   key: 716a7db65e89
   home: https://plato.pusan.ac.kr/mod/ubboard/view.php?id=2624
+# 나눔시스템(지역사회기여센터). 목록은 자바스크립트가 암호화된 요청으로
+# 받아와 우리가 재현할 수 없다. 대신 글 하나하나는 seq 번호로 그냥 열리므로
+# 마지막으로 본 번호 다음부터 짚어가며 새 글을 찾는다.
+- name: 나눔시스템
+  url: https://nanum.pusan.ac.kr/page?menuCD=000000000000007
+  parser: nanum
+  start_seq: 1341
+  key: fe5b93177fd4
+  home: https://nanum.pusan.ac.kr/page?menuCD=000000000000007
 shortcuts:
 - name: AI역량지원시스템
   url: https://swcss.pusan.ac.kr/

@@ -7,6 +7,7 @@ from typing import Callable
 from ..models import Post, Site
 from .bi_pusan import parse_bi_pusan
 from .generic import parse_generic
+from .nanum import parse_nanum
 from .pnu import parse_pnu
 from .pyxis import parse_pyxis
 from .rss import parse_rss
@@ -19,6 +20,7 @@ PARSERS: dict[str, Parser] = {
     "rss": parse_rss,
     "bi_pusan": parse_bi_pusan,
     "pyxis": parse_pyxis,
+    "nanum": parse_nanum,
 }
 
 
@@ -36,6 +38,7 @@ __all__ = [
     "get_parser",
     "parse_bi_pusan",
     "parse_generic",
+    "parse_nanum",
     "parse_pnu",
     "parse_pyxis",
     "parse_rss",

@@ -21,7 +21,12 @@ from notice_tap.config import Config  # noqa: E402
 from notice_tap.dashboard import TEMPLATE, render_dashboard  # noqa: E402
 from notice_tap.dates import to_iso_date  # noqa: E402
 from notice_tap.models import Post, Site  # noqa: E402
-from notice_tap.parsers import get_parser, parse_generic, parse_pyxis  # noqa: E402
+from notice_tap.parsers import (  # noqa: E402
+    get_parser,
+    parse_generic,
+    parse_nanum,
+    parse_pyxis,
+)
 from notice_tap.store import Store  # noqa: E402
 from notice_tap.text import collapse  # noqa: E402
 
@@ -704,6 +709,89 @@ class PagedBoardTest(unittest.TestCase):
         parse_generic(self._site(pages=2), fetcher)
         self.assertIn("mCode=MN095", fetcher.urls[1])
         self.assertIn("page=2", fetcher.urls[1])
+
+
+def detail_html(title, author="이준호", date="2026-09-07"):
+    return (
+        '<div class="board-view-title"><h4>' + title + "</h4>"
+        '<p class="board-info">작성자 ' + author + " 작성일 " + date + " 15:23:31 조회수 7</p></div>"
+    )
+
+
+class SeqFetcher:
+    """번호별로 글이 있는 곳/없는 곳을 흉내낸다."""
+
+    def __init__(self, existing):
+        self.existing = existing
+        self.asked = []
+
+    def get_text(self, url):
+        import re as _re
+        seq = int(_re.search(r"seq=(\d+)", url).group(1))
+        self.asked.append(seq)
+        if seq in self.existing:
+            return detail_html(self.existing[seq])
+        return "<div>없는 글</div>"
+
+
+class NanumTest(TempDirCase):
+    """목록을 통째로 가져올 수 없어 글 번호를 하나씩 짚어가는 게시판."""
+
+    def setUp(self):
+        super().setUp()
+        self.store = Store(self.tmp / "t.db")
+        self.site = Site(
+            name="나눔시스템",
+            url="https://nanum.example.ac.kr/page?menuCD=000000000000007",
+            parser="nanum",
+            options={"start_seq": 100},
+        )
+
+    def tearDown(self):
+        self.store.close()
+        super().tearDown()
+
+    def test_처음에는_거슬러_올라가며_최근_글을_담는다(self):
+        fetcher = SeqFetcher({n: f"글{n}" for n in range(90, 101)})
+        posts = parse_nanum(self.site, fetcher, self.store)
+        self.assertEqual([p.post_id for p in posts][:3], ["100", "99", "98"])
+        self.assertEqual(posts[0].title, "글100")
+        self.assertEqual(posts[0].posted_on, "2026-09-07")
+        self.assertEqual(posts[0].author, "이준호")
+
+    def test_이미_본_번호_다음부터_짚는다(self):
+        self.store.record([make_post("100", site_key=self.site.key)], notified=True)
+        fetcher = SeqFetcher({101: "새 글"})
+        posts = parse_nanum(self.site, fetcher, self.store)
+        self.assertEqual([p.title for p in posts], ["새 글"])
+        self.assertEqual(min(fetcher.asked), 101)  # 본 것을 다시 긁지 않는다
+
+    def test_지워진_번호가_중간에_있어도_넘어간다(self):
+        """번호가 한두 칸 비었다고 멈추면 그 뒤 새 글을 통째로 놓친다."""
+        self.store.record([make_post("100", site_key=self.site.key)], notified=True)
+        fetcher = SeqFetcher({103: "구멍 건너 새 글"})
+        posts = parse_nanum(self.site, fetcher, self.store)
+        self.assertEqual([p.title for p in posts], ["구멍 건너 새 글"])
+
+    def test_연속으로_비면_거기서_멈춘다(self):
+        self.store.record([make_post("100", site_key=self.site.key)], notified=True)
+        fetcher = SeqFetcher({})
+        self.assertEqual(parse_nanum(self.site, fetcher, self.store), [])
+        self.assertEqual(len(fetcher.asked), 5)  # 끝없이 두드리지 않는다
+
+    def test_주소에_원래_메뉴_번호가_남는다(self):
+        fetcher = SeqFetcher({100: "글"})
+        posts = parse_nanum(self.site, fetcher, self.store)
+        self.assertIn("menuCD=000000000000007", posts[0].url)
+        self.assertIn("mode=DETAIL", posts[0].url)
+        self.assertIn("seq=100", posts[0].url)
+
+    def test_시작_번호가_없으면_알아듣게_알려준다(self):
+        site = Site(name="나눔", url="https://nanum.example.ac.kr/page?menuCD=7",
+                    parser="nanum", options={})
+        with self.assertRaises(ValueError) as caught:
+            parse_nanum(site, SeqFetcher({}), self.store)
+        self.assertIn("start_seq", str(caught.exception))
 
 
 class PyxisTest(unittest.TestCase):
