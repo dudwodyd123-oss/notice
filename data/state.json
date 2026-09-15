@@ -3809,22 +3809,6 @@
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1510694"
   },
   {
-   "author": "학생성공개발원행정실",
-   "baseline": 1,
-   "category": "",
-   "first_seen": "2026-08-30T15:09:40+09:00",
-   "notified": 1,
-   "pinned": 1,
-   "post_id": "1510713",
-   "posted_at": "2026-08-28",
-   "posted_on": "2026-08-28",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "[학생성공개발원] 「JOB多한 페어」 2026년 대학생·대학원생 커리어 페어 및...",
-   "uid": "95390426e921:1510713",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510713"
-  },
-  {
    "author": "인권센터",
    "baseline": 1,
    "category": "",
@@ -4175,6 +4159,22 @@
    "title": "📌 '26-2학기 부산대 학생 핵심역량 진단(PNU-CESA) 참여 안내",
    "uid": "95390426e921:1510890",
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510890"
+  },
+  {
+   "author": "학생과",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-15T16:49:36+00:00",
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1510891",
+   "posted_at": "2026-09-04",
+   "posted_on": "2026-09-04",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "[부산테크노파크] 슬기로운 대학생활 금융 아카데미 개최 안내",
+   "uid": "95390426e921:1510891",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1510891"
   },
   {
    "author": "학생성공개발원행정실",
@@ -6255,6 +6255,22 @@
    "title": "[다담다 멘토링] 2026학년도 장학재단-교육청 다담다 멘토링 참여 멘토 모집(3차) 공고",
    "uid": "fe5b93177fd4:1341",
    "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1341"
+  },
+  {
+   "author": "류지원",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-15T16:50:07+00:00",
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1342",
+   "posted_at": "2026-09-16",
+   "posted_on": "2026-09-16",
+   "site_key": "fe5b93177fd4",
+   "site_name": "나눔시스템",
+   "title": "[해외봉사] 제39기 부산대학교 산학협력 해외봉사단 모집 공고",
+   "uid": "fe5b93177fd4:1342",
+   "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1342"
   }
  ],
  "sites_state": [
@@ -6343,9 +6359,9 @@
    "site_key": "ca53af7720c5"
   },
   {
-   "fail_since": "2026-09-10T13:31:37+00:00",
-   "last_alert": "2026-09-14T19:13:17+00:00",
-   "last_error": "글을 하나도 읽지 못했습니다 (사이트 구조가 바뀌었을 수 있음)",
+   "fail_since": "",
+   "last_alert": "",
+   "last_error": "",
    "site_key": "fe5b93177fd4"
   }
  ],
