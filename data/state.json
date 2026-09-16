@@ -519,22 +519,6 @@
    "first_seen": "2026-08-29T23:04:54+09:00",
    "notified": 1,
    "pinned": 0,
-   "post_id": "1434151",
-   "posted_at": "2026.04.09",
-   "posted_on": "2026-04-09",
-   "site_key": "10062ffd1f9d",
-   "site_name": "정보컴퓨터공학부",
-   "title": "[2026전기] 졸업과제 착수보고서 및 지도확인서 제출 : ~5.15.(금)",
-   "uid": "10062ffd1f9d:1434151",
-   "url": "https://cse.pusan.ac.kr/bbs/cse/2056/1434151/artclView.do"
-  },
-  {
-   "author": "정 * 랑",
-   "baseline": 1,
-   "category": "",
-   "first_seen": "2026-08-29T23:04:54+09:00",
-   "notified": 1,
-   "pinned": 0,
    "post_id": "1434541",
    "posted_at": "2026.04.13",
    "posted_on": "2026-04-13",
@@ -687,6 +671,22 @@
    "title": "[2026전기] GitHub 및 동영상 제출 : ~9.20.(일)까지",
    "uid": "10062ffd1f9d:1456400",
    "url": "https://cse.pusan.ac.kr/bbs/cse/2056/1456400/artclView.do"
+  },
+  {
+   "author": "정 * 랑",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-16T11:58:55+00:00",
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1462942",
+   "posted_at": "2026.09.16",
+   "posted_on": "2026-09-16",
+   "site_key": "10062ffd1f9d",
+   "site_name": "정보컴퓨터공학부",
+   "title": "[앵커] 2026학년도 2학기 캡스톤 디자인 교과목 지원사업 신청 안내(1차:~10/5)",
+   "uid": "10062ffd1f9d:1462942",
+   "url": "https://cse.pusan.ac.kr/bbs/cse/2056/1462942/artclView.do"
   },
   {
    "author": "황 * 경",
@@ -1057,38 +1057,6 @@
    "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1444261/artclView.do"
   },
   {
-   "author": "정 * 랑",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-08T09:00:34+00:00",
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1459742",
-   "posted_at": "2026.09.08",
-   "posted_on": "2026-09-08",
-   "site_key": "374945f5c2db",
-   "site_name": "정보컴퓨터공학부",
-   "title": "[학생활동인정] 제11회 PNU 대학생 프로그래밍 경진대회(ICPC예선) 모집(~09/22",
-   "uid": "374945f5c2db:1459742",
-   "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1459742/artclView.do"
-  },
-  {
-   "author": "정 * 랑",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-08T09:00:34+00:00",
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1459786",
-   "posted_at": "2026.09.08",
-   "posted_on": "2026-09-08",
-   "site_key": "374945f5c2db",
-   "site_name": "정보컴퓨터공학부",
-   "title": "[장학] (2차) 2026.2학기 수업조교 추가 모집(~9/9까지)",
-   "uid": "374945f5c2db:1459786",
-   "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1459786/artclView.do"
-  },
-  {
    "author": "황 * 경",
    "baseline": 0,
    "category": "",
@@ -1215,6 +1183,38 @@
    "title": "[수업]2026학년도 2학기 교양교과목 2차(최종) 폐강 강좌 및 수강 정정 알림",
    "uid": "374945f5c2db:1462832",
    "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1462832/artclView.do"
+  },
+  {
+   "author": "황 * 경",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-16T11:58:55+00:00",
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1463014",
+   "posted_at": "2026.09.16",
+   "posted_on": "2026-09-16",
+   "site_key": "374945f5c2db",
+   "site_name": "정보컴퓨터공학부",
+   "title": "2026학년도 국외현장실습학기제 참여희망학생 모집 홍보 요청(모집일정 변경 재공고)",
+   "uid": "374945f5c2db:1463014",
+   "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1463014/artclView.do"
+  },
+  {
+   "author": "황 * 경",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-16T11:58:55+00:00",
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1463020",
+   "posted_at": "2026.09.16",
+   "posted_on": "2026-09-16",
+   "site_key": "374945f5c2db",
+   "site_name": "정보컴퓨터공학부",
+   "title": "[수업]2026학년도 2학기 학부 수강취소(W) 안내",
+   "uid": "374945f5c2db:1463020",
+   "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1463020/artclView.do"
   },
   {
    "author": "조 **** 화",
@@ -3681,6 +3681,22 @@
    "url": "https://plato.pusan.ac.kr/mod/ubboard/article.php?keyfield&keyword&listsize=15&page=1&categoryid&bwid=25549&id=2624"
   },
   {
+   "author": "사이트관리자",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-16T11:59:20+00:00",
+   "notified": 1,
+   "pinned": 1,
+   "post_id": "29119",
+   "posted_at": "2026-09-16",
+   "posted_on": "2026-09-16",
+   "site_key": "716a7db65e89",
+   "site_name": "PLATO",
+   "title": "[PLATO] 강의실 입장 시 모든 주차 및 학습 콘텐츠 보기 안내(대시보드 사용 안함)",
+   "uid": "716a7db65e89:29119",
+   "url": "https://plato.pusan.ac.kr/mod/ubboard/article.php?keyfield&keyword&listsize=15&page=1&categoryid&bwid=29119&id=2624"
+  },
+  {
    "author": "황 * 경",
    "baseline": 1,
    "category": "",
@@ -4177,22 +4193,6 @@
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1510772"
   },
   {
-   "author": "학생성공개발원행정실",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-02T04:57:36+00:00",
-   "notified": 1,
-   "pinned": 1,
-   "post_id": "1510825",
-   "posted_at": "2026-09-02",
-   "posted_on": "2026-09-02",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "2026학년도 저학년 진로설계 커리어로드맵 공모전 안내",
-   "uid": "95390426e921:1510825",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510825"
-  },
-  {
    "author": "녹색국토물관리연구소",
    "baseline": 0,
    "category": "",
@@ -4273,54 +4273,6 @@
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1510891"
   },
   {
-   "author": "학생성공개발원행정실",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-04T13:23:47+00:00",
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1510898",
-   "posted_at": "2026-09-04",
-   "posted_on": "2026-09-04",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "[학생성공개발원] 2026 JOB多한 커리어 페어 운영보조요원 선발자 명단",
-   "uid": "95390426e921:1510898",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510898"
-  },
-  {
-   "author": "인권센터",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-07T00:54:05+00:00",
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1510903",
-   "posted_at": "2026-09-07",
-   "posted_on": "2026-09-07",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "[성평등가족부] 폭력피해 이주여성(유학생 포함) 지원 서비스 안내(필리핀어, 캄...",
-   "uid": "95390426e921:1510903",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510903"
-  },
-  {
-   "author": "인권센터",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-07T00:54:05+00:00",
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1510904",
-   "posted_at": "2026-09-07",
-   "posted_on": "2026-09-07",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "[성평등가족부] 폭력피해 이주여성(유학생 포함) 지원 서비스 안내(몽골어, 러시...",
-   "uid": "95390426e921:1510904",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510904"
-  },
-  {
    "author": "경제통상대학.경영대학.국제전문대학원.경영대학원.경제통상대학원.금융대학원통합행정실",
    "baseline": 0,
    "category": "",
@@ -4351,22 +4303,6 @@
    "title": "2026 학부교육 실태조사 참여 안내(모바일쿠폰 추첨 증정)",
    "uid": "95390426e921:1510913",
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510913"
-  },
-  {
-   "author": "효원상담원",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-07T12:14:08+00:00",
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1510922",
-   "posted_at": "2026-09-07",
-   "posted_on": "2026-09-07",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "[효원상담원] 2학기를 기분좋게 시작할 수 있는 심리기술훈련 5차(9월 18일)...",
-   "uid": "95390426e921:1510922",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510922"
   },
   {
    "author": "디지털인문학센터",
@@ -4950,7 +4886,7 @@
    "category": "",
    "first_seen": "2026-09-15T06:36:22+00:00",
    "notified": 1,
-   "pinned": 0,
+   "pinned": 1,
    "post_id": "1511060",
    "posted_at": "2026-09-15",
    "posted_on": "2026-09-15",
@@ -5078,7 +5014,7 @@
    "category": "",
    "first_seen": "2026-09-15T12:03:13+00:00",
    "notified": 1,
-   "pinned": 0,
+   "pinned": 1,
    "post_id": "1511075",
    "posted_at": "2026-09-15",
    "posted_on": "2026-09-15",
@@ -5135,6 +5071,86 @@
    "title": "[국제처] 2026학년도 2학기 논문지도 브릿지 참여자 모집(대학원생)",
    "uid": "95390426e921:1511079",
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511079"
+  },
+  {
+   "author": "교육혁신실",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-16T11:59:00+00:00",
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1511082",
+   "posted_at": "2026-09-16",
+   "posted_on": "2026-09-16",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "2027학년도 1학기 학생설계전공 이수자 선발 안내",
+   "uid": "95390426e921:1511082",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511082"
+  },
+  {
+   "author": "학사과",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-16T11:59:00+00:00",
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1511083",
+   "posted_at": "2026-09-16",
+   "posted_on": "2026-09-16",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "2026학년도 2학기 학부 수강취소(W) 안내",
+   "uid": "95390426e921:1511083",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511083"
+  },
+  {
+   "author": "교수학습지원센터",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-16T11:59:00+00:00",
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1511086",
+   "posted_at": "2026-09-16",
+   "posted_on": "2026-09-16",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "[교수학습지원센터 밀양분원] 꿈그린 토크콘서트 참여자 모집 안내",
+   "uid": "95390426e921:1511086",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511086"
+  },
+  {
+   "author": "학생과",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-16T11:59:00+00:00",
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1511096",
+   "posted_at": "2026-09-16",
+   "posted_on": "2026-09-16",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "[부산광역시] 「피란수도 부산유산 BI 공모전」 개최 안내",
+   "uid": "95390426e921:1511096",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511096"
+  },
+  {
+   "author": "학생과",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-16T11:59:00+00:00",
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1511097",
+   "posted_at": "2026-09-16",
+   "posted_on": "2026-09-16",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "[한국청소년상담복지개발원] 2026년 청소년 상담 1388 숏폼 영상 공모전 개...",
+   "uid": "95390426e921:1511097",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511097"
   },
   {
    "author": "산학협력단 관리자",
@@ -5703,22 +5719,6 @@
    "first_seen": "2026-09-03T12:34:45+00:00",
    "notified": 1,
    "pinned": 0,
-   "post_id": "57522",
-   "posted_at": "2026-08-13",
-   "posted_on": "2026-08-13",
-   "site_key": "ca53af7720c5",
-   "site_name": "도서관",
-   "title": "[양산캠퍼스] 2026학년도 2학기 의생명과학도서관 업무보조인력 채용 최종 합격자 공고",
-   "uid": "ca53af7720c5:57522",
-   "url": "https://lib.pusan.ac.kr/guide/notice/57522"
-  },
-  {
-   "author": "",
-   "baseline": 1,
-   "category": "일반",
-   "first_seen": "2026-09-03T12:34:45+00:00",
-   "notified": 1,
-   "pinned": 0,
    "post_id": "57523",
    "posted_at": "2026-08-13",
    "posted_on": "2026-08-13",
@@ -6177,6 +6177,22 @@
    "url": "https://lib.pusan.ac.kr/guide/notice/57824"
   },
   {
+   "author": "",
+   "baseline": 0,
+   "category": "일반",
+   "first_seen": "2026-09-16T11:59:12+00:00",
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "57833",
+   "posted_at": "2026-09-16",
+   "posted_on": "2026-09-16",
+   "site_key": "ca53af7720c5",
+   "site_name": "도서관",
+   "title": "[9.24.(목)~9.27.(일)] 추석 연휴 기간 도서관 개관시간 변경 공고",
+   "uid": "ca53af7720c5:57833",
+   "url": "https://lib.pusan.ac.kr/guide/notice/57833"
+  },
+  {
    "author": "이준호",
    "baseline": 1,
    "category": "",
@@ -6383,49 +6399,65 @@
    "title": "[해외봉사] 제39기 부산대학교 산학협력 해외봉사단 모집 공고",
    "uid": "fe5b93177fd4:1342",
    "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1342"
+  },
+  {
+   "author": "지수현",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-16T11:59:32+00:00",
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1343",
+   "posted_at": "2026-09-16",
+   "posted_on": "2026-09-16",
+   "site_key": "fe5b93177fd4",
+   "site_name": "나눔시스템",
+   "title": "[금정구진로교육지원센터] 찾아가는 꿈교실 '진로톡톡' 프로그램 참여 멘토 모집(2학기)",
+   "uid": "fe5b93177fd4:1343",
+   "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1343"
   }
  ],
  "sites_state": [
   {
-   "fail_since": "2026-09-16T06:43:02+00:00",
+   "fail_since": "",
    "last_alert": "",
-   "last_error": "HTTPSConnectionPool(host='bi.pusan.ac.kr', port=443): Max retries exceeded with url: /community/notice (Caused by ConnectTimeoutError(<HTTPSConnection(host='bi.pusan.ac.kr', port=443) at 0x7f84d1e6a810>, 'Connection to bi.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "",
    "site_key": "0e920dac2b3c"
   },
   {
-   "fail_since": "2026-09-16T06:38:20+00:00",
+   "fail_since": "",
    "last_alert": "",
-   "last_error": "https://cse.pusan.ac.kr/bbs/cse/2056/artclList.do 가져오기 실패: HTTPSConnectionPool(host='cse.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/cse/2056/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='cse.pusan.ac.kr', port=443) at 0x7f84d1e69df0>, 'Connection to cse.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "",
    "site_key": "10062ffd1f9d"
   },
   {
-   "fail_since": "2026-09-16T06:40:31+00:00",
+   "fail_since": "",
    "last_alert": "",
-   "last_error": "https://cse.pusan.ac.kr/bbs/cse/2052/artclList.do 가져오기 실패: HTTPSConnectionPool(host='cse.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/cse/2052/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='cse.pusan.ac.kr', port=443) at 0x7f84d1e6a3c0>, 'Connection to cse.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "",
    "site_key": "32530b1606ef"
   },
   {
-   "fail_since": "2026-09-16T06:37:13+00:00",
+   "fail_since": "",
    "last_alert": "",
-   "last_error": "https://cse.pusan.ac.kr/bbs/cse/2055/artclList.do 가져오기 실패: HTTPSConnectionPool(host='cse.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/cse/2055/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='cse.pusan.ac.kr', port=443) at 0x7f84d1e691c0>, 'Connection to cse.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "",
    "site_key": "374945f5c2db"
   },
   {
-   "fail_since": "2026-09-16T06:39:26+00:00",
+   "fail_since": "",
    "last_alert": "",
-   "last_error": "https://cse.pusan.ac.kr/bbs/cse/2060/artclList.do 가져오기 실패: HTTPSConnectionPool(host='cse.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/cse/2060/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='cse.pusan.ac.kr', port=443) at 0x7f84d1e696a0>, 'Connection to cse.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "",
    "site_key": "488205947b84"
   },
   {
-   "fail_since": "2026-09-16T06:48:55+00:00",
+   "fail_since": "",
    "last_alert": "",
-   "last_error": "https://job.pusan.ac.kr/ko/notice/notice/list/1 가져오기 실패: HTTPSConnectionPool(host='job.pusan.ac.kr', port=443): Max retries exceeded with url: /ko/notice/notice/list/1 (Caused by ConnectTimeoutError(<HTTPSConnection(host='job.pusan.ac.kr', port=443) at 0x7f84d1e4b6e0>, 'Connection to job.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "",
    "site_key": "51f3de4349e0"
   },
   {
-   "fail_since": "2026-09-16T06:46:23+00:00",
+   "fail_since": "",
    "last_alert": "",
-   "last_error": "https://swedu.pusan.ac.kr/bbs/swedu/2265/artclList.do 가져오기 실패: HTTPSConnectionPool(host='swedu.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/swedu/2265/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='swedu.pusan.ac.kr', port=443) at 0x7f84d1e6bf20>, 'Connection to swedu.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "",
    "site_key": "5287380eed4f"
   },
   {
@@ -6435,45 +6467,45 @@
    "site_key": "716a7db65e89"
   },
   {
-   "fail_since": "2026-09-16T06:47:49+00:00",
+   "fail_since": "",
    "last_alert": "",
-   "last_error": "https://cse.pusan.ac.kr/bbs/cse/2064/artclList.do 가져오기 실패: HTTPSConnectionPool(host='cse.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/cse/2064/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='cse.pusan.ac.kr', port=443) at 0x7f84d1e69250>, 'Connection to cse.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "",
    "site_key": "7e4c933f44ff"
   },
   {
-   "fail_since": "2026-09-16T06:42:42+00:00",
+   "fail_since": "",
    "last_alert": "",
-   "last_error": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095 가져오기 실패: HTTPSConnectionPool(host='www.pusan.ac.kr', port=443): Max retries exceeded with url: /kor/CMS/Board/Board.do?mCode=MN095 (Caused by ConnectTimeoutError(<HTTPSConnection(host='www.pusan.ac.kr', port=443) at 0x7f84d1e6b230>, 'Connection to www.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "",
    "site_key": "95390426e921"
   },
   {
-   "fail_since": "2026-09-16T06:44:10+00:00",
+   "fail_since": "",
    "last_alert": "",
-   "last_error": "https://sanhak.pusan.ac.kr/sanhak/board/4 가져오기 실패: HTTPSConnectionPool(host='sanhak.pusan.ac.kr', port=443): Max retries exceeded with url: /sanhak/board/4 (Caused by ConnectTimeoutError(<HTTPSConnection(host='sanhak.pusan.ac.kr', port=443) at 0x7f84d1e69520>, 'Connection to sanhak.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "",
    "site_key": "9872521de15b"
   },
   {
-   "fail_since": "2026-09-16T06:41:36+00:00",
+   "fail_since": "",
    "last_alert": "",
-   "last_error": "https://cse.pusan.ac.kr/bbs/cse/2061/artclList.do 가져오기 실패: HTTPSConnectionPool(host='cse.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/cse/2061/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='cse.pusan.ac.kr', port=443) at 0x7f84d1e6b020>, 'Connection to cse.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "",
    "site_key": "9a9cc23bc9b6"
   },
   {
-   "fail_since": "2026-09-16T06:45:16+00:00",
+   "fail_since": "",
    "last_alert": "",
-   "last_error": "https://international.pusan.ac.kr/bbs/international/2080/artclList.do 가져오기 실패: HTTPSConnectionPool(host='international.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/international/2080/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='international.pusan.ac.kr', port=443) at 0x7f84d1e4a6c0>, 'Connection to international.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "",
    "site_key": "aa28cd59ae6d"
   },
   {
-   "fail_since": "2026-09-16T06:46:44+00:00",
+   "fail_since": "",
    "last_alert": "",
-   "last_error": "HTTPSConnectionPool(host='lib.pusan.ac.kr', port=443): Max retries exceeded with url: /pyxis-api/1/bulletin-boards/2/bulletins?nameOption=&onlyWriter=false&onlyNoticableBulletin=true&max=30 (Caused by ConnectTimeoutError(<HTTPSConnection(host='lib.pusan.ac.kr', port=443) at 0x7f84d1e69760>, 'Connection to lib.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "",
    "site_key": "ca53af7720c5"
   },
   {
-   "fail_since": "2026-09-15T20:07:40+00:00",
+   "fail_since": "",
    "last_alert": "",
-   "last_error": "글을 하나도 읽지 못했습니다 (사이트 구조가 바뀌었을 수 있음)",
+   "last_error": "",
    "site_key": "fe5b93177fd4"
   }
  ],
