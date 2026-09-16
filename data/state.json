@@ -4273,6 +4273,22 @@
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1510891"
   },
   {
+   "author": "인권센터",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-16T16:39:47+00:00",
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1510904",
+   "posted_at": "2026-09-07",
+   "posted_on": "2026-09-07",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "[성평등가족부] 폭력피해 이주여성(유학생 포함) 지원 서비스 안내(몽골어, 러시...",
+   "uid": "95390426e921:1510904",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1510904"
+  },
+  {
    "author": "경제통상대학.경영대학.국제전문대학원.경영대학원.경제통상대학원.금융대학원통합행정실",
    "baseline": 0,
    "category": "",
@@ -4303,6 +4319,22 @@
    "title": "2026 학부교육 실태조사 참여 안내(모바일쿠폰 추첨 증정)",
    "uid": "95390426e921:1510913",
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510913"
+  },
+  {
+   "author": "효원상담원",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-16T16:39:47+00:00",
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1510922",
+   "posted_at": "2026-09-07",
+   "posted_on": "2026-09-07",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "[효원상담원] 2학기를 기분좋게 시작할 수 있는 심리기술훈련 5차(9월 18일)...",
+   "uid": "95390426e921:1510922",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1510922"
   },
   {
    "author": "디지털인문학센터",
@@ -5151,6 +5183,22 @@
    "title": "[한국청소년상담복지개발원] 2026년 청소년 상담 1388 숏폼 영상 공모전 개...",
    "uid": "95390426e921:1511097",
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511097"
+  },
+  {
+   "author": "효원상담원",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-16T16:39:47+00:00",
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1511110",
+   "posted_at": "2026-09-16",
+   "posted_on": "2026-09-16",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "[효원상담원] 마음튼튼 2학기 시작을 도와주는 심리기술훈련 5차(신청기한 9월 ...",
+   "uid": "95390426e921:1511110",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511110"
   },
   {
    "author": "산학협력단 관리자",
@@ -6503,9 +6551,9 @@
    "site_key": "ca53af7720c5"
   },
   {
-   "fail_since": "",
+   "fail_since": "2026-09-16T16:40:12+00:00",
    "last_alert": "",
-   "last_error": "",
+   "last_error": "글을 하나도 읽지 못했습니다 (사이트 구조가 바뀌었을 수 있음)",
    "site_key": "fe5b93177fd4"
   }
  ],
