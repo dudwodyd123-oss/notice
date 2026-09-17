@@ -8,6 +8,7 @@ from pathlib import Path
 
 from .dates import to_iso_date
 from .models import Post
+from .text import is_muted
 
 # 글의 "날짜". 게시일이 비어 있는 게시판도 있어 그럴 때는 발견 날짜를 쓴다.
 EFFECTIVE_DATE = "COALESCE(NULLIF(posted_on, ''), substr(first_seen, 1, 10))"
@@ -37,7 +38,8 @@ CREATE TABLE IF NOT EXISTS posts (
     pinned     INTEGER DEFAULT 0,
     first_seen TEXT NOT NULL,
     notified   INTEGER DEFAULT 0,
-    baseline   INTEGER DEFAULT 0
+    baseline   INTEGER DEFAULT 0,
+    muted      INTEGER DEFAULT 0
 );
 CREATE INDEX IF NOT EXISTS idx_posts_seen ON posts(first_seen DESC);
 CREATE INDEX IF NOT EXISTS idx_posts_site ON posts(site_key);
@@ -66,6 +68,8 @@ class Store:
     def _migrate(self) -> None:
         """예전 버전에서 만든 데이터베이스도 그대로 쓸 수 있게 한다."""
         posts_columns = {row["name"] for row in self.conn.execute("PRAGMA table_info(posts)")}
+        if "muted" not in posts_columns:
+            self.conn.execute("ALTER TABLE posts ADD COLUMN muted INTEGER DEFAULT 0")
         if "baseline" not in posts_columns:
             self.conn.execute("ALTER TABLE posts ADD COLUMN baseline INTEGER DEFAULT 0")
         if "posted_on" not in posts_columns:
@@ -170,6 +174,22 @@ class Store:
         self.conn.commit()
         return changed
 
+    def sync_muted(self, keywords: list[str]) -> int:
+        """설정한 낱말이 든 글을 감추고, 규칙에서 빠진 글은 되살린다.
+
+        매번 다시 판단해야 설정을 바꾼 것이 이미 저장된 글에도 바로 반영된다.
+        감추기만 하고 지우지는 않으므로, 낱말을 빼면 그대로 돌아온다.
+        """
+        changed = [
+            (1 - row["muted"], row["uid"])
+            for row in self.conn.execute("SELECT uid, title, muted FROM posts")
+            if is_muted(row["title"], keywords) != bool(row["muted"])
+        ]
+        if changed:
+            self.conn.executemany("UPDATE posts SET muted = ? WHERE uid = ?", changed)
+            self.conn.commit()
+        return len(changed)
+
     def mark_check(self, site_key: str, error: str = "") -> None:
         """확인 결과를 기록한다. 연속 실패가 언제 시작됐는지도 함께 남긴다."""
         now = _now()
@@ -229,7 +249,8 @@ class Store:
         marks = ",".join("?" * len(site_keys))
         rows = self.conn.execute(
             f"""SELECT * FROM posts
-                 WHERE notified = 0 AND baseline = 0 AND site_key IN ({marks})
+                 WHERE notified = 0 AND baseline = 0 AND muted = 0
+                   AND site_key IN ({marks})
                  ORDER BY posted_on, post_id""",
             site_keys,
         )
@@ -276,7 +297,7 @@ class Store:
         return list(
             self.conn.execute(
                 f"""SELECT * FROM posts
-                     WHERE {WITHIN_WINDOW}
+                     WHERE muted = 0 AND {WITHIN_WINDOW}
                      ORDER BY posted_on DESC, first_seen DESC, post_id DESC
                      LIMIT ?""",
                 (since, since, limit),

@@ -10,6 +10,20 @@ dashboard_path: dashboard.html
 notify_on_pinned: true
 stale_alert_days: 2
 retention_days: 7
+# 제목에 이 낱말이 들어간 글은 화면에도 안 나오고 알림도 가지 않는다.
+# 지우는 것이 아니라 감추는 것이라, 낱말을 빼면 다음 확인 때 되살아난다.
+# '채용' 만으로 자르면 '채용 연계 해커톤' 같은 것까지 사라지므로,
+# 졸업반 대상 행사 이름만 콕 집어 적는다.
+mute_keywords:
+- 채용설명회
+- 채용상담회
+- 채용박람회
+- 채용설명
+- 공개채용
+- 직원채용
+- 신입사원
+- 경력사원
+- 교수초빙
 notifiers:
   console:
     enabled: true

@@ -10,6 +10,7 @@ from .fetcher import Fetcher
 from .models import Post, Site
 from .parsers import get_parser
 from .store import Store
+from .text import is_muted
 
 
 @dataclass
@@ -18,6 +19,7 @@ class SiteResult:
     new_posts: list[Post] = field(default_factory=list)
     total_seen: int = 0
     baseline: bool = False  # 첫 등록이라 알림 없이 기준점만 잡은 경우
+    muted: int = 0  # 거르는 낱말에 걸려 내보내지 않은 글 수
     error: str = ""
     # 이번에 읽은 글이 전부 처음 보는 것이면, 지난번 이후 목록이 통째로
     # 갈렸다는 뜻이다. 그 사이에 밀려난 글이 있어도 알 방법이 없다.
@@ -51,6 +53,9 @@ class Checker:
         result = CheckResult()
         for site in self.config.enabled_sites:
             result.sites.append(self.check_site(site, notify_first_run))
+        # 거르는 규칙은 저장이 끝난 뒤 한 번에 다시 매긴다. 설정을 바꾸면
+        # 새 글뿐 아니라 이미 저장된 글에도 곧바로 반영된다.
+        self.store.sync_muted(self.config.mute_keywords)
         return result
 
     def check_site(self, site: Site, notify_first_run: bool = False) -> SiteResult:
@@ -93,11 +98,18 @@ class Checker:
         if not self.config.get("notify_on_pinned", True):
             fresh = [post for post in fresh if not post.pinned]
 
-        outcome.new_posts = sorted(fresh, key=_chronological)
+        # 걸러낼 글은 저장은 하되 '새 글' 로 세지 않는다. 화면에서 감추는 것과
+        # 같은 규칙을 써야 알림은 오는데 목록에는 없는 글이 생기지 않는다.
+        keywords = self.config.mute_keywords
+        outcome.muted = sum(1 for post in fresh if is_muted(post.title, keywords))
+        outcome.new_posts = sorted(
+            (post for post in fresh if not is_muted(post.title, keywords)),
+            key=_chronological,
+        )
         # 알릴 글은 '아직 안 보냄' 으로 먼저 저장한다. 전송이 실패해도 기록이
         # 남아 다음 실행 때 다시 시도할 수 있다. (예전에는 보내기 전에 이미
         # '보냄' 으로 적어버려서, 한 번 실패한 알림은 영영 사라졌다.)
-        self.store.record(outcome.new_posts, notified=False)
+        self.store.record(fresh, notified=False)
         # 나머지(고정글 제외 설정으로 걸러진 것 등)는 알릴 대상이 아니다.
         self.store.record(posts, notified=True)
         self.store.sync_pinned(posts)

@@ -28,7 +28,7 @@ from notice_tap.parsers import (  # noqa: E402
     parse_pyxis,
 )
 from notice_tap.store import Store  # noqa: E402
-from notice_tap.text import collapse  # noqa: E402
+from notice_tap.text import collapse, is_muted  # noqa: E402
 
 
 def _days_ago(days):
@@ -503,6 +503,59 @@ class WindowTest(TempDirCase):
         self.store.record([make_post("1", title="새 글",
                                      posted_at=date.today().isoformat())], notified=True)
         self.assertEqual(self._titles(), ["새 글"])
+
+
+class MuteTest(TempDirCase):
+    """1학년이 볼 일 없는 채용 행사 공지를 화면과 알림에서 함께 빼는 기능.
+
+    화면에서 감추는 쪽과 알림을 막는 쪽이 서로 다른 판단을 하면,
+    알림은 왔는데 눌러 봐도 목록에 없는 글이 생긴다. 규칙은 하나여야 한다.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.store = Store(self.tmp / "t.db")
+        self.words = ["채용설명회", "신입사원"]
+
+    def tearDown(self):
+        self.store.close()
+        super().tearDown()
+
+    def _titles(self):
+        return [row["title"] for row in self.store.recent(since=_days_ago(7))]
+
+    def test_걸린_글은_화면에서_빠진다(self):
+        self.store.record([
+            make_post("1", title="한화오션 채용설명회 안내"),
+            make_post("2", title="장학금 신청 안내"),
+        ], notified=True)
+        self.store.sync_muted(self.words)
+        self.assertEqual(self._titles(), ["장학금 신청 안내"])
+
+    def test_걸린_글은_알림_대기열에도_안_남는다(self):
+        self.store.record([make_post("1", title="한화오션 채용설명회 안내")], notified=False)
+        self.store.sync_muted(self.words)
+        self.assertEqual(self.store.pending_posts(["s"]), [])
+
+    def test_낱말을_빼면_되살아난다(self):
+        """지우는 것이 아니라 감추는 것이라야 마음이 바뀌어도 복구된다."""
+        self.store.record([make_post("1", title="한화오션 채용설명회 안내")], notified=True)
+        self.store.sync_muted(self.words)
+        self.assertEqual(self._titles(), [])
+        self.store.sync_muted([])
+        self.assertEqual(len(self._titles()), 1)
+
+    def test_띄어쓰기가_달라도_걸린다(self):
+        self.assertTrue(is_muted("2026 신입 사원 모집", self.words))
+        self.assertTrue(is_muted("한화오션 채용 설명회", self.words))
+
+    def test_애먼_글까지_자르지_않는다(self):
+        """'채용' 만으로 자르면 1학년도 갈 만한 행사까지 사라진다."""
+        self.assertFalse(is_muted("2026 소프트뱅크 채용 연계 해커톤 참가자 모집", self.words))
+        self.assertFalse(is_muted("추천채용 안내", self.words))
+
+    def test_규칙이_비어_있으면_아무것도_거르지_않는다(self):
+        self.assertFalse(is_muted("한화오션 채용설명회 안내", []))
 
 
 # --- 저장 기록 주고받기 -----------------------------------------------------

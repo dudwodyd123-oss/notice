@@ -23,3 +23,19 @@ def collapse(value: object) -> str:
 def node_text(node) -> str:
     """BeautifulSoup 노드의 글자. 노드가 없으면 빈 문자열."""
     return collapse(node.get_text(" ", strip=True)) if node is not None else ""
+
+
+def is_muted(title: str, keywords: list[str]) -> bool:
+    """제목에 걸러낼 낱말이 들어 있는지.
+
+    거르는 규칙은 여기 하나만 둔다. 화면에서 감추는 쪽과 알림을 막는 쪽이
+    서로 다른 판단을 하면, 알림은 오는데 눌러 봐도 목록에 없는 글이 생긴다.
+    """
+    # 띄어쓰기는 글마다 제각각이다. '채용설명회' 와 '채용 설명회' 를 서로 다른
+    # 말로 보면 규칙에 변형을 하나씩 다 적어 넣어야 한다. 공백을 지우고 견준다.
+    packed = WHITESPACE.sub("", (title or "")).lower()
+    return any(
+        stripped in packed
+        for word in keywords
+        if (stripped := WHITESPACE.sub("", str(word)).lower())
+    )

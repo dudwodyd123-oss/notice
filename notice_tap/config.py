@@ -20,6 +20,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "notify_on_pinned": True,
     "stale_alert_days": 2,
     "retention_days": 7,
+    "mute_keywords": [],
     "notifiers": {
         "console": {"enabled": True},
         "discord": {"enabled": True, "webhook_url": "${DISCORD_WEBHOOK_URL}"},
@@ -77,6 +78,11 @@ class Config:
     @property
     def enabled_sites(self) -> list[Site]:
         return [site for site in self.sites if site.enabled]
+
+    @property
+    def mute_keywords(self) -> list[str]:
+        """제목에 이 낱말이 들어간 글은 화면에도 알림에도 내보내지 않는다."""
+        return [str(word) for word in self.data.get("mute_keywords") or [] if str(word).strip()]
 
     @property
     def shortcuts(self) -> list[dict[str, str]]:
