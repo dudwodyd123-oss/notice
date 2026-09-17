@@ -3368,6 +3368,23 @@
   },
   {
    "author": "",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-17T06:34:42+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "204361",
+   "posted_at": "2026-09-17",
+   "posted_on": "2026-09-17",
+   "site_key": "51f3de4349e0",
+   "site_name": "학생성공개발원",
+   "title": "CJ제일제당] Future Marketer League 모집",
+   "uid": "51f3de4349e0:204361",
+   "url": "https://job.pusan.ac.kr/ko/notice/notice/view/204361?p=2"
+  },
+  {
+   "author": "",
    "baseline": 1,
    "category": "",
    "first_seen": "2026-09-10T01:42:06+00:00",
@@ -4353,40 +4370,6 @@
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1510922"
   },
   {
-   "author": "학생과",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-08T09:00:38+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1510939",
-   "posted_at": "2026-09-08",
-   "posted_on": "2026-09-08",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "[부산경제진흥원] 부산청년주간 행사 개최 안내",
-   "uid": "95390426e921:1510939",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510939"
-  },
-  {
-   "author": "인권센터",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-09T05:26:37+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1510952",
-   "posted_at": "2026-09-09",
-   "posted_on": "2026-09-09",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "[성평등가족부] 「교제폭력 · 스토킹 레드플래그 10」 숏폼 영상 안내",
-   "uid": "95390426e921:1510952",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510952"
-  },
-  {
    "author": "사범대학.교육대학원통합행정실",
    "baseline": 0,
    "category": "",
@@ -5269,6 +5252,40 @@
    "title": "[대학일자리플러스센터] 2026년도 금정구 지역청년을 위한 자기소개서 완성 실전...",
    "uid": "95390426e921:1511117",
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511117"
+  },
+  {
+   "author": "기획평가과",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-17T06:34:29+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 1,
+   "post_id": "1511122",
+   "posted_at": "2026-09-17",
+   "posted_on": "2026-09-17",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "고등교육 규제특례 신청 관련 의견수렴 안내",
+   "uid": "95390426e921:1511122",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511122"
+  },
+  {
+   "author": "대학일자리플러스센터",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-17T06:34:29+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1511125",
+   "posted_at": "2026-09-17",
+   "posted_on": "2026-09-17",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "[추가모집] 「2026년도 부산 청년 대상 실전 면접 스킬 강화 프로그램」 (인...",
+   "uid": "95390426e921:1511125",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511125"
   },
   {
    "author": "산학협력단 관리자",
@@ -6348,7 +6365,7 @@
    "first_seen": "2026-09-16T11:59:12+00:00",
    "muted": 0,
    "notified": 1,
-   "pinned": 0,
+   "pinned": 1,
    "post_id": "57833",
    "posted_at": "2026-09-16",
    "posted_on": "2026-09-16",
@@ -6612,6 +6629,23 @@
    "title": "[금정구진로교육지원센터] 찾아가는 꿈교실 '진로톡톡' 프로그램 참여 멘토 모집(2학기)",
    "uid": "fe5b93177fd4:1343",
    "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1343"
+  },
+  {
+   "author": "이준호",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-17T06:34:54+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1344",
+   "posted_at": "2026-09-17",
+   "posted_on": "2026-09-17",
+   "site_key": "fe5b93177fd4",
+   "site_name": "나눔시스템",
+   "title": "[다담다 멘토링] 2026학년도 장학재단-교육청 다담다 멘토링 멘토 모집(3차) 최종합격자 및 예비인원 발표",
+   "uid": "fe5b93177fd4:1344",
+   "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1344"
   }
  ],
  "sites_state": [
@@ -6700,9 +6734,9 @@
    "site_key": "ca53af7720c5"
   },
   {
-   "fail_since": "2026-09-16T16:40:12+00:00",
+   "fail_since": "",
    "last_alert": "",
-   "last_error": "글을 하나도 읽지 못했습니다 (사이트 구조가 바뀌었을 수 있음)",
+   "last_error": "",
    "site_key": "fe5b93177fd4"
   }
  ],
