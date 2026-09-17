@@ -3,23 +3,6 @@
   {
    "author": "담당자",
    "baseline": 1,
-   "category": "예비창업",
-   "first_seen": "2026-08-30T15:09:41+09:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "40720",
-   "posted_at": "2026-06-05",
-   "posted_on": "2026-06-05",
-   "site_key": "0e920dac2b3c",
-   "site_name": "창업지원단",
-   "title": "「2026 B.Startup × Pet & Healthcare with.AI」 프로그램 참가 모집 안내",
-   "uid": "0e920dac2b3c:40720",
-   "url": "https://bi.pusan.ac.kr/community/notice/40720"
-  },
-  {
-   "author": "담당자",
-   "baseline": 1,
    "category": "창업교육",
    "first_seen": "2026-08-30T15:09:41+09:00",
    "muted": 0,
@@ -509,6 +492,23 @@
    "title": "[IP 창업그라운드] 네트워킹 데이 참가자 모집 공고",
    "uid": "0e920dac2b3c:40945",
    "url": "https://bi.pusan.ac.kr/community/notice/40945"
+  },
+  {
+   "author": "담당자",
+   "baseline": 0,
+   "category": "기타",
+   "first_seen": "2026-09-17T12:00:24+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "40959",
+   "posted_at": "2026-09-17",
+   "posted_on": "2026-09-17",
+   "site_key": "0e920dac2b3c",
+   "site_name": "창업지원단",
+   "title": "「BOUNCE 2026 대학생 단체 사전등록 이벤트」",
+   "uid": "0e920dac2b3c:40959",
+   "url": "https://bi.pusan.ac.kr/community/notice/40959"
   },
   {
    "author": "유 * 화",
@@ -1123,23 +1123,6 @@
    "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1444261/artclView.do"
   },
   {
-   "author": "황 * 경",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-09T06:33:48+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1459956",
-   "posted_at": "2026.09.09",
-   "posted_on": "2026-09-09",
-   "site_key": "374945f5c2db",
-   "site_name": "정보컴퓨터공학부",
-   "title": "2027학년도 1학기 학생설계전공 이수자 선발 계획 알림",
-   "uid": "374945f5c2db:1459956",
-   "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1459956/artclView.do"
-  },
-  {
    "author": "정 * 랑",
    "baseline": 0,
    "category": "",
@@ -1293,6 +1276,23 @@
    "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1463020/artclView.do"
   },
   {
+   "author": "정 * 랑",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-17T12:00:17+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1463475",
+   "posted_at": "2026.09.17",
+   "posted_on": "2026-09-17",
+   "site_key": "374945f5c2db",
+   "site_name": "정보컴퓨터공학부",
+   "title": "[학생과] 2026학년도 제39기 부산대학교 산학협력 해외봉사단 참가 신청 안내(~9/29",
+   "uid": "374945f5c2db:1463475",
+   "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1463475/artclView.do"
+  },
+  {
    "author": "조 **** 화",
    "baseline": 1,
    "category": "일반공지",
@@ -1393,23 +1393,6 @@
    "title": "[졸업]졸업요건 변경 알림(2028년 2월 졸업예정자부터 적용)",
    "uid": "488205947b84:1444261",
    "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1444261/artclView.do"
-  },
-  {
-   "author": "정 * 랑",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-04T08:59:47+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1459233",
-   "posted_at": "2026.09.04",
-   "posted_on": "2026-09-04",
-   "site_key": "488205947b84",
-   "site_name": "정보컴퓨터공학부",
-   "title": "[채용] (주)인바디 추천채용 안내(~9/10 15시까지)",
-   "uid": "488205947b84:1459233",
-   "url": "https://cse.pusan.ac.kr/bbs/cse/2060/1459233/artclView.do"
   },
   {
    "author": "정 * 랑",
@@ -1563,6 +1546,23 @@
    "title": "[풍산그룹] 2026 신입사원 채용 및 본사 초청 채용설명회(9/18)",
    "uid": "488205947b84:1462492",
    "url": "https://cse.pusan.ac.kr/bbs/cse/2060/1462492/artclView.do"
+  },
+  {
+   "author": "정 * 랑",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-17T12:00:18+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1463472",
+   "posted_at": "2026.09.17",
+   "posted_on": "2026-09-17",
+   "site_key": "488205947b84",
+   "site_name": "정보컴퓨터공학부",
+   "title": "[채용] 티에스전자(주) 추천채용 안내(~9/20)",
+   "uid": "488205947b84:1463472",
+   "url": "https://cse.pusan.ac.kr/bbs/cse/2060/1463472/artclView.do"
   },
   {
    "author": "",
@@ -3385,6 +3385,23 @@
   },
   {
    "author": "",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-17T12:00:39+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "204362",
+   "posted_at": "2026-09-17",
+   "posted_on": "2026-09-17",
+   "site_key": "51f3de4349e0",
+   "site_name": "학생성공개발원",
+   "title": "[학생성공개발원] ㈜비웰코리아(KOREC) 일본취업 설명회 안내",
+   "uid": "51f3de4349e0:204362",
+   "url": "https://job.pusan.ac.kr/ko/notice/notice/view/204362?p=2"
+  },
+  {
+   "author": "",
    "baseline": 1,
    "category": "",
    "first_seen": "2026-09-10T01:42:06+00:00",
@@ -4370,23 +4387,6 @@
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1510922"
   },
   {
-   "author": "사범대학.교육대학원통합행정실",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-09T05:26:37+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1510961",
-   "posted_at": "2026-09-09",
-   "posted_on": "2026-09-09",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "[사범대학] 2027학년도 교원임용 1차시험 대비 「교육학 논술」 특강",
-   "uid": "95390426e921:1510961",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510961"
-  },
-  {
    "author": "효원상담원",
    "baseline": 0,
    "category": "",
@@ -4436,23 +4436,6 @@
    "title": "[2026 대학창업 페스티벌] 캠퍼스 코파운더 매칭 라운드 참가자 모집",
    "uid": "95390426e921:1510974",
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510974"
-  },
-  {
-   "author": "창업지원부",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-09T11:46:42+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1510975",
-   "posted_at": "2026-09-09",
-   "posted_on": "2026-09-09",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "[창업지원부] 2026년 청년 오픈이노베이션 챌린지 참가자 모집중(~9/18)",
-   "uid": "95390426e921:1510975",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510975"
   },
   {
    "author": "총무과",
@@ -5288,6 +5271,40 @@
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511125"
   },
   {
+   "author": "학생과",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-17T12:00:22+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1511126",
+   "posted_at": "2026-09-17",
+   "posted_on": "2026-09-17",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "[학생과] 부산동구가족센터 다문화 아동청소년 진로설계지원사업 참여 멘토 모집 공고",
+   "uid": "95390426e921:1511126",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511126"
+  },
+  {
+   "author": "기술사업부",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-17T12:00:22+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1511132",
+   "posted_at": "2026-09-17",
+   "posted_on": "2026-09-17",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "[기술사업부] 2026년 하반기 지식재산권 4차 교육 운영 및 신청 안내(선행기...",
+   "uid": "95390426e921:1511132",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511132"
+  },
+  {
    "author": "산학협력단 관리자",
    "baseline": 1,
    "category": "",
@@ -5303,23 +5320,6 @@
    "title": "[산학협력단] 부산대 사칭 노쇼사기 발생에 따른 추가 피해 예방을 위한 안내",
    "uid": "9872521de15b:22",
    "url": "https://sanhak.pusan.ac.kr/sanhak/boardview/4/22"
-  },
-  {
-   "author": "산학협력단 관리자",
-   "baseline": 1,
-   "category": "",
-   "first_seen": "2026-08-30T15:09:42+09:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "77",
-   "posted_at": "2026.08.07 11:03",
-   "posted_on": "2026-08-07",
-   "site_key": "9872521de15b",
-   "site_name": "산학협력단",
-   "title": "[산학협력단 창업지원부][글로컬대학 30]「지역민을 위한 창업체험 교육」개최 안내",
-   "uid": "9872521de15b:77",
-   "url": "https://sanhak.pusan.ac.kr/sanhak/boardview/4/77"
   },
   {
    "author": "산학협력단 관리자",
@@ -5456,6 +5456,23 @@
    "title": "[과학기술정보통신부]「국가연구개발혁신법」개정공포안 안내",
    "uid": "9872521de15b:85",
    "url": "https://sanhak.pusan.ac.kr/sanhak/boardview/4/85"
+  },
+  {
+   "author": "산학협력단 관리자",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-17T12:00:28+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "86",
+   "posted_at": "2026.09.17 16:24",
+   "posted_on": "2026-09-17",
+   "site_key": "9872521de15b",
+   "site_name": "산학협력단",
+   "title": "[부산광역시]「제12회 부산r&d주간」개최 안내",
+   "uid": "9872521de15b:86",
+   "url": "https://sanhak.pusan.ac.kr/sanhak/boardview/4/86"
   },
   {
    "author": "유 * 화",
@@ -6646,6 +6663,23 @@
    "title": "[다담다 멘토링] 2026학년도 장학재단-교육청 다담다 멘토링 멘토 모집(3차) 최종합격자 및 예비인원 발표",
    "uid": "fe5b93177fd4:1344",
    "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1344"
+  },
+  {
+   "author": "이준호",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-17T12:00:50+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1345",
+   "posted_at": "2026-09-17",
+   "posted_on": "2026-09-17",
+   "site_key": "fe5b93177fd4",
+   "site_name": "나눔시스템",
+   "title": "[부산동구가족센터] 2026 다문화 아동청소년 진로설계지원사업 참여 멘토 모집 공고",
+   "uid": "fe5b93177fd4:1345",
+   "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1345"
   }
  ],
  "sites_state": [
