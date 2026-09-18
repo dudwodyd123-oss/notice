@@ -174,7 +174,7 @@ class Store:
         self.conn.commit()
         return changed
 
-    def sync_muted(self, keywords: list[str]) -> int:
+    def sync_muted(self, keywords: list[str], allow: list[str] | None = None) -> int:
         """설정한 낱말이 든 글을 감추고, 규칙에서 빠진 글은 되살린다.
 
         매번 다시 판단해야 설정을 바꾼 것이 이미 저장된 글에도 바로 반영된다.
@@ -183,7 +183,7 @@ class Store:
         changed = [
             (1 - row["muted"], row["uid"])
             for row in self.conn.execute("SELECT uid, title, muted FROM posts")
-            if is_muted(row["title"], keywords) != bool(row["muted"])
+            if is_muted(row["title"], keywords, allow) != bool(row["muted"])
         ]
         if changed:
             self.conn.executemany("UPDATE posts SET muted = ? WHERE uid = ?", changed)

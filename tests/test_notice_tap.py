@@ -554,6 +554,23 @@ class MuteTest(TempDirCase):
         self.assertFalse(is_muted("2026 소프트뱅크 채용 연계 해커톤 참가자 모집", self.words))
         self.assertFalse(is_muted("추천채용 안내", self.words))
 
+    def test_예외_낱말이_있으면_걸렸어도_내보낸다(self):
+        """'채용' 을 통째로 자르면 1학년도 갈 만한 행사까지 사라진다."""
+        wide, keep = ["채용", "취업"], ["해커톤", "공모전"]
+        self.assertFalse(is_muted("2026 소프트뱅크 채용 연계 해커톤 참가자 모집", wide, keep))
+        self.assertTrue(is_muted("한화오션 하반기 채용설명회 안내", wide, keep))
+        self.assertTrue(is_muted("일본취업 설명회 개최", wide, keep))
+
+    def test_예외가_화면에서도_같이_적용된다(self):
+        """감추는 쪽과 내보내는 쪽이 어긋나면 알림만 오고 목록엔 없는 글이 생긴다."""
+        self.store.record([
+            make_post("1", title="[채용/해커톤] 소프트뱅크 채용 연계 해커톤 참가자 모집"),
+            make_post("2", title="한화오션 채용설명회 안내"),
+        ], notified=False)
+        self.store.sync_muted(["채용"], ["해커톤"])
+        self.assertEqual(len(self._titles()), 1)
+        self.assertEqual([p.post_id for p in self.store.pending_posts(["s"])], ["1"])
+
     def test_규칙이_비어_있으면_아무것도_거르지_않는다(self):
         self.assertFalse(is_muted("한화오션 채용설명회 안내", []))
 

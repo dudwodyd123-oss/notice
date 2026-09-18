@@ -55,7 +55,7 @@ class Checker:
             result.sites.append(self.check_site(site, notify_first_run))
         # 거르는 규칙은 저장이 끝난 뒤 한 번에 다시 매긴다. 설정을 바꾸면
         # 새 글뿐 아니라 이미 저장된 글에도 곧바로 반영된다.
-        self.store.sync_muted(self.config.mute_keywords)
+        self.store.sync_muted(self.config.mute_keywords, self.config.mute_except)
         return result
 
     def check_site(self, site: Site, notify_first_run: bool = False) -> SiteResult:
@@ -100,10 +100,10 @@ class Checker:
 
         # 걸러낼 글은 저장은 하되 '새 글' 로 세지 않는다. 화면에서 감추는 것과
         # 같은 규칙을 써야 알림은 오는데 목록에는 없는 글이 생기지 않는다.
-        keywords = self.config.mute_keywords
-        outcome.muted = sum(1 for post in fresh if is_muted(post.title, keywords))
+        keywords, allow = self.config.mute_keywords, self.config.mute_except
+        outcome.muted = sum(1 for post in fresh if is_muted(post.title, keywords, allow))
         outcome.new_posts = sorted(
-            (post for post in fresh if not is_muted(post.title, keywords)),
+            (post for post in fresh if not is_muted(post.title, keywords, allow)),
             key=_chronological,
         )
         # 알릴 글은 '아직 안 보냄' 으로 먼저 저장한다. 전송이 실패해도 기록이
