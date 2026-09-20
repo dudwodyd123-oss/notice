@@ -6031,14 +6031,14 @@
    "site_key": "aa28cd59ae6d"
   },
   {
-   "fail_since": "",
+   "fail_since": "2026-09-20T18:59:55+00:00",
    "last_alert": "",
-   "last_error": "",
+   "last_error": "HTTPSConnectionPool(host='error.inek.kr', port=18999): Max retries exceeded with url: /error.html (Caused by NameResolutionError(\"HTTPSConnection(host='error.inek.kr', port=18999): Failed to resolve 'error.inek.kr' ([Errno -2] Name or service not known)\"))",
    "site_key": "ca53af7720c5"
   },
   {
    "fail_since": "2026-09-17T16:47:04+00:00",
-   "last_alert": "2026-09-19T18:47:15+00:00",
+   "last_alert": "2026-09-20T19:00:10+00:00",
    "last_error": "글을 하나도 읽지 못했습니다 (사이트 구조가 바뀌었을 수 있음)",
    "site_key": "fe5b93177fd4"
   }
