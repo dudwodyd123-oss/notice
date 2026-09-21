@@ -3574,23 +3574,6 @@
    "author": "교육인증원",
    "baseline": 0,
    "category": "",
-   "first_seen": "2026-09-08T04:14:40+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 1,
-   "post_id": "1510131",
-   "posted_at": "2026-07-27",
-   "posted_on": "2026-07-27",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "[교육인증원] '2026학년도 학생포트폴리오 경진대회' 참가자 모...",
-   "uid": "95390426e921:1510131",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510131"
-  },
-  {
-   "author": "교육인증원",
-   "baseline": 0,
-   "category": "",
    "first_seen": "2026-09-04T08:59:51+00:00",
    "muted": 0,
    "notified": 1,
@@ -3637,23 +3620,6 @@
    "title": "[성평등가족부] 폭력피해 이주여성(유학생 포함) 지원 서비스 안내(몽골어, 러시...",
    "uid": "95390426e921:1510904",
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1510904"
-  },
-  {
-   "author": "경제통상대학.경영대학.국제전문대학원.경영대학원.경제통상대학원.금융대학원통합행정실",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-07T06:00:11+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 1,
-   "post_id": "1510908",
-   "posted_at": "2026-09-07",
-   "posted_on": "2026-09-07",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "2027 국제학부 복수전공(GSP) 이수자 모집/ 2027 GSP Selecti...",
-   "uid": "95390426e921:1510908",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510908"
   },
   {
    "author": "교육인증원",
@@ -3773,6 +3739,40 @@
    "title": "[총무과] 2027학년도 직장보육시설 입소 신청 안내(2차)",
    "uid": "95390426e921:1510977",
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1510977"
+  },
+  {
+   "author": "총무과",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-21T19:14:40+00:00",
+   "muted": 1,
+   "notified": 0,
+   "pinned": 0,
+   "post_id": "1510986",
+   "posted_at": "2026-09-10",
+   "posted_on": "2026-09-10",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "부산대학교 기간제 방호원 공개채용 서류전형 합격자 공고",
+   "uid": "95390426e921:1510986",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1510986"
+  },
+  {
+   "author": "미래신산업실",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-21T19:14:40+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1510995",
+   "posted_at": "2026-09-10",
+   "posted_on": "2026-09-10",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "[앵커사업단] 2026 파워반도체 공유대학(반도체기초트랙) 모집 안내(~10/1)",
+   "uid": "95390426e921:1510995",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1510995"
   },
   {
    "author": "노어노문학과",
@@ -6242,7 +6242,7 @@
   },
   {
    "fail_since": "2026-09-17T16:47:04+00:00",
-   "last_alert": "2026-09-20T19:00:10+00:00",
+   "last_alert": "2026-09-21T19:15:13+00:00",
    "last_error": "글을 하나도 읽지 못했습니다 (사이트 구조가 바뀌었을 수 있음)",
    "site_key": "fe5b93177fd4"
   }
