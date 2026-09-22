@@ -1123,23 +1123,6 @@
    "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1444261/artclView.do"
   },
   {
-   "author": "정 * 랑",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-10T09:05:33+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1461932",
-   "posted_at": "2026.09.10",
-   "posted_on": "2026-09-10",
-   "site_key": "374945f5c2db",
-   "site_name": "정보컴퓨터공학부",
-   "title": "[학과활동인정] 2026 제5회 CSE TECH WEEK 프로그램 및 신청 안내",
-   "uid": "374945f5c2db:1461932",
-   "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1461932/artclView.do"
-  },
-  {
    "author": "황 * 경",
    "baseline": 0,
    "category": "",
@@ -1291,6 +1274,23 @@
    "title": "2027학년도 경제통상대학 국제학부 복수전공(GSP) 이수자 선발 안내",
    "uid": "374945f5c2db:1463857",
    "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1463857/artclView.do"
+  },
+  {
+   "author": "황 * 경",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-09-22T12:31:28+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1463889",
+   "posted_at": "2026.09.22",
+   "posted_on": "2026-09-22",
+   "site_key": "374945f5c2db",
+   "site_name": "정보컴퓨터공학부",
+   "title": "2026-2학기 교양교육원 비교과프로그램 「디지털문화와인간」특강 안내",
+   "uid": "374945f5c2db:1463889",
+   "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1463889/artclView.do"
   },
   {
    "author": "조 **** 화",
@@ -5237,6 +5237,23 @@
    "url": "https://international.pusan.ac.kr/bbs/international/2080/1463766/artclView.do"
   },
   {
+   "author": "김 * 민",
+   "baseline": 0,
+   "category": "전체게시판공지",
+   "first_seen": "2026-09-22T12:31:39+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 1,
+   "post_id": "1463920",
+   "posted_at": "2026.09.22",
+   "posted_on": "2026-09-22",
+   "site_key": "aa28cd59ae6d",
+   "site_name": "국제처",
+   "title": "[Course Withdrawal] '26-2 학부 수강취소(W) 안내 Cours",
+   "uid": "aa28cd59ae6d:1463920",
+   "url": "https://international.pusan.ac.kr/bbs/international/2081/1463920/artclView.do"
+  },
+  {
    "author": "",
    "baseline": 1,
    "category": "일반",
@@ -5952,9 +5969,9 @@
    "site_key": "ca53af7720c5"
   },
   {
-   "fail_since": "",
+   "fail_since": "2026-09-22T12:31:57+00:00",
    "last_alert": "",
-   "last_error": "",
+   "last_error": "글을 하나도 읽지 못했습니다 (사이트 구조가 바뀌었을 수 있음)",
    "site_key": "fe5b93177fd4"
   }
  ],
