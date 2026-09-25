@@ -3996,23 +3996,6 @@
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511117"
   },
   {
-   "author": "기획평가과",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-17T06:34:29+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 1,
-   "post_id": "1511122",
-   "posted_at": "2026-09-17",
-   "posted_on": "2026-09-17",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "고등교육 규제특례 신청 관련 의견수렴 안내",
-   "uid": "95390426e921:1511122",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511122"
-  },
-  {
    "author": "대학일자리플러스센터",
    "baseline": 0,
    "category": "",
@@ -5783,9 +5766,9 @@
  ],
  "sites_state": [
   {
-   "fail_since": "",
+   "fail_since": "2026-09-25T00:26:02+00:00",
    "last_alert": "",
-   "last_error": "",
+   "last_error": "HTTPSConnectionPool(host='bi.pusan.ac.kr', port=443): Max retries exceeded with url: /community/notice (Caused by ConnectTimeoutError(<HTTPSConnection(host='bi.pusan.ac.kr', port=443) at 0x7f40ceed1ac0>, 'Connection to bi.pusan.ac.kr timed out. (connect timeout=20)'))",
    "site_key": "0e920dac2b3c"
   },
   {
@@ -5863,7 +5846,7 @@
   {
    "fail_since": "2026-09-24T21:45:23+00:00",
    "last_alert": "",
-   "last_error": "HTTPSConnectionPool(host='error.inek.kr', port=18999): Max retries exceeded with url: /error.html (Caused by NameResolutionError(\"HTTPSConnection(host='error.inek.kr', port=18999): Failed to resolve 'error.inek.kr' ([Errno -2] Name or service not known)\"))",
+   "last_error": "HTTPSConnectionPool(host='lib.pusan.ac.kr', port=443): Max retries exceeded with url: /pyxis-api/1/bulletin-boards/2/bulletins?nameOption=&onlyWriter=false&onlyNoticableBulletin=true&max=30 (Caused by ConnectTimeoutError(<HTTPSConnection(host='lib.pusan.ac.kr', port=443) at 0x7f40cebddc10>, 'Connection to lib.pusan.ac.kr timed out. (connect timeout=20)'))",
    "site_key": "ca53af7720c5"
   },
   {
