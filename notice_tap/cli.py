@@ -143,8 +143,11 @@ def cmd_check(args) -> int:
         days=config.get("retention_days", 7),
         shortcuts=config.shortcuts,
     )
-    _alert_gap(result, notifiers, muted=args.no_notify, dashboard=path)
-    _alert_stale(config, checker, notifiers, muted=args.no_notify, dashboard=path)
+    # 경고에 붙일 주소. 올려둔 주소가 있으면 그쪽을 쓴다 - 내 컴퓨터 안의
+    # 경로(file://)는 남의 기기에서 열리지도 않고 디스코드도 받지 않는다.
+    link = config.get("dashboard_url", "") or path.resolve().as_uri()
+    _alert_gap(result, notifiers, muted=args.no_notify, link=link)
+    _alert_stale(config, checker, notifiers, muted=args.no_notify, link=link)
     print(f"\n모아보기 페이지: {path.resolve()}")
     checker.close()
     return 0
@@ -180,7 +183,7 @@ def _deliver(config: Config, checker: Checker, notifiers) -> None:
         print(f"  {len(pending)}건을 보류합니다 — 다음 실행에서 다시 보냅니다")
 
 
-def _alert_gap(result, notifiers, muted: bool, dashboard: Path) -> None:
+def _alert_gap(result, notifiers, muted: bool, link: str) -> None:
     """읽어온 글이 전부 처음 보는 것이면 그 사이에 놓친 글이 있을 수 있다.
 
     놓친 글은 오류도 남지 않고 알림도 없어, 놓쳤다는 사실 자체를 알 수 없다.
@@ -207,7 +210,6 @@ def _alert_gap(result, notifiers, muted: bool, dashboard: Path) -> None:
     if muted:
         return
 
-    link = dashboard.resolve().as_uri()
     for notifier in notifiers:
         if notifier.name == "console":
             continue
@@ -217,7 +219,7 @@ def _alert_gap(result, notifiers, muted: bool, dashboard: Path) -> None:
             print(f"  경고 알림 실패 ({notifier.name}): {exc}")
 
 
-def _alert_stale(config: Config, checker: Checker, notifiers, muted: bool, dashboard: Path) -> None:
+def _alert_stale(config: Config, checker: Checker, notifiers, muted: bool, link: str) -> None:
     """며칠째 계속 실패하는 게시판이 있으면 알린다.
 
     파싱이 깨지면 겉으로는 '새 글 없음'과 구분되지 않아 조용히 방치되기 쉽다.
@@ -248,7 +250,6 @@ def _alert_stale(config: Config, checker: Checker, notifiers, muted: bool, dashb
     if muted:
         return
 
-    link = dashboard.resolve().as_uri()
     delivered = True
     for notifier in notifiers:
         if notifier.name == "console":

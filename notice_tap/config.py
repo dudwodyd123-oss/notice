@@ -17,6 +17,8 @@ DEFAULT_PATH = Path("config.yaml")
 DEFAULT_CONFIG: dict[str, Any] = {
     "database": "data/notices.db",
     "dashboard_path": "dashboard.html",
+    # 모아보기 페이지를 올려둔 주소. 경고 알림에 이 주소를 붙인다.
+    "dashboard_url": "",
     "notify_on_pinned": True,
     "stale_alert_days": 2,
     "retention_days": 7,

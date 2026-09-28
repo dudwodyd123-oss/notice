@@ -23,6 +23,8 @@ from notice_tap.config import Config  # noqa: E402
 from notice_tap.dashboard import TEMPLATE, render_dashboard  # noqa: E402
 from notice_tap.dates import to_iso_date  # noqa: E402
 from notice_tap.models import Post, Site  # noqa: E402
+from notice_tap.notify import discord as discord_module  # noqa: E402
+from notice_tap.notify.discord import DiscordNotifier  # noqa: E402
 from notice_tap.parsers import (  # noqa: E402
     get_parser,
     parse_generic,
@@ -999,21 +1001,64 @@ class StaleAlertTest(TempDirCase):
 
     def test_보냈으면_하루_동안_다시_보내지_않는다(self):
         channel = self.Channel("discord")
-        _alert_stale(self.config, self.checker, [channel], False, self.tmp / "d.html")
+        _alert_stale(self.config, self.checker, [channel], False, "https://example.com/notice/")
         self.assertEqual(len(channel.sent), 1)
         self.assertTrue(self._alerted())
-        _alert_stale(self.config, self.checker, [channel], False, self.tmp / "d.html")
+        _alert_stale(self.config, self.checker, [channel], False, "https://example.com/notice/")
         self.assertEqual(len(channel.sent), 1)  # 같은 말을 되풀이하지 않는다
 
     def test_못_보냈으면_보냈다고_적지_않는다(self):
         """여기서 적어 버리면 알림 통로가 막힌 사실까지 하루 동안 조용해진다."""
         broken = self.Channel("discord", fails=True)
-        _alert_stale(self.config, self.checker, [broken], False, self.tmp / "d.html")
+        _alert_stale(self.config, self.checker, [broken], False, "https://example.com/notice/")
         self.assertFalse(self._alerted())
 
         working = self.Channel("discord")
-        _alert_stale(self.config, self.checker, [working], False, self.tmp / "d.html")
+        _alert_stale(self.config, self.checker, [working], False, "https://example.com/notice/")
         self.assertEqual(len(working.sent), 1)  # 다음 회차에 다시 시도한다
+
+
+class DiscordEmbedTest(unittest.TestCase):
+    """경고 알림이 디스코드에서 통째로 거절당하던 사고."""
+
+    def _sent(self, call):
+        posted = []
+        notifier = DiscordNotifier("https://discord.example/hook")
+        original = discord_module.requests.post
+
+        def fake(url, json=None, timeout=None):
+            posted.append(json)
+            return SimpleNamespace(ok=True, status_code=204, text="")
+
+        discord_module.requests.post = fake
+        try:
+            call(notifier)
+        finally:
+            discord_module.requests.post = original
+        return posted
+
+    def test_경고에는_내_컴퓨터_경로를_싣지_않는다(self):
+        """embed 의 url 은 http/https 여야 한다.
+
+        file:// 을 넣으면 400 이 떨어져 통보가 통째로 사라지는데, 그 실패는
+        로그에만 남아 정작 '게시판이 고장났다'는 사실까지 조용히 묻힌다.
+        """
+        sent = self._sent(
+            lambda n: n.send_alert("게시판 고장", "나눔시스템 — 실패", "file:///C:/dash.html")
+        )
+        self.assertNotIn("url", sent[0]["embeds"][0])
+        self.assertIn("나눔시스템", sent[0]["embeds"][0]["description"])
+
+    def test_올려둔_주소는_그대로_붙는다(self):
+        sent = self._sent(
+            lambda n: n.send_alert("게시판 고장", "본문", "https://example.com/notice/")
+        )
+        self.assertEqual(sent[0]["embeds"][0]["url"], "https://example.com/notice/")
+
+    def test_경고는_새_글과_다르게_보인다(self):
+        sent = self._sent(lambda n: n.send_alert("게시판 고장", "본문", ""))
+        self.assertIn("⚠", sent[0]["content"])
+        self.assertNotIn("새 공지", sent[0]["content"])
 
 
 if __name__ == "__main__":

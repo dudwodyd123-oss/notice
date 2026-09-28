@@ -7,6 +7,8 @@
 #  토큰을 이 파일에 직접 적지 마세요 - 이 파일은 GitHub 에 올라갑니다.
 database: data/notices.db
 dashboard_path: dashboard.html
+# 경고 알림(게시판 고장, 글 누락 의심)에 붙일 주소.
+dashboard_url: https://dudwodyd123-oss.github.io/notice/
 notify_on_pinned: true
 stale_alert_days: 2
 retention_days: 7
