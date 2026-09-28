@@ -5,11 +5,9 @@ from __future__ import annotations
 from typing import Any
 
 from .base import Notifier, NotifierUnavailable, group_by_site
-from .console import ConsoleNotifier
 from .discord import DiscordNotifier
 
 BUILDERS = {
-    "console": lambda cfg: ConsoleNotifier(),
     "discord": lambda cfg: DiscordNotifier(webhook_url=cfg.get("webhook_url", "")),
 }
 
@@ -39,7 +37,6 @@ def build_notifiers(config: dict[str, Any]) -> tuple[list[Notifier], list[str]]:
 
 __all__ = [
     "BUILDERS",
-    "ConsoleNotifier",
     "DiscordNotifier",
     "Notifier",
     "NotifierUnavailable",

@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import base64
 import html
 import json
 from datetime import date, datetime, timedelta, timezone
@@ -24,9 +23,9 @@ TEMPLATE = """<!doctype html>
 <meta name="theme-color" content="#2e8b57">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="공지 모아보기">
-<link rel="icon" type="image/png" href="data:image/png;base64,{favicon}">
-<link rel="apple-touch-icon" href="data:image/png;base64,{icon192}">
-<link rel="manifest" href="data:application/manifest+json;charset=utf-8;base64,{manifest}">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
 <title>공지 모아보기 — notice_tap</title>
 <style>
   /* 기기 설정과 상관없이 항상 밝은 화면으로 고정한다. */
@@ -306,35 +305,39 @@ refresh();
 
 
 ICON_DIR = Path(__file__).parent / "icons"
+ICONS = ("favicon.png", "icon-192.png", "icon-512.png")
+
+MANIFEST = {
+    "name": "공지 모아보기",
+    "short_name": "공지",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "#f6f7f9",
+    "theme_color": "#2e8b57",
+    "icons": [
+        {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+        {"src": "icon-512.png", "sizes": "512x512", "type": "image/png"},
+    ],
+}
 
 
-def _icon(name: str) -> str:
-    return base64.b64encode((ICON_DIR / name).read_bytes()).decode("ascii")
+def write_assets(folder: Path) -> list[Path]:
+    """아이콘과 매니페스트를 페이지 옆에 파일로 놓는다.
 
+    예전에는 이것들을 base64 로 HTML 안에 박아 넣었다. 그러면 페이지를 열
+    때마다 아이콘까지 통째로 다시 받는다. 실제로 전송량 81KB 중 71KB 가
+    아이콘이었다. 파일로 빼두면 브라우저가 한 번만 받아 캐시한다.
+    """
+    written = []
+    for name in ICONS:
+        target = folder / name
+        target.write_bytes((ICON_DIR / name).read_bytes())
+        written.append(target)
 
-def _manifest() -> str:
-    """홈 화면에 추가했을 때 앱처럼 보이게 하는 설명서."""
-    body = {
-        "name": "공지 모아보기",
-        "short_name": "공지",
-        "start_url": ".",
-        "display": "standalone",
-        "background_color": "#f6f7f9",
-        "theme_color": "#2e8b57",
-        "icons": [
-            {
-                "src": f"data:image/png;base64,{_icon('icon-192.png')}",
-                "sizes": "192x192",
-                "type": "image/png",
-            },
-            {
-                "src": f"data:image/png;base64,{_icon('icon-512.png')}",
-                "sizes": "512x512",
-                "type": "image/png",
-            },
-        ],
-    }
-    return base64.b64encode(json.dumps(body, ensure_ascii=False).encode("utf-8")).decode("ascii")
+    manifest = folder / "manifest.webmanifest"
+    manifest.write_text(json.dumps(MANIFEST, ensure_ascii=False), encoding="utf-8")
+    written.append(manifest)
+    return written
 
 
 def render_dashboard(
@@ -378,15 +381,13 @@ def render_dashboard(
 
     out = Path(path)
     out.parent.mkdir(parents=True, exist_ok=True)
+    write_assets(out.parent)
     out.write_text(
         TEMPLATE.format(
             site_count=len(site_names),
             post_count=len(rows),
             generated=datetime.now(KST).strftime("%Y-%m-%d %H:%M"),
             days=days,
-            favicon=_icon("favicon.png"),
-            icon192=_icon("icon-192.png"),
-            manifest=_manifest(),
             chips=chips,
             shortcut_chips=shortcut_chips,
             shortcut_names=json.dumps(shortcut_names, ensure_ascii=False),

@@ -102,20 +102,27 @@ class Store:
         rows = self.conn.execute("SELECT uid FROM posts WHERE site_key = ?", (site_key,))
         return {row["uid"] for row in rows}
 
-    def max_numeric_post_id(self, site_key: str) -> int | None:
-        """그 게시판에서 본 글 중 가장 큰 번호. 번호를 짚어가는 파서가 쓴다.
+    def numeric_post_ids(self, site_key: str) -> list[int]:
+        """그 게시판에서 본 글 번호를 큰 것부터. 번호를 짚어가는 파서가 쓴다.
 
-        글 번호는 문자열로 저장돼 있어 SQL 의 MAX 로는 "999" 가 "1000" 보다
-        크다고 나온다. 숫자로 바꿔서 고른다.
+        글 번호는 문자열로 저장돼 있어 SQL 로 정렬하면 "999" 가 "1000" 보다
+        크다고 나온다. 숫자로 바꿔서 정렬한다.
         """
-        numbers = [
-            int(row["post_id"])
-            for row in self.conn.execute(
-                "SELECT post_id FROM posts WHERE site_key = ?", (site_key,)
-            )
-            if row["post_id"].isdigit()
-        ]
-        return max(numbers) if numbers else None
+        return sorted(
+            (
+                int(row["post_id"])
+                for row in self.conn.execute(
+                    "SELECT post_id FROM posts WHERE site_key = ?", (site_key,)
+                )
+                if row["post_id"].isdigit()
+            ),
+            reverse=True,
+        )
+
+    def max_numeric_post_id(self, site_key: str) -> int | None:
+        """그 게시판에서 본 글 중 가장 큰 번호."""
+        numbers = self.numeric_post_ids(site_key)
+        return numbers[0] if numbers else None
 
     def has_seen_site(self, site_key: str) -> bool:
         row = self.conn.execute(

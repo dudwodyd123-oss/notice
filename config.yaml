@@ -6,7 +6,8 @@
 #  값이 없으면 그 채널은 조용히 꺼지므로, 쓰지 않는 채널은 그대로 두면 됩니다.
 #  토큰을 이 파일에 직접 적지 마세요 - 이 파일은 GitHub 에 올라갑니다.
 database: data/notices.db
-dashboard_path: dashboard.html
+# 아이콘·매니페스트가 페이지 옆에 함께 놓이므로 통째로 한 폴더에 만든다.
+dashboard_path: public/index.html
 # 경고 알림(게시판 고장, 글 누락 의심)에 붙일 주소.
 dashboard_url: https://dudwodyd123-oss.github.io/notice/
 notify_on_pinned: true
@@ -32,8 +33,6 @@ mute_except:
 - 부트캠프
 - 장학
 notifiers:
-  console:
-    enabled: true
   discord:
     enabled: true
     webhook_url: ${DISCORD_WEBHOOK_URL}

@@ -42,7 +42,8 @@ def parse_nanum(site: Site, fetcher: Fetcher, store: Store) -> list[Post]:
             "게시판에서 아무 글이나 열어 주소의 seq 값을 적으세요."
         )
 
-    last_seen = store.max_numeric_post_id(site.key)
+    seen = store.numeric_post_ids(site.key)
+    last_seen = seen[0] if seen else None
     if last_seen is None:
         # 처음 등록하는 경우. 화면이 휑하지 않도록 최근 글을 거슬러 올라가며 담는다.
         numbers = range(int(start), int(start) - BACKFILL, -1)
@@ -72,17 +73,21 @@ def parse_nanum(site: Site, fetcher: Fetcher, store: Store) -> list[Post]:
     # '한 건도 못 읽었다 = 게시판이 깨졌다' 로 본다. 조용한 날과 고장을
     # 가려내려면, 마지막으로 본 글이 아직 열리는지 확인해 그 글을 내준다.
     # 이미 저장돼 있는 글이라 새 알림이 가지는 않는다.
-    return _anchor(site, fetcher, last_seen)
+    return _anchor(site, fetcher, seen)
 
 
-def _anchor(site: Site, fetcher: Fetcher, last_seen: int) -> list[Post]:
-    """마지막으로 본 글(없으면 그 앞 몇 개)을 읽어 게시판이 살아 있음을 보인다.
+def _anchor(site: Site, fetcher: Fetcher, seen: list[int]) -> list[Post]:
+    """이미 본 글 하나를 다시 읽어 게시판이 살아 있음을 보인다.
 
-    글쓴이가 지워 버린 번호일 수도 있어 한 칸씩 거슬러 올라가며 본다.
-    몇 칸을 봐도 안 열리면 그때는 정말 무언가 달라진 것이므로 빈 목록을
+    글쓴이가 지워 버린 번호일 수도 있어 최근 것부터 거슬러 올라가며 본다.
+    몇 개를 봐도 안 열리면 그때는 정말 무언가 달라진 것이므로 빈 목록을
     돌려주어 실패로 남긴다.
+
+    반드시 '이미 저장된' 번호만 짚는다. 저장에 없는 번호를 집어 오면 그것이
+    새 글로 잡혀, 한참 전 글이 알림으로 다시 나가고 '목록이 통째로 갈렸다'는
+    헛경보까지 뜬다.
     """
-    for seq in range(last_seen, max(last_seen - ANCHOR_TRIES, 0), -1):
+    for seq in seen[:ANCHOR_TRIES]:
         post = _one(site, fetcher, seq)
         if post is not None:
             return [post]

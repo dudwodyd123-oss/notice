@@ -5,7 +5,6 @@ from __future__ import annotations
 import argparse
 import json
 import sys
-import time
 import webbrowser
 from pathlib import Path
 
@@ -159,17 +158,16 @@ def _deliver(config: Config, checker: Checker, notifiers) -> None:
     전송에 실패한 글은 표시하지 않고 남겨두어 다음 실행에서 다시 시도한다.
     알림이 조용히 사라지는 것보다 늦게라도 도착하는 편이 낫다.
     """
-    channels = [n for n in notifiers if n.name != "console"]  # 콘솔은 이미 출력했다
     pending = checker.store.pending_posts([site.key for site in config.enabled_sites])
     if not pending:
         return
 
-    if not channels:
+    if not notifiers:
         print(f"  보낼 채널이 없어 {len(pending)}건을 보류합니다 (다음 실행에서 다시 시도)")
         return
 
     delivered = True
-    for notifier in channels:
+    for notifier in notifiers:
         try:
             notifier.send(pending)
             print(f"  알림 전송 완료 → {notifier.name} ({len(pending)}건)")
@@ -211,8 +209,6 @@ def _alert_gap(result, notifiers, muted: bool, link: str) -> None:
         return
 
     for notifier in notifiers:
-        if notifier.name == "console":
-            continue
         try:
             notifier.send_alert(heading, body, link)
         except Exception as exc:
@@ -252,8 +248,6 @@ def _alert_stale(config: Config, checker: Checker, notifiers, muted: bool, link:
 
     delivered = True
     for notifier in notifiers:
-        if notifier.name == "console":
-            continue  # 바로 위에서 이미 출력했다
         try:
             notifier.send_alert(heading, body, link)
         except Exception as exc:
@@ -416,35 +410,8 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
-LOG_PATH = Path("data/notice_tap.log")
-LOG_MAX_BYTES = 1_000_000
-
-
-def _trim_log() -> None:
-    """30분마다 쌓이는 로그가 무한정 커지지 않도록 절반씩 잘라낸다."""
-    try:
-        if LOG_PATH.stat().st_size <= LOG_MAX_BYTES:
-            return
-        text = LOG_PATH.read_text(encoding="utf-8", errors="replace")
-        kept = text[len(text) // 2 :]
-        # 잘린 자리가 회차 중간이면 다음 회차 머리부터 남긴다.
-        marker = kept.find("\n===== ")
-        LOG_PATH.write_text(kept[marker + 1 :] if marker >= 0 else kept, encoding="utf-8")
-    except OSError:
-        pass  # 로그 정리 실패가 본 작업을 막아서는 안 된다
-
-
 def _setup_output() -> None:
-    """콘솔 한글 깨짐을 막고, 창 없는 실행(pythonw)에서는 로그 파일에 기록한다."""
-    if sys.stdout is None:
-        # 작업 스케줄러가 pythonw 로 띄우면 stdout 이 없어 기록이 하나도 남지 않는다.
-        LOG_PATH.parent.mkdir(parents=True, exist_ok=True)
-        _trim_log()
-        handle = LOG_PATH.open("a", encoding="utf-8", buffering=1)
-        handle.write("\n===== " + time.strftime("%Y-%m-%d %H:%M:%S") + " =====\n")
-        sys.stdout = sys.stderr = handle
-        return
-
+    """윈도 명령창에서 한글이 깨지지 않게 한다."""
     for stream in (sys.stdout, sys.stderr):
         try:
             stream.reconfigure(encoding="utf-8")

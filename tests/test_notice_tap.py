@@ -851,8 +851,8 @@ class NanumTest(TempDirCase):
         self.store.record([make_post("100", site_key=self.site.key)], notified=True)
         fetcher = SeqFetcher({})
         self.assertEqual(parse_nanum(self.site, fetcher, self.store), [])
-        # 앞으로 다섯 번 두드려 보고, 뒤로 다섯 번 살아 있는지 확인한다.
-        self.assertEqual(len(fetcher.asked), 10)  # 끝없이 두드리지 않는다
+        # 앞으로 다섯 번 두드려 보고, 저장해 둔 글(한 건)로 살아 있는지 확인한다.
+        self.assertEqual(len(fetcher.asked), 6)  # 끝없이 두드리지 않는다
 
     def test_새_글이_없어도_마지막_글을_내준다(self):
         """빈 목록은 부르는 쪽에서 '게시판이 깨졌다' 로 읽힌다.
@@ -865,9 +865,17 @@ class NanumTest(TempDirCase):
         self.assertEqual([p.post_id for p in posts], ["100"])
 
     def test_마지막_글이_지워졌으면_그_앞을_본다(self):
-        self.store.record([make_post("100", site_key=self.site.key)], notified=True)
+        for number in ("98", "100"):
+            self.store.record([make_post(number, site_key=self.site.key)], notified=True)
         posts = parse_nanum(self.site, SeqFetcher({98: "그 앞 글"}), self.store)
         self.assertEqual([p.post_id for p in posts], ["98"])
+
+    def test_저장에_없는_번호는_확인용으로도_집지_않는다(self):
+        """집어 오면 새 글로 잡혀, 한참 전 글이 알림으로 다시 나간다."""
+        self.store.record([make_post("100", site_key=self.site.key)], notified=True)
+        fetcher = SeqFetcher({99: "저장에 없는 옛 글"})
+        self.assertEqual(parse_nanum(self.site, fetcher, self.store), [])
+        self.assertNotIn(99, fetcher.asked)
 
     def test_아무것도_안_열리면_빈_채로_둔다(self):
         """이때는 정말 사이트가 달라진 것이라 실패로 남아야 한다."""
@@ -1059,6 +1067,36 @@ class DiscordEmbedTest(unittest.TestCase):
         sent = self._sent(lambda n: n.send_alert("게시판 고장", "본문", ""))
         self.assertIn("⚠", sent[0]["content"])
         self.assertNotIn("새 공지", sent[0]["content"])
+
+
+class AssetTest(TempDirCase):
+    """아이콘을 HTML 안에 박아 넣으면 페이지를 열 때마다 통째로 다시 받는다."""
+
+    def _render(self):
+        store = Store(self.tmp / "t.db")
+        store.record([make_post("1")], notified=True)
+        out = render_dashboard(store, self.tmp / "index.html")
+        store.close()
+        return out
+
+    def test_아이콘은_따로_받아_가도록_파일로_놓는다(self):
+        """전송량 81KB 중 71KB 가 아이콘이던 것을 10KB 로 줄인 조치다."""
+        out = self._render()
+        page = out.read_text(encoding="utf-8")
+        self.assertNotIn("data:image", page)
+        for name in ("favicon.png", "icon-192.png", "icon-512.png", "manifest.webmanifest"):
+            self.assertTrue((out.parent / name).exists(), name)
+        self.assertIn('href="favicon.png"', page)
+        self.assertIn('href="manifest.webmanifest"', page)
+
+    def test_매니페스트가_아이콘_파일을_가리킨다(self):
+        """홈 화면에 추가할 때 쓰는 아이콘이라, 끊기면 기본 아이콘이 박힌다."""
+        out = self._render()
+        body = json.loads((out.parent / "manifest.webmanifest").read_text(encoding="utf-8"))
+        sources = [icon["src"] for icon in body["icons"]]
+        self.assertEqual(sources, ["icon-192.png", "icon-512.png"])
+        for src in sources:
+            self.assertTrue((out.parent / src).exists(), src)
 
 
 if __name__ == "__main__":

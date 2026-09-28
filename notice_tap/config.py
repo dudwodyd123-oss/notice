@@ -25,7 +25,6 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "mute_keywords": [],
     "mute_except": [],
     "notifiers": {
-        "console": {"enabled": True},
         "discord": {"enabled": True, "webhook_url": "${DISCORD_WEBHOOK_URL}"},
     },
     "sites": [],
