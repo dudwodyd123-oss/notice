@@ -1099,5 +1099,61 @@ class AssetTest(TempDirCase):
             self.assertTrue((out.parent / src).exists(), src)
 
 
+class ListOrderTest(TempDirCase):
+    """게시일이 한참 전인데 게시판에는 오늘 뒤늦게 올라오는 글이 있다.
+
+    게시일만 보고 줄을 세우면 그런 글이 목록 맨 아래로 가라앉는다. 실제로
+    9월 14일자 교육인증원 공지가 63건 중 60번째에 박혀, 디스코드로는 알림이
+    왔는데 화면에서는 안 보인다는 말을 들었다.
+    """
+
+    def setUp(self):
+        super().setUp()
+        self.store = Store(self.tmp / "t.db")
+
+    def tearDown(self):
+        self.store.close()
+        super().tearDown()
+
+    def _record(self, post, seen_days_ago=0):
+        self.store.record([post], notified=True)
+        if seen_days_ago:
+            when = (datetime.now().astimezone()
+                    - timedelta(days=seen_days_ago)).isoformat(timespec="seconds")
+            self.store.conn.execute(
+                "UPDATE posts SET first_seen = ? WHERE uid = ?", (when, post.uid)
+            )
+            self.store.conn.commit()
+
+    def _titles(self):
+        since = (date.today() - timedelta(days=7)).isoformat()
+        return [row["title"] for row in self.store.recent(since=since)]
+
+    def test_오늘_처음_본_글은_게시일이_오래돼도_위로_온다(self):
+        self._record(make_post("1", title="이틀 전 글", posted_at=_days_ago(2)),
+                     seen_days_ago=2)
+        self._record(make_post("2", title="뒤늦게 올라온 글", posted_at=_days_ago(6)))
+        self.assertEqual(self._titles(), ["뒤늦게 올라온 글", "이틀 전 글"])
+
+    def test_같은_날_알게_된_글끼리는_게시일_순이다(self):
+        self._record(make_post("1", title="어제 글", posted_at=_days_ago(1)))
+        self._record(make_post("2", title="오늘 글", posted_at=_days_ago(0)))
+        self._record(make_post("3", title="그제 글", posted_at=_days_ago(2)))
+        self.assertEqual(self._titles(), ["오늘 글", "어제 글", "그제 글"])
+
+    def test_뒤늦게_올라온_글에는_확인한_날을_적는다(self):
+        """날짜만 보면 왜 목록 위쪽에 있는지 알 수 없다."""
+        self._record(make_post("9", title="뒤늦은 글", posted_at=_days_ago(6)))
+        page = render_dashboard(self.store, self.tmp / "d.html").read_text(encoding="utf-8")
+        found = date.today().strftime("%m/%d") + " 확인"
+        self.assertIn(found, page)
+
+    def test_바로_올라온_글에는_군더더기를_붙이지_않는다(self):
+        self._record(make_post("9", title="오늘 글", posted_at=_days_ago(0)))
+        page = render_dashboard(self.store, self.tmp / "d.html").read_text(encoding="utf-8")
+        self.assertNotIn("확인 ·", page)
+        self.assertNotIn("확인</div>", page)
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

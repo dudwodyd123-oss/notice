@@ -408,6 +408,10 @@ def _item(row, cutoff: str, rank: int) -> str:
     # 저장할 때 통일해 둔 날짜를 쓴다. 해석 못 한 것만 원문을 보여준다.
     if shown_date := (row["posted_on"] or row["posted_at"]):
         bits.append(shown_date)
+    # 게시일은 한참 전인데 게시판에 이제야 올라온 글이 있다. 그런 글은
+    # 목록 위쪽에 서는데 날짜만 보면 왜 여기 있나 싶으므로 이유를 적어준다.
+    if (found := row["first_seen"][:10]) and found > _plus_days(row["post_date"], 1):
+        bits.append(f"{found[5:].replace('-', '/')} 확인")
     if row["author"]:
         bits.append(row["author"])
     if row["category"]:
@@ -425,7 +429,7 @@ def _item(row, cutoff: str, rank: int) -> str:
             ("data-url", row["url"]),
             ("data-sub", sub),
             ("data-bp", "1" if row["pinned"] else "0"),
-            ("data-order", (row["posted_on"] or "") + "|" + row["first_seen"]),
+            ("data-order", row["list_date"] + "|" + row["first_seen"]),
             # 핀을 뽑았을 때 돌아갈 자리. 이 값이 없으면 위로 끌어올린 글이
             # 그 자리에 눌러앉는다.
             ("data-rank", str(rank)),
@@ -439,6 +443,14 @@ def _item(row, cutoff: str, rank: int) -> str:
         f'<div class="sub">{html.escape(sub)} {board_pin}</div></div>'
         f'<button class="pinbtn" type="button">📌</button></li>'
     )
+
+
+def _plus_days(day: str, days: int) -> str:
+    """'YYYY-MM-DD' 에 며칠을 더한다. 읽을 수 없는 값이면 먼 미래로 둔다."""
+    try:
+        return (date.fromisoformat(day) + timedelta(days=days)).isoformat()
+    except (TypeError, ValueError):
+        return "9999-12-31"  # 비교에서 늘 지도록 두어 표시를 붙이지 않는다
 
 
 def esc(value: str) -> str:

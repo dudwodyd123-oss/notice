@@ -23,6 +23,11 @@ SEEN_DATE = "substr(first_seen, 1, 10)"
 # 처음 등록할 때 기준점으로 잡아둔 글(baseline)은 새로 본 것이 아니므로 뺀다.
 WITHIN_WINDOW = f"({EFFECTIVE_DATE} >= ? OR (baseline = 0 AND {SEEN_DATE} >= ?))"
 
+# 목록을 늘어놓는 기준. 게시일이 2주 전이어도 게시판에 오늘 뒤늦게 올라왔다면
+# 우리에게는 오늘 온 글이다. 게시일만 보고 줄을 세우면 그런 글이 맨 아래로
+# 가라앉아, 디스코드로는 알림이 왔는데 화면에서는 안 보인다는 말을 듣는다.
+LIST_DATE = f"MAX({EFFECTIVE_DATE}, {SEEN_DATE})"
+
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS posts (
     uid        TEXT PRIMARY KEY,
@@ -297,15 +302,18 @@ class Store:
     # --- 읽기 ---------------------------------------------------------
 
     def recent(self, limit: int = 200, since: str = "") -> list[sqlite3.Row]:
-        """since(YYYY-MM-DD) 이후 글만. 게시일을 먼저 보고 정렬한다.
+        """since(YYYY-MM-DD) 이후 글만. 알게 된 순서대로 늘어놓는다.
 
-        발견 시각을 앞에 두면 게시판별로 뭉쳐 버려서 최신순이 되지 않는다.
+        list_date 는 게시일과 처음 본 날 중 나중 것이다. 화면에 보여줄 날짜가
+        아니라 줄 세우는 데만 쓴다. 같은 날 알게 된 글끼리는 게시일 순이다.
         """
         return list(
             self.conn.execute(
-                f"""SELECT * FROM posts
+                f"""SELECT *, {LIST_DATE} AS list_date, {EFFECTIVE_DATE} AS post_date
+                      FROM posts
                      WHERE muted = 0 AND {WITHIN_WINDOW}
-                     ORDER BY posted_on DESC, first_seen DESC, post_id DESC
+                     ORDER BY list_date DESC, post_date DESC,
+                              first_seen DESC, post_id DESC
                      LIMIT ?""",
                 (since, since, limit),
             )
