@@ -249,13 +249,20 @@ def _alert_stale(config: Config, checker: Checker, notifiers, muted: bool, dashb
         return
 
     link = dashboard.resolve().as_uri()
+    delivered = True
     for notifier in notifiers:
         if notifier.name == "console":
             continue  # 바로 위에서 이미 출력했다
         try:
             notifier.send_alert(heading, body, link)
         except Exception as exc:
+            delivered = False
             print(f"  오류 알림 실패 ({notifier.name}): {exc}")
+
+    # 보내지도 못했는데 '알렸음' 으로 적으면 하루 동안 입을 다문다.
+    # 알림 통로 자체가 막혔을 때 그 사실마저 조용해지는 것이 가장 나쁘다.
+    if not delivered:
+        return
 
     for row in stale:
         checker.store.mark_alerted(row["site_key"])

@@ -26,6 +26,8 @@ MAX_MISSES = 5
 MAX_NEW = 25
 # 처음 등록할 때 화면을 채우려고 거슬러 올라가 훑는 개수.
 BACKFILL = 12
+# 새 글이 없을 때, 게시판이 살아 있는지 확인하려고 거슬러 올라가 볼 개수.
+ANCHOR_TRIES = 5
 
 INFO_RE = re.compile(
     r"작성자\s*(?P<author>.*?)\s*작성일\s*(?P<date>\d{4}-\d{2}-\d{2})"
@@ -62,7 +64,29 @@ def parse_nanum(site: Site, fetcher: Fetcher, store: Store) -> list[Post]:
         posts.append(post)
         if len(posts) >= MAX_NEW:
             break
-    return posts
+
+    if posts or last_seen is None:
+        return posts
+
+    # 새 글이 하나도 없으면 목록이 빈 채로 돌아간다. 그런데 부르는 쪽은
+    # '한 건도 못 읽었다 = 게시판이 깨졌다' 로 본다. 조용한 날과 고장을
+    # 가려내려면, 마지막으로 본 글이 아직 열리는지 확인해 그 글을 내준다.
+    # 이미 저장돼 있는 글이라 새 알림이 가지는 않는다.
+    return _anchor(site, fetcher, last_seen)
+
+
+def _anchor(site: Site, fetcher: Fetcher, last_seen: int) -> list[Post]:
+    """마지막으로 본 글(없으면 그 앞 몇 개)을 읽어 게시판이 살아 있음을 보인다.
+
+    글쓴이가 지워 버린 번호일 수도 있어 한 칸씩 거슬러 올라가며 본다.
+    몇 칸을 봐도 안 열리면 그때는 정말 무언가 달라진 것이므로 빈 목록을
+    돌려주어 실패로 남긴다.
+    """
+    for seq in range(last_seen, max(last_seen - ANCHOR_TRIES, 0), -1):
+        post = _one(site, fetcher, seq)
+        if post is not None:
+            return [post]
+    return []
 
 
 parse_nanum.needs_fetcher = True

@@ -11,12 +11,14 @@ import re
 import sys
 import tempfile
 import unittest
+from types import SimpleNamespace
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from notice_tap.checker import Checker, _turned_over  # noqa: E402
+from notice_tap.cli import _alert_stale  # noqa: E402
 from notice_tap.config import Config  # noqa: E402
 from notice_tap.dashboard import TEMPLATE, render_dashboard  # noqa: E402
 from notice_tap.dates import to_iso_date  # noqa: E402
@@ -847,7 +849,35 @@ class NanumTest(TempDirCase):
         self.store.record([make_post("100", site_key=self.site.key)], notified=True)
         fetcher = SeqFetcher({})
         self.assertEqual(parse_nanum(self.site, fetcher, self.store), [])
-        self.assertEqual(len(fetcher.asked), 5)  # 끝없이 두드리지 않는다
+        # 앞으로 다섯 번 두드려 보고, 뒤로 다섯 번 살아 있는지 확인한다.
+        self.assertEqual(len(fetcher.asked), 10)  # 끝없이 두드리지 않는다
+
+    def test_새_글이_없어도_마지막_글을_내준다(self):
+        """빈 목록은 부르는 쪽에서 '게시판이 깨졌다' 로 읽힌다.
+
+        추석처럼 며칠 조용한 것뿐인데 고장 알림이 날마다 오면, 정작 진짜
+        고장이 났을 때 그 알림을 흘려보게 된다.
+        """
+        self.store.record([make_post("100", site_key=self.site.key)], notified=True)
+        posts = parse_nanum(self.site, SeqFetcher({100: "지난 글"}), self.store)
+        self.assertEqual([p.post_id for p in posts], ["100"])
+
+    def test_마지막_글이_지워졌으면_그_앞을_본다(self):
+        self.store.record([make_post("100", site_key=self.site.key)], notified=True)
+        posts = parse_nanum(self.site, SeqFetcher({98: "그 앞 글"}), self.store)
+        self.assertEqual([p.post_id for p in posts], ["98"])
+
+    def test_아무것도_안_열리면_빈_채로_둔다(self):
+        """이때는 정말 사이트가 달라진 것이라 실패로 남아야 한다."""
+        self.store.record([make_post("100", site_key=self.site.key)], notified=True)
+        self.assertEqual(parse_nanum(self.site, SeqFetcher({}), self.store), [])
+
+    def test_새_글이_있으면_지난_글까지_긁지_않는다(self):
+        self.store.record([make_post("100", site_key=self.site.key)], notified=True)
+        fetcher = SeqFetcher({101: "새 글"})
+        posts = parse_nanum(self.site, fetcher, self.store)
+        self.assertEqual([p.post_id for p in posts], ["101"])
+        self.assertTrue(all(seq > 100 for seq in fetcher.asked))
 
     def test_주소에_원래_메뉴_번호가_남는다(self):
         fetcher = SeqFetcher({100: "글"})
@@ -923,6 +953,67 @@ class PyxisTest(unittest.TestCase):
         with self.assertRaises(RuntimeError) as caught:
             parse_pyxis(self._site(), StubFetcher(session))
         self.assertIn("권한 없음", str(caught.exception))
+
+
+class StaleAlertTest(TempDirCase):
+    """며칠째 못 읽는 게시판이 있으면 알린다. 그 알림마저 막히면 안 된다."""
+
+    class Channel:
+        def __init__(self, name, fails=False):
+            self.name, self.fails, self.sent = name, fails, []
+
+        def send_alert(self, heading, body, link):
+            if self.fails:
+                raise RuntimeError("보내지 못했습니다")
+            self.sent.append(heading)
+
+    def setUp(self):
+        super().setUp()
+        self.store = Store(self.tmp / "t.db")
+        self.site = Site(name="나눔시스템", url="https://nanum.example.ac.kr/page",
+                         parser="nanum", options={})
+        old = (datetime.now().astimezone() - timedelta(days=5)).isoformat(timespec="seconds")
+        self.store.mark_check(self.site.key, error="글을 하나도 읽지 못했습니다")
+        self.store.conn.execute(
+            "UPDATE sites_state SET fail_since = ? WHERE site_key = ?", (old, self.site.key)
+        )
+        self.store.conn.commit()
+        self.config = Config(
+            {"stale_alert_days": 2, "sites": [
+                {"name": self.site.name, "url": self.site.url,
+                 "parser": "nanum", "key": self.site.key}
+            ]},
+            self.tmp / "config.yaml",
+        )
+        self.checker = SimpleNamespace(store=self.store)
+
+    def tearDown(self):
+        self.store.close()
+        super().tearDown()
+
+    def _alerted(self):
+        row = self.store.conn.execute(
+            "SELECT last_alert FROM sites_state WHERE site_key = ?", (self.site.key,)
+        ).fetchone()
+        return bool(row["last_alert"])
+
+    def test_보냈으면_하루_동안_다시_보내지_않는다(self):
+        channel = self.Channel("discord")
+        _alert_stale(self.config, self.checker, [channel], False, self.tmp / "d.html")
+        self.assertEqual(len(channel.sent), 1)
+        self.assertTrue(self._alerted())
+        _alert_stale(self.config, self.checker, [channel], False, self.tmp / "d.html")
+        self.assertEqual(len(channel.sent), 1)  # 같은 말을 되풀이하지 않는다
+
+    def test_못_보냈으면_보냈다고_적지_않는다(self):
+        """여기서 적어 버리면 알림 통로가 막힌 사실까지 하루 동안 조용해진다."""
+        broken = self.Channel("discord", fails=True)
+        _alert_stale(self.config, self.checker, [broken], False, self.tmp / "d.html")
+        self.assertFalse(self._alerted())
+
+        working = self.Channel("discord")
+        _alert_stale(self.config, self.checker, [working], False, self.tmp / "d.html")
+        self.assertEqual(len(working.sent), 1)  # 다음 회차에 다시 시도한다
 
 
 if __name__ == "__main__":
