@@ -96,6 +96,9 @@ def _anchor(site: Site, fetcher: Fetcher, seen: list[int]) -> list[Post]:
 
 parse_nanum.needs_fetcher = True
 parse_nanum.needs_store = True  # 어디까지 봤는지 알아야 그 다음부터 짚어간다
+# 목록 한 판을 통째로 돌려주는 것이 아니라 새 글만 골라 내준다.
+# '읽은 것이 전부 새 글' 을 목록이 갈린 신호로 삼는 검사는 여기에 쓸 수 없다.
+parse_nanum.full_listing = False
 
 
 def _one(site: Site, fetcher: Fetcher, seq: int) -> Post | None:

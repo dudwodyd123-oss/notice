@@ -93,7 +93,11 @@ class Checker:
             outcome.baseline = True
             return outcome
 
-        outcome.gap_suspected = _turned_over(posts, fresh)
+        # 게시판 한 판을 통째로 읽는 파서에만 뜻이 있는 검사다. 번호를 하나씩
+        # 짚어 새 글만 골라 오는 파서는 새 글이 있을 때마다 '전부 새 글' 이 되어
+        # 늘 걸린다. 그런 헛경보가 쌓이면 진짜 신호를 흘려보게 된다.
+        if getattr(parser, "full_listing", True):
+            outcome.gap_suspected = _turned_over(posts, fresh)
 
         if not self.config.get("notify_on_pinned", True):
             fresh = [post for post in fresh if not post.pinned]

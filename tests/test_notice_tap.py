@@ -329,6 +329,47 @@ class CheckerTest(TempDirCase):
         self.assertEqual(checker.check_all().new_posts, [])
         checker.close()
 
+    def _nanum_checker(self):
+        """번호를 하나씩 짚어 새 글만 골라 오는 게시판."""
+        path = self.tmp / "config.yaml"
+        lines = [
+            "database: " + str(self.tmp / "n.db").replace(chr(92), "/"),
+            "sites:",
+            "- name: 나눔시스템",
+            "  url: https://nanum.example.ac.kr/page?menuCD=7",
+            "  parser: nanum",
+            "  start_seq: 100",
+        ]
+        path.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        return Checker(Config.load(path), fetcher=SeqFetcher({100: "첫 글"}))
+
+    def test_새_글만_골라_오는_게시판은_누락_의심을_걸지_않는다(self):
+        """이 파서는 새 글만 내주므로 '읽은 것이 전부 새 글' 이 늘 참이다.
+
+        그대로 두면 새 글이 올라올 때마다 '글을 놓쳤을 수 있습니다' 가 뜬다.
+        실제로 하루 사이에 두 번 헛경보가 나갔다.
+        """
+        checker = self._nanum_checker()
+        checker.check_all(notify_first_run=True)  # 100번 글을 저장해 둔다
+
+        checker.fetcher = SeqFetcher({100: "첫 글", 101: "새 글"})
+        result = checker.check_all()
+
+        self.assertEqual([p.title for p in result.new_posts], ["새 글"])
+        self.assertEqual(result.gaps, [])
+        checker.close()
+
+    def test_목록을_통째로_읽는_게시판은_그대로_걸린다(self):
+        """헛경보를 없앤다고 진짜 신호까지 꺼서는 안 된다."""
+        checker = self._checker()
+        checker.check_all()
+
+        checker.fetcher = FakeFetcher(
+            BOARD.replace("1001", "2001").replace("1002", "2002")
+        )
+        self.assertEqual(len(checker.check_all().gaps), 1)
+        checker.close()
+
 
 # --- 보관 기간 -------------------------------------------------------------
 
@@ -798,6 +839,9 @@ class SeqFetcher:
     def __init__(self, existing):
         self.existing = existing
         self.asked = []
+
+    def close(self):
+        pass
 
     def get_text(self, url):
         import re as _re
