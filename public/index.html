@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="theme-color" content="#2e8b57">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="공지 모아보기">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<title>공지 모아보기 — notice_tap</title>
+<style>
+  /* 기기 설정과 상관없이 항상 밝은 화면으로 고정한다. */
+  :root {
+    color-scheme: light;
+    --bg: #f6f7f9; --card: #ffffff; --text: #16181d; --muted: #6b7280;
+    --line: #e4e7ec; --accent: #2e8b57; --accent-soft: #e8f3ec;
+    --new: #d92d20; --chip: #eef2f7;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.6 "Pretendard", "Malgun Gothic", -apple-system, system-ui, sans-serif; }
+  .wrap { max-width: 900px; margin: 0 auto; padding: 28px 18px 64px; }
+  h1 { font-size: 22px; margin: 0 0 4px; letter-spacing: -0.02em; }
+  .meta { color: var(--muted); font-size: 13px; margin-bottom: 20px; }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; align-items: center; }
+  input[type=search] { flex: 1 1 240px; padding: 9px 12px; border: 1px solid var(--line);
+    border-radius: 8px; background: var(--card); color: var(--text); font-size: 14px; }
+  input[type=search]:focus { outline: none; border-color: var(--accent); }
+  .chip { border: 1px solid var(--line); background: var(--chip); color: var(--text);
+    border-radius: 999px; padding: 6px 12px; font-size: 13px; cursor: pointer; }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+  .chip.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .chip.on:hover { color: #fff; }
+  /* 공지를 모으지 않고 링크만 걸어둔 곳. 색으로 구분한다. */
+  .chip.shortcut { background: var(--accent-soft); border-color: #cfe3d6;
+    color: #1f6b42; }
+  .chip.shortcut:hover { border-color: var(--accent); }
+  .chip.shortcut.on { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .board-link { display: none; align-items: center; gap: 8px; margin-bottom: 14px;
+    padding: 11px 14px; border: 1px solid var(--line); border-radius: 10px;
+    background: var(--card); color: var(--accent); text-decoration: none;
+    font-size: 14px; font-weight: 600; }
+  .board-link.show { display: flex; }
+  .board-link:hover { background: var(--accent-soft); }
+  .board-link .arrow { margin-left: auto; color: var(--muted); font-weight: 400; }
+  ul { list-style: none; margin: 0; padding: 0; }
+  li.post { background: var(--card); border: 1px solid var(--line); border-radius: 10px;
+    padding: 12px 14px; margin-bottom: 8px;
+    display: flex; align-items: flex-start; gap: 10px; }
+  /* display 를 지정했으므로 hidden 이 먹도록 따로 되살려 준다. */
+  li.post[hidden] { display: none; }
+  .body { flex: 1; min-width: 0; }
+  li.post a { color: var(--text); text-decoration: none; font-weight: 600; }
+  li.post a:hover { color: var(--accent); text-decoration: underline; }
+  .sub { color: var(--muted); font-size: 12.5px; margin-top: 4px;
+    display: flex; gap: 8px; flex-wrap: wrap; }
+  .badge { color: var(--new); font-weight: 700; font-size: 11px; letter-spacing: .04em; }
+  .pin { color: var(--muted); font-size: 11px; border: 1px solid var(--line);
+    border-radius: 4px; padding: 0 4px; }
+  /* 내가 직접 꽂은 핀. 게시판이 붙여 놓은 '고정'(.pin) 과는 다른 것이다. */
+  .pinbtn { flex: none; width: 32px; height: 32px; padding: 0; cursor: pointer;
+    border: 1px solid var(--line); border-radius: 8px; background: var(--card);
+    font-size: 14px; line-height: 1; filter: grayscale(1); opacity: .45; }
+  .pinbtn:hover { border-color: var(--accent); opacity: .8; }
+  li.post.pinned { border-color: var(--accent); background: var(--accent-soft); }
+  li.post.pinned .pinbtn { border-color: var(--accent); background: var(--card);
+    filter: none; opacity: 1; }
+  .keep { color: var(--accent); font-size: 11px; font-weight: 600; }
+  .empty { color: var(--muted); text-align: center; padding: 48px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>공지 모아보기</h1>
+  <div class="meta">최근 7일 · 8개 게시판 · 글 86건 · 갱신 2026-09-30 01:15</div>
+
+  <div class="controls">
+    <input type="search" id="q" placeholder="제목 검색…">
+    <button class="chip on" data-site="">전체</button>
+    <button class="chip" data-site="PLATO">PLATO</button>
+    <button class="chip" data-site="국제처">국제처</button>
+    <button class="chip" data-site="나눔시스템">나눔시스템</button>
+    <button class="chip" data-site="도서관">도서관</button>
+    <button class="chip" data-site="부산대학교">부산대학교</button>
+    <button class="chip" data-site="정보컴퓨터공학부">정보컴퓨터공학부</button>
+    <button class="chip" data-site="창업지원단">창업지원단</button>
+    <button class="chip" data-site="학생성공개발원">학생성공개발원</button>
+    <button class="chip shortcut" data-site="AI역량지원시스템">AI역량지원시스템</button>
+  </div>
+
+  <a class="board-link" id="boardLink" href="#" target="_blank" rel="noopener"></a>
+
+  <ul id="list"><li class="post" data-uid="fe5b93177fd4:1347" data-site="나눔시스템" data-title="[문화가 온 DAY] 2026학년도 P&amp;U 문화가 온 DAY 6차 단체 문화체험 프로그램 신청 안내" data-url="https://nanum.pusan.ac.kr/page?menuCD=000000000000007&amp;mode=DETAIL&amp;seq=1347" data-sub="나눔시스템 · 2026-09-29 · 김요섭" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:46+09:00" data-rank="0" data-search="[문화가 온 day] 2026학년도 p&amp;u 문화가 온 day 6차 단체 문화체험 프로그램 신청 안내 나눔시스템"><div class="body"><span class="badge">NEW</span> <a href="https://nanum.pusan.ac.kr/page?menuCD=000000000000007&amp;mode=DETAIL&amp;seq=1347" target="_blank" rel="noopener">[문화가 온 DAY] 2026학년도 P&amp;U 문화가 온 DAY 6차 단체 문화체험 프로그램 신청 안내</a><div class="sub">나눔시스템 · 2026-09-29 · 김요섭 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="51f3de4349e0:204394" data-site="학생성공개발원" data-title="[학생성공개발원/현장실습지원센터] 고려아연 현직자 초청 기업·직무 특강 및 부산대 선배와의 대화 안내(10. 1.)" data-url="https://job.pusan.ac.kr/ko/notice/notice/view/204394?p=2" data-sub="학생성공개발원 · 2026-09-29" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:38+09:00" data-rank="1" data-search="[학생성공개발원/현장실습지원센터] 고려아연 현직자 초청 기업·직무 특강 및 부산대 선배와의 대화 안내(10. 1.) 학생성공개발원"><div class="body"><span class="badge">NEW</span> <a href="https://job.pusan.ac.kr/ko/notice/notice/view/204394?p=2" target="_blank" rel="noopener">[학생성공개발원/현장실습지원센터] 고려아연 현직자 초청 기업·직무 특강 및 부산대 선배와의 대화 안내(10. 1.)</a><div class="sub">학생성공개발원 · 2026-09-29 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="51f3de4349e0:204392" data-site="학생성공개발원" data-title="[학생성공개발원] Pre-SKALA 부산대학교 캠퍼스 커피차 &amp; 커피챗 이벤트 안내" data-url="https://job.pusan.ac.kr/ko/notice/notice/view/204392?p=2" data-sub="학생성공개발원 · 2026-09-29" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:38+09:00" data-rank="2" data-search="[학생성공개발원] pre-skala 부산대학교 캠퍼스 커피차 &amp; 커피챗 이벤트 안내 학생성공개발원"><div class="body"><span class="badge">NEW</span> <a href="https://job.pusan.ac.kr/ko/notice/notice/view/204392?p=2" target="_blank" rel="noopener">[학생성공개발원] Pre-SKALA 부산대학교 캠퍼스 커피차 &amp; 커피챗 이벤트 안내</a><div class="sub">학생성공개발원 · 2026-09-29 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="51f3de4349e0:204391" data-site="학생성공개발원" data-title="KG ICT 국비지원 교육과정 모집 안내" data-url="https://job.pusan.ac.kr/ko/notice/notice/view/204391?p=2" data-sub="학생성공개발원 · 2026-09-29" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:38+09:00" data-rank="3" data-search="kg ict 국비지원 교육과정 모집 안내 학생성공개발원"><div class="body"><span class="badge">NEW</span> <a href="https://job.pusan.ac.kr/ko/notice/notice/view/204391?p=2" target="_blank" rel="noopener">KG ICT 국비지원 교육과정 모집 안내</a><div class="sub">학생성공개발원 · 2026-09-29 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="ca53af7720c5:57901" data-site="도서관" data-title="[KSDC] ICPSR 해외 양적자료 활용법 교육" data-url="https://lib.pusan.ac.kr/guide/notice/57901" data-sub="도서관 · 2026-09-29 · 학술DB" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:34+09:00" data-rank="4" data-search="[ksdc] icpsr 해외 양적자료 활용법 교육 도서관"><div class="body"><span class="badge">NEW</span> <a href="https://lib.pusan.ac.kr/guide/notice/57901" target="_blank" rel="noopener">[KSDC] ICPSR 해외 양적자료 활용법 교육</a><div class="sub">도서관 · 2026-09-29 · 학술DB </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="ca53af7720c5:57900" data-site="도서관" data-title="26년 10월 학술 DB 이용교육 일정 안내" data-url="https://lib.pusan.ac.kr/guide/notice/57900" data-sub="도서관 · 2026-09-29 · 학술DB" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:34+09:00" data-rank="5" data-search="26년 10월 학술 db 이용교육 일정 안내 도서관"><div class="body"><span class="badge">NEW</span> <a href="https://lib.pusan.ac.kr/guide/notice/57900" target="_blank" rel="noopener">26년 10월 학술 DB 이용교육 일정 안내</a><div class="sub">도서관 · 2026-09-29 · 학술DB </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511287" data-site="부산대학교" data-title="[부산광역시 금정구] 「2026 금정사랑 걷기대회」 개최 안내" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511287" data-sub="부산대학교 · 2026-09-29 · 학생과" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:30+09:00" data-rank="6" data-search="[부산광역시 금정구] 「2026 금정사랑 걷기대회」 개최 안내 부산대학교"><div class="body"><span class="badge">NEW</span> <a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511287" target="_blank" rel="noopener">[부산광역시 금정구] 「2026 금정사랑 걷기대회」 개최 안내</a><div class="sub">부산대학교 · 2026-09-29 · 학생과 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511286" data-site="부산대학교" data-title="[기후에너지환경부] 2030청년자문단 상반기 브랜드과제 관련 설문조사 안내 &lt;기..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511286" data-sub="부산대학교 · 2026-09-29 · 학생과" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:30+09:00" data-rank="7" data-search="[기후에너지환경부] 2030청년자문단 상반기 브랜드과제 관련 설문조사 안내 &lt;기... 부산대학교"><div class="body"><span class="badge">NEW</span> <a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511286" target="_blank" rel="noopener">[기후에너지환경부] 2030청년자문단 상반기 브랜드과제 관련 설문조사 안내 &lt;기...</a><div class="sub">부산대학교 · 2026-09-29 · 학생과 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511285" data-site="부산대학교" data-title="[기후에너지환경부] 2030청년자문단 상반기 브랜드과제 관련 설문조사 안내 &lt;..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511285" data-sub="부산대학교 · 2026-09-29 · 학생과" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:30+09:00" data-rank="8" data-search="[기후에너지환경부] 2030청년자문단 상반기 브랜드과제 관련 설문조사 안내 &lt;... 부산대학교"><div class="body"><span class="badge">NEW</span> <a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511285" target="_blank" rel="noopener">[기후에너지환경부] 2030청년자문단 상반기 브랜드과제 관련 설문조사 안내 &lt;...</a><div class="sub">부산대학교 · 2026-09-29 · 학생과 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511284" data-site="부산대학교" data-title="[부산자갈치축제] 제33회 부산자갈치축제 &lt;제4회 글로벌 대학가요제&gt; 참가자 모..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511284" data-sub="부산대학교 · 2026-09-29 · 학생과" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:30+09:00" data-rank="9" data-search="[부산자갈치축제] 제33회 부산자갈치축제 &lt;제4회 글로벌 대학가요제&gt; 참가자 모... 부산대학교"><div class="body"><span class="badge">NEW</span> <a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511284" target="_blank" rel="noopener">[부산자갈치축제] 제33회 부산자갈치축제 &lt;제4회 글로벌 대학가요제&gt; 참가자 모...</a><div class="sub">부산대학교 · 2026-09-29 · 학생과 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511283" data-site="부산대학교" data-title="2026년 경영대학.경제통상대학.사회과학대학 학생회 주관 [북삼제] 행사 일정 ..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511283" data-sub="부산대학교 · 2026-09-29 · 경제통상대학.경영대학.국제전문대학원.경영대학원.경제통상대학원.금융대학원통합행정실" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:30+09:00" data-rank="10" data-search="2026년 경영대학.경제통상대학.사회과학대학 학생회 주관 [북삼제] 행사 일정 ... 부산대학교"><div class="body"><span class="badge">NEW</span> <a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511283" target="_blank" rel="noopener">2026년 경영대학.경제통상대학.사회과학대학 학생회 주관 [북삼제] 행사 일정 ...</a><div class="sub">부산대학교 · 2026-09-29 · 경제통상대학.경영대학.국제전문대학원.경영대학원.경제통상대학원.금융대학원통합행정실 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511281" data-site="부산대학교" data-title="[부산대자율상권조합] &lt;부산대 자율상권 청년 상권 소통 LAB&gt; 청년연구팀 모집..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511281" data-sub="부산대학교 · 2026-09-29 · 학생과" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:30+09:00" data-rank="11" data-search="[부산대자율상권조합] &lt;부산대 자율상권 청년 상권 소통 lab&gt; 청년연구팀 모집... 부산대학교"><div class="body"><span class="badge">NEW</span> <a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511281" target="_blank" rel="noopener">[부산대자율상권조합] &lt;부산대 자율상권 청년 상권 소통 LAB&gt; 청년연구팀 모집...</a><div class="sub">부산대학교 · 2026-09-29 · 학생과 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511276" data-site="부산대학교" data-title="2027학년도 전기 데이터사이언스전문대학원 신입생 모집" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511276" data-sub="부산대학교 · 2026-09-29 · 공과대학.산업대학원.환경대학원.기술창업대학원.데이터사이언스전문대학원통합행정실" data-bp="1" data-order="2026-09-30|2026-09-30T01:15:30+09:00" data-rank="12" data-search="2027학년도 전기 데이터사이언스전문대학원 신입생 모집 부산대학교"><div class="body"><span class="badge">NEW</span> <a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511276" target="_blank" rel="noopener">2027학년도 전기 데이터사이언스전문대학원 신입생 모집</a><div class="sub">부산대학교 · 2026-09-29 · 공과대학.산업대학원.환경대학원.기술창업대학원.데이터사이언스전문대학원통합행정실 <span class="pin">고정</span></div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511275" data-site="부산대학교" data-title="[언어교육원] 2026학년도 2차 BK21 한국어역량강화 지원 프로그램 수강생 ..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511275" data-sub="부산대학교 · 2026-09-29 · 언어교육원 행정실" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:30+09:00" data-rank="13" data-search="[언어교육원] 2026학년도 2차 bk21 한국어역량강화 지원 프로그램 수강생 ... 부산대학교"><div class="body"><span class="badge">NEW</span> <a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511275" target="_blank" rel="noopener">[언어교육원] 2026학년도 2차 BK21 한국어역량강화 지원 프로그램 수강생 ...</a><div class="sub">부산대학교 · 2026-09-29 · 언어교육원 행정실 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="374945f5c2db:1464486" data-site="정보컴퓨터공학부" data-title="[TechWeek] 2026 정컴 테크위크 출석 인정 방법 및 정컴활동점수 관련 안내" data-url="https://cse.pusan.ac.kr/bbs/cse/2055/1464486/artclView.do" data-sub="정보컴퓨터공학부 · 2026-09-29 · 정 * 랑" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:27+09:00" data-rank="14" data-search="[techweek] 2026 정컴 테크위크 출석 인정 방법 및 정컴활동점수 관련 안내 정보컴퓨터공학부"><div class="body"><span class="badge">NEW</span> <a href="https://cse.pusan.ac.kr/bbs/cse/2055/1464486/artclView.do" target="_blank" rel="noopener">[TechWeek] 2026 정컴 테크위크 출석 인정 방법 및 정컴활동점수 관련 안내</a><div class="sub">정보컴퓨터공학부 · 2026-09-29 · 정 * 랑 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="374945f5c2db:1464381" data-site="정보컴퓨터공학부" data-title="[국립대육성] 2026 가장 일하고 싶은 지역기업TOP10 공모전 안내(~10/7)" data-url="https://cse.pusan.ac.kr/bbs/cse/2055/1464381/artclView.do" data-sub="정보컴퓨터공학부 · 2026-09-29 · 정 * 랑" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:27+09:00" data-rank="15" data-search="[국립대육성] 2026 가장 일하고 싶은 지역기업top10 공모전 안내(~10/7) 정보컴퓨터공학부"><div class="body"><span class="badge">NEW</span> <a href="https://cse.pusan.ac.kr/bbs/cse/2055/1464381/artclView.do" target="_blank" rel="noopener">[국립대육성] 2026 가장 일하고 싶은 지역기업TOP10 공모전 안내(~10/7)</a><div class="sub">정보컴퓨터공학부 · 2026-09-29 · 정 * 랑 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="374945f5c2db:1464379" data-site="정보컴퓨터공학부" data-title="[부산대기술지주] PNU TECH BIZ WEEK 2026 5분 IR 피칭 창업 아이디어" data-url="https://cse.pusan.ac.kr/bbs/cse/2055/1464379/artclView.do" data-sub="정보컴퓨터공학부 · 2026-09-29 · 정 * 랑" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:27+09:00" data-rank="16" data-search="[부산대기술지주] pnu tech biz week 2026 5분 ir 피칭 창업 아이디어 정보컴퓨터공학부"><div class="body"><span class="badge">NEW</span> <a href="https://cse.pusan.ac.kr/bbs/cse/2055/1464379/artclView.do" target="_blank" rel="noopener">[부산대기술지주] PNU TECH BIZ WEEK 2026 5분 IR 피칭 창업 아이디어</a><div class="sub">정보컴퓨터공학부 · 2026-09-29 · 정 * 랑 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="374945f5c2db:1464376" data-site="정보컴퓨터공학부" data-title="[국립대육성] 2027 겨울 WFUNA 유엔본부 한국 대학생 대표단 선발 공고(~10/9)" data-url="https://cse.pusan.ac.kr/bbs/cse/2055/1464376/artclView.do" data-sub="정보컴퓨터공학부 · 2026-09-29 · 정 * 랑" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:27+09:00" data-rank="17" data-search="[국립대육성] 2027 겨울 wfuna 유엔본부 한국 대학생 대표단 선발 공고(~10/9) 정보컴퓨터공학부"><div class="body"><span class="badge">NEW</span> <a href="https://cse.pusan.ac.kr/bbs/cse/2055/1464376/artclView.do" target="_blank" rel="noopener">[국립대육성] 2027 겨울 WFUNA 유엔본부 한국 대학생 대표단 선발 공고(~10/9)</a><div class="sub">정보컴퓨터공학부 · 2026-09-29 · 정 * 랑 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="51f3de4349e0:204390" data-site="학생성공개발원" data-title="[과기부 교육비전액지원+중식제공] AI를 활용한 반도체 공정장비 데이터분석 전문가 과정안내" data-url="https://job.pusan.ac.kr/ko/notice/notice/view/204390?p=2" data-sub="학생성공개발원 · 2026-09-28 · 09/30 확인" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:38+09:00" data-rank="18" data-search="[과기부 교육비전액지원+중식제공] ai를 활용한 반도체 공정장비 데이터분석 전문가 과정안내 학생성공개발원"><div class="body"><span class="badge">NEW</span> <a href="https://job.pusan.ac.kr/ko/notice/notice/view/204390?p=2" target="_blank" rel="noopener">[과기부 교육비전액지원+중식제공] AI를 활용한 반도체 공정장비 데이터분석 전문가 과정안내</a><div class="sub">학생성공개발원 · 2026-09-28 · 09/30 확인 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="51f3de4349e0:204389" data-site="학생성공개발원" data-title="▩ 2026 미래내일 일경험 프로젝트형 기업 실무 프로젝트 8주, 포트폴리오까지 완성하는 기회" data-url="https://job.pusan.ac.kr/ko/notice/notice/view/204389?p=2" data-sub="학생성공개발원 · 2026-09-28 · 09/30 확인" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:38+09:00" data-rank="19" data-search="▩ 2026 미래내일 일경험 프로젝트형 기업 실무 프로젝트 8주, 포트폴리오까지 완성하는 기회 학생성공개발원"><div class="body"><span class="badge">NEW</span> <a href="https://job.pusan.ac.kr/ko/notice/notice/view/204389?p=2" target="_blank" rel="noopener">▩ 2026 미래내일 일경험 프로젝트형 기업 실무 프로젝트 8주, 포트폴리오까지 완성하는 기회</a><div class="sub">학생성공개발원 · 2026-09-28 · 09/30 확인 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="ca53af7720c5:57885" data-site="도서관" data-title="2026학년도 2학기 중간고사 기간 새벽벌도서관 개관시간 변경 공고" data-url="https://lib.pusan.ac.kr/guide/notice/57885" data-sub="도서관 · 2026-09-28 · 09/30 확인 · 일반" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:34+09:00" data-rank="20" data-search="2026학년도 2학기 중간고사 기간 새벽벌도서관 개관시간 변경 공고 도서관"><div class="body"><span class="badge">NEW</span> <a href="https://lib.pusan.ac.kr/guide/notice/57885" target="_blank" rel="noopener">2026학년도 2학기 중간고사 기간 새벽벌도서관 개관시간 변경 공고</a><div class="sub">도서관 · 2026-09-28 · 09/30 확인 · 일반 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511269" data-site="부산대학교" data-title="(+신청기간연장)[기술사업부] 2026년 도전! 지식재산권(IP) 골든벨 참가자..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511269" data-sub="부산대학교 · 2026-09-28 · 09/30 확인 · 기술사업부" data-bp="1" data-order="2026-09-30|2026-09-30T01:15:30+09:00" data-rank="21" data-search="(+신청기간연장)[기술사업부] 2026년 도전! 지식재산권(ip) 골든벨 참가자... 부산대학교"><div class="body"><span class="badge">NEW</span> <a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511269" target="_blank" rel="noopener">(+신청기간연장)[기술사업부] 2026년 도전! 지식재산권(IP) 골든벨 참가자...</a><div class="sub">부산대학교 · 2026-09-28 · 09/30 확인 · 기술사업부 <span class="pin">고정</span></div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511268" data-site="부산대학교" data-title="대학생을 위한 실전 AI 무료 강의! Gemini Academy 수강생 모집 (..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511268" data-sub="부산대학교 · 2026-09-28 · 09/30 확인 · 대학일자리플러스센터" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:30+09:00" data-rank="22" data-search="대학생을 위한 실전 ai 무료 강의! gemini academy 수강생 모집 (... 부산대학교"><div class="body"><span class="badge">NEW</span> <a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511268" target="_blank" rel="noopener">대학생을 위한 실전 AI 무료 강의! Gemini Academy 수강생 모집 (...</a><div class="sub">부산대학교 · 2026-09-28 · 09/30 확인 · 대학일자리플러스센터 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511266" data-site="부산대학교" data-title="[효원상담원] 2026 힐링캠프 &#x27;쉬어보입시 the 숲&#x27;에 초대합..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511266" data-sub="부산대학교 · 2026-09-28 · 09/30 확인 · 효원상담원" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:30+09:00" data-rank="23" data-search="[효원상담원] 2026 힐링캠프 &#x27;쉬어보입시 the 숲&#x27;에 초대합... 부산대학교"><div class="body"><span class="badge">NEW</span> <a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511266" target="_blank" rel="noopener">[효원상담원] 2026 힐링캠프 &#x27;쉬어보입시 the 숲&#x27;에 초대합...</a><div class="sub">부산대학교 · 2026-09-28 · 09/30 확인 · 효원상담원 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511262" data-site="부산대학교" data-title="[일반사회교육과] 2026학년도 2학기 연구조교 모집" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511262" data-sub="부산대학교 · 2026-09-28 · 09/30 확인 · 일반사회교육과" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:30+09:00" data-rank="24" data-search="[일반사회교육과] 2026학년도 2학기 연구조교 모집 부산대학교"><div class="body"><span class="badge">NEW</span> <a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511262" target="_blank" rel="noopener">[일반사회교육과] 2026학년도 2학기 연구조교 모집</a><div class="sub">부산대학교 · 2026-09-28 · 09/30 확인 · 일반사회교육과 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511261" data-site="부산대학교" data-title="[부산대학교기술지주(주)] PNU Tech Biz Week 2026(Togeth..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511261" data-sub="부산대학교 · 2026-09-28 · 09/30 확인 · 기술사업부" data-bp="1" data-order="2026-09-30|2026-09-30T01:15:30+09:00" data-rank="25" data-search="[부산대학교기술지주(주)] pnu tech biz week 2026(togeth... 부산대학교"><div class="body"><span class="badge">NEW</span> <a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511261" target="_blank" rel="noopener">[부산대학교기술지주(주)] PNU Tech Biz Week 2026(Togeth...</a><div class="sub">부산대학교 · 2026-09-28 · 09/30 확인 · 기술사업부 <span class="pin">고정</span></div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511259" data-site="부산대학교" data-title="[모집] 외국인 유학생 장기자랑 참가 모집(~10.18.)" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511259" data-sub="부산대학교 · 2026-09-28 · 09/30 확인 · 부산대언론사" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:30+09:00" data-rank="26" data-search="[모집] 외국인 유학생 장기자랑 참가 모집(~10.18.) 부산대학교"><div class="body"><span class="badge">NEW</span> <a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511259" target="_blank" rel="noopener">[모집] 외국인 유학생 장기자랑 참가 모집(~10.18.)</a><div class="sub">부산대학교 · 2026-09-28 · 09/30 확인 · 부산대언론사 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511258" data-site="부산대학교" data-title="[언어교육원] 2026학년도 10월 정기 모의 테스트(토익, 토플) 실시 안내" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511258" data-sub="부산대학교 · 2026-09-28 · 09/30 확인 · 언어교육원 행정실" data-bp="0" data-order="2026-09-30|2026-09-30T01:15:30+09:00" data-rank="27" data-search="[언어교육원] 2026학년도 10월 정기 모의 테스트(토익, 토플) 실시 안내 부산대학교"><div class="body"><span class="badge">NEW</span> <a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511258" target="_blank" rel="noopener">[언어교육원] 2026학년도 10월 정기 모의 테스트(토익, 토플) 실시 안내</a><div class="sub">부산대학교 · 2026-09-28 · 09/30 확인 · 언어교육원 행정실 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511029" data-site="부산대학교" data-title="[교육인증원] &#x27;2026학년도 학생포트폴리오 온라인 세미나&#x27; 개최..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511029" data-sub="부산대학교 · 2026-09-14 · 09/30 확인 · 교육인증원" data-bp="1" data-order="2026-09-30|2026-09-30T01:15:30+09:00" data-rank="28" data-search="[교육인증원] &#x27;2026학년도 학생포트폴리오 온라인 세미나&#x27; 개최... 부산대학교"><div class="body"><span class="badge">NEW</span> <a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511029" target="_blank" rel="noopener">[교육인증원] &#x27;2026학년도 학생포트폴리오 온라인 세미나&#x27; 개최...</a><div class="sub">부산대학교 · 2026-09-14 · 09/30 확인 · 교육인증원 <span class="pin">고정</span></div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="716a7db65e89:35278" data-site="PLATO" data-title="[부산대학교기술지주] 「PNU TECH BIZ WEEK 2026」 5분 IR 피칭 창업아이디어 경진대회 안" data-url="https://plato.pusan.ac.kr/mod/ubboard/article.php?keyfield&amp;keyword&amp;listsize=15&amp;page=1&amp;categoryid&amp;bwid=35278&amp;id=2624" data-sub="PLATO · 2026-09-28 · 사이트관리자" data-bp="1" data-order="2026-09-28|2026-09-28T10:50:15+09:00" data-rank="29" data-search="[부산대학교기술지주] 「pnu tech biz week 2026」 5분 ir 피칭 창업아이디어 경진대회 안 plato"><div class="body"><a href="https://plato.pusan.ac.kr/mod/ubboard/article.php?keyfield&amp;keyword&amp;listsize=15&amp;page=1&amp;categoryid&amp;bwid=35278&amp;id=2624" target="_blank" rel="noopener">[부산대학교기술지주] 「PNU TECH BIZ WEEK 2026」 5분 IR 피칭 창업아이디어 경진대회 안</a><div class="sub">PLATO · 2026-09-28 · 사이트관리자 <span class="pin">고정</span></div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511255" data-site="부산대학교" data-title="(재안내)[부산대학교기술지주]「PNU TECH BIZ WEEK 2026」 5분 ..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511255" data-sub="부산대학교 · 2026-09-28 · 기술지주" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="30" data-search="(재안내)[부산대학교기술지주]「pnu tech biz week 2026」 5분 ... 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511255" target="_blank" rel="noopener">(재안내)[부산대학교기술지주]「PNU TECH BIZ WEEK 2026」 5분 ...</a><div class="sub">부산대학교 · 2026-09-28 · 기술지주 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="374945f5c2db:1464170" data-site="정보컴퓨터공학부" data-title="[장학] 2026학년도 2학기 DB *베트남 국적 유학생* 장학금 신청 안내(~9/29까지" data-url="https://cse.pusan.ac.kr/bbs/cse/2055/1464170/artclView.do" data-sub="정보컴퓨터공학부 · 2026-09-28 · 정 * 랑" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:00+09:00" data-rank="31" data-search="[장학] 2026학년도 2학기 db *베트남 국적 유학생* 장학금 신청 안내(~9/29까지 정보컴퓨터공학부"><div class="body"><a href="https://cse.pusan.ac.kr/bbs/cse/2055/1464170/artclView.do" target="_blank" rel="noopener">[장학] 2026학년도 2학기 DB *베트남 국적 유학생* 장학금 신청 안내(~9/29까지</a><div class="sub">정보컴퓨터공학부 · 2026-09-28 · 정 * 랑 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="ca53af7720c5:57868" data-site="도서관" data-title="[부산캠퍼스] 2026학년도 2학기 노션(Notion) 이용교육 안내 (10월)" data-url="https://lib.pusan.ac.kr/guide/notice/57868" data-sub="도서관 · 2026-09-23 · 09/28 확인 · 일반" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:10+09:00" data-rank="32" data-search="[부산캠퍼스] 2026학년도 2학기 노션(notion) 이용교육 안내 (10월) 도서관"><div class="body"><a href="https://lib.pusan.ac.kr/guide/notice/57868" target="_blank" rel="noopener">[부산캠퍼스] 2026학년도 2학기 노션(Notion) 이용교육 안내 (10월)</a><div class="sub">도서관 · 2026-09-23 · 09/28 확인 · 일반 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="aa28cd59ae6d:1464131" data-site="국제처" data-title="[단기파견] 2027 겨울 WFUNA 유엔본부 한국대학생 대표단 선발 공고" data-url="https://international.pusan.ac.kr/bbs/international/2080/1464131/artclView.do" data-sub="국제처 · 2026-09-23 · 09/28 확인 · 노 * 리" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:07+09:00" data-rank="33" data-search="[단기파견] 2027 겨울 wfuna 유엔본부 한국대학생 대표단 선발 공고 국제처"><div class="body"><a href="https://international.pusan.ac.kr/bbs/international/2080/1464131/artclView.do" target="_blank" rel="noopener">[단기파견] 2027 겨울 WFUNA 유엔본부 한국대학생 대표단 선발 공고</a><div class="sub">국제처 · 2026-09-23 · 09/28 확인 · 노 * 리 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="aa28cd59ae6d:1463935" data-site="국제처" data-title="[성적처리] 2026학년도 1학기 1차 성적처리 대상자 명단 알림" data-url="https://international.pusan.ac.kr/bbs/international/2080/1463935/artclView.do" data-sub="국제처 · 2026-09-23 · 09/28 확인 · 최 * 정" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:07+09:00" data-rank="34" data-search="[성적처리] 2026학년도 1학기 1차 성적처리 대상자 명단 알림 국제처"><div class="body"><a href="https://international.pusan.ac.kr/bbs/international/2080/1463935/artclView.do" target="_blank" rel="noopener">[성적처리] 2026학년도 1학기 1차 성적처리 대상자 명단 알림</a><div class="sub">국제처 · 2026-09-23 · 09/28 확인 · 최 * 정 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511252" data-site="부산대학교" data-title="[(재)부산테크노파크] 대학생 금융 역량 UP 「슬기로운 대학생활 금융 아카데미..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511252" data-sub="부산대학교 · 2026-09-23 · 09/28 확인 · 학생과" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="35" data-search="[(재)부산테크노파크] 대학생 금융 역량 up 「슬기로운 대학생활 금융 아카데미... 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511252" target="_blank" rel="noopener">[(재)부산테크노파크] 대학생 금융 역량 UP 「슬기로운 대학생활 금융 아카데미...</a><div class="sub">부산대학교 · 2026-09-23 · 09/28 확인 · 학생과 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511251" data-site="부산대학교" data-title="[교육부] 2026년도 학생 대상 안전한 개인정보보호 사례 공모전 개최 안내" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511251" data-sub="부산대학교 · 2026-09-23 · 09/28 확인 · 학생과" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="36" data-search="[교육부] 2026년도 학생 대상 안전한 개인정보보호 사례 공모전 개최 안내 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511251" target="_blank" rel="noopener">[교육부] 2026년도 학생 대상 안전한 개인정보보호 사례 공모전 개최 안내</a><div class="sub">부산대학교 · 2026-09-23 · 09/28 확인 · 학생과 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511250" data-site="부산대학교" data-title="[글로컬대학] 2026년 기업체 연계 임상시험/임상실증 지원 사업(2차) 공고 ..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511250" data-sub="부산대학교 · 2026-09-23 · 09/28 확인 · 의생명.바이오 인재양성실" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="37" data-search="[글로컬대학] 2026년 기업체 연계 임상시험/임상실증 지원 사업(2차) 공고 ... 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511250" target="_blank" rel="noopener">[글로컬대학] 2026년 기업체 연계 임상시험/임상실증 지원 사업(2차) 공고 ...</a><div class="sub">부산대학교 · 2026-09-23 · 09/28 확인 · 의생명.바이오 인재양성실 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511249" data-site="부산대학교" data-title="[도서관] 2026학년도 2학기 노션(Notion) 이용교육 안내 (10월)" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511249" data-sub="부산대학교 · 2026-09-23 · 09/28 확인 · 도서관 정보운영과" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="38" data-search="[도서관] 2026학년도 2학기 노션(notion) 이용교육 안내 (10월) 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511249" target="_blank" rel="noopener">[도서관] 2026학년도 2학기 노션(Notion) 이용교육 안내 (10월)</a><div class="sub">부산대학교 · 2026-09-23 · 09/28 확인 · 도서관 정보운영과 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511248" data-site="부산대학교" data-title="[부산대 AI 콜로퀴엄 2026] 26.10.2(금), 임정환 대표(㈜모티프테크..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511248" data-sub="부산대학교 · 2026-09-23 · 09/28 확인 · 장영실AI융합연구원" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="39" data-search="[부산대 ai 콜로퀴엄 2026] 26.10.2(금), 임정환 대표(㈜모티프테크... 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511248" target="_blank" rel="noopener">[부산대 AI 콜로퀴엄 2026] 26.10.2(금), 임정환 대표(㈜모티프테크...</a><div class="sub">부산대학교 · 2026-09-23 · 09/28 확인 · 장영실AI융합연구원 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511245" data-site="부산대학교" data-title="[학생과] 찾아가는 꿈교실 &#x27;진로톡톡&#x27; 프로그램 참여 멘토 모집(..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511245" data-sub="부산대학교 · 2026-09-23 · 09/28 확인 · 학생과" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="40" data-search="[학생과] 찾아가는 꿈교실 &#x27;진로톡톡&#x27; 프로그램 참여 멘토 모집(... 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511245" target="_blank" rel="noopener">[학생과] 찾아가는 꿈교실 &#x27;진로톡톡&#x27; 프로그램 참여 멘토 모집(...</a><div class="sub">부산대학교 · 2026-09-23 · 09/28 확인 · 학생과 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511234" data-site="부산대학교" data-title="[특강] 구글 딥마인드·메타 출신에게 듣는 LLM 핵심 기술" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511234" data-sub="부산대학교 · 2026-09-23 · 09/28 확인 · 공과대학.산업대학원.환경대학원.기술창업대학원.데이터사이언스전문대학원통합행정실" data-bp="1" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="41" data-search="[특강] 구글 딥마인드·메타 출신에게 듣는 llm 핵심 기술 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511234" target="_blank" rel="noopener">[특강] 구글 딥마인드·메타 출신에게 듣는 LLM 핵심 기술</a><div class="sub">부산대학교 · 2026-09-23 · 09/28 확인 · 공과대학.산업대학원.환경대학원.기술창업대학원.데이터사이언스전문대학원통합행정실 <span class="pin">고정</span></div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511233" data-site="부산대학교" data-title="[앵커사업단] 2026년도 제3회 전력반도체 지산학 K-포럼 안내" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511233" data-sub="부산대학교 · 2026-09-23 · 09/28 확인 · 미래신산업실" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="42" data-search="[앵커사업단] 2026년도 제3회 전력반도체 지산학 k-포럼 안내 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511233" target="_blank" rel="noopener">[앵커사업단] 2026년도 제3회 전력반도체 지산학 K-포럼 안내</a><div class="sub">부산대학교 · 2026-09-23 · 09/28 확인 · 미래신산업실 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="fe5b93177fd4:1346" data-site="나눔시스템" data-title="[멘토스쿨] 2026학년도 2학기 멘토스쿨 이수완료자 공고" data-url="https://nanum.pusan.ac.kr/page?menuCD=000000000000007&amp;mode=DETAIL&amp;seq=1346" data-sub="나눔시스템 · 2026-09-22 · 09/28 확인 · 류지원" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:22+09:00" data-rank="43" data-search="[멘토스쿨] 2026학년도 2학기 멘토스쿨 이수완료자 공고 나눔시스템"><div class="body"><a href="https://nanum.pusan.ac.kr/page?menuCD=000000000000007&amp;mode=DETAIL&amp;seq=1346" target="_blank" rel="noopener">[멘토스쿨] 2026학년도 2학기 멘토스쿨 이수완료자 공고</a><div class="sub">나눔시스템 · 2026-09-22 · 09/28 확인 · 류지원 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="51f3de4349e0:204382" data-site="학생성공개발원" data-title="2026년 제4회 넥스트 블록체인 교육 안내" data-url="https://job.pusan.ac.kr/ko/notice/notice/view/204382?p=2" data-sub="학생성공개발원 · 2026-09-22 · 09/28 확인" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:14+09:00" data-rank="44" data-search="2026년 제4회 넥스트 블록체인 교육 안내 학생성공개발원"><div class="body"><a href="https://job.pusan.ac.kr/ko/notice/notice/view/204382?p=2" target="_blank" rel="noopener">2026년 제4회 넥스트 블록체인 교육 안내</a><div class="sub">학생성공개발원 · 2026-09-22 · 09/28 확인 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="51f3de4349e0:204381" data-site="학생성공개발원" data-title="[한국PCO협회] 2026 마이스人 쇼(MICE IN Show) 안내" data-url="https://job.pusan.ac.kr/ko/notice/notice/view/204381?p=2" data-sub="학생성공개발원 · 2026-09-22 · 09/28 확인" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:14+09:00" data-rank="45" data-search="[한국pco협회] 2026 마이스人 쇼(mice in show) 안내 학생성공개발원"><div class="body"><a href="https://job.pusan.ac.kr/ko/notice/notice/view/204381?p=2" target="_blank" rel="noopener">[한국PCO협회] 2026 마이스人 쇼(MICE IN Show) 안내</a><div class="sub">학생성공개발원 · 2026-09-22 · 09/28 확인 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="ca53af7720c5:57860" data-site="도서관" data-title="2026학년도 2학기 도서관 홍보서포터즈 합격자 발표" data-url="https://lib.pusan.ac.kr/guide/notice/57860" data-sub="도서관 · 2026-09-22 · 09/28 확인 · 일반" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:10+09:00" data-rank="46" data-search="2026학년도 2학기 도서관 홍보서포터즈 합격자 발표 도서관"><div class="body"><a href="https://lib.pusan.ac.kr/guide/notice/57860" target="_blank" rel="noopener">2026학년도 2학기 도서관 홍보서포터즈 합격자 발표</a><div class="sub">도서관 · 2026-09-22 · 09/28 확인 · 일반 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="aa28cd59ae6d:1463920" data-site="국제처" data-title="[Course Withdrawal] &#x27;26-2 학부 수강취소(W) 안내 Cours" data-url="https://international.pusan.ac.kr/bbs/international/2081/1463920/artclView.do" data-sub="국제처 · 2026-09-22 · 09/28 확인 · 김 * 민 · 전체게시판공지" data-bp="1" data-order="2026-09-28|2026-09-28T10:50:07+09:00" data-rank="47" data-search="[course withdrawal] &#x27;26-2 학부 수강취소(w) 안내 cours 국제처"><div class="body"><a href="https://international.pusan.ac.kr/bbs/international/2081/1463920/artclView.do" target="_blank" rel="noopener">[Course Withdrawal] &#x27;26-2 학부 수강취소(W) 안내 Cours</a><div class="sub">국제처 · 2026-09-22 · 09/28 확인 · 김 * 민 · 전체게시판공지 <span class="pin">고정</span></div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511228" data-site="부산대학교" data-title="[학생과] 2026년 10월 각 군 현역병 모집계획 알림" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511228" data-sub="부산대학교 · 2026-09-22 · 09/28 확인 · 학생과" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="48" data-search="[학생과] 2026년 10월 각 군 현역병 모집계획 알림 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511228" target="_blank" rel="noopener">[학생과] 2026년 10월 각 군 현역병 모집계획 알림</a><div class="sub">부산대학교 · 2026-09-22 · 09/28 확인 · 학생과 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511227" data-site="부산대학교" data-title="[효원상담원] 2026 힐링캠프 &#x27;아로마힐링: 향기로 만난 나&#x27;..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511227" data-sub="부산대학교 · 2026-09-22 · 09/28 확인 · 효원상담원" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="49" data-search="[효원상담원] 2026 힐링캠프 &#x27;아로마힐링: 향기로 만난 나&#x27;... 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511227" target="_blank" rel="noopener">[효원상담원] 2026 힐링캠프 &#x27;아로마힐링: 향기로 만난 나&#x27;...</a><div class="sub">부산대학교 · 2026-09-22 · 09/28 확인 · 효원상담원 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511226" data-site="부산대학교" data-title="[한국해양진흥공사] &lt;2026 KOBC 해양사진공모전&gt; 개최 안내" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511226" data-sub="부산대학교 · 2026-09-22 · 09/28 확인 · 학생과" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="50" data-search="[한국해양진흥공사] &lt;2026 kobc 해양사진공모전&gt; 개최 안내 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511226" target="_blank" rel="noopener">[한국해양진흥공사] &lt;2026 KOBC 해양사진공모전&gt; 개최 안내</a><div class="sub">부산대학교 · 2026-09-22 · 09/28 확인 · 학생과 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511225" data-site="부산대학교" data-title="[선율 법학경시대회] 제 9회 법학경시대회 개최 안내" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511225" data-sub="부산대학교 · 2026-09-22 · 09/28 확인 · 학생과" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="51" data-search="[선율 법학경시대회] 제 9회 법학경시대회 개최 안내 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511225" target="_blank" rel="noopener">[선율 법학경시대회] 제 9회 법학경시대회 개최 안내</a><div class="sub">부산대학교 · 2026-09-22 · 09/28 확인 · 학생과 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511224" data-site="부산대학교" data-title="[부산정보산업진흥원] 「2026 부산광역시장배 브레나 베스트 플레이어」 참가 선..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511224" data-sub="부산대학교 · 2026-09-22 · 09/28 확인 · 학생과" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="52" data-search="[부산정보산업진흥원] 「2026 부산광역시장배 브레나 베스트 플레이어」 참가 선... 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511224" target="_blank" rel="noopener">[부산정보산업진흥원] 「2026 부산광역시장배 브레나 베스트 플레이어」 참가 선...</a><div class="sub">부산대학교 · 2026-09-22 · 09/28 확인 · 학생과 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511222" data-site="부산대학교" data-title="[(재)부산테크노파크] 2026년 제4회 넥스트 블록체인 교육 안내" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511222" data-sub="부산대학교 · 2026-09-22 · 09/28 확인 · 학생과" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="53" data-search="[(재)부산테크노파크] 2026년 제4회 넥스트 블록체인 교육 안내 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511222" target="_blank" rel="noopener">[(재)부산테크노파크] 2026년 제4회 넥스트 블록체인 교육 안내</a><div class="sub">부산대학교 · 2026-09-22 · 09/28 확인 · 학생과 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511221" data-site="부산대학교" data-title="[부산광역시상수도사업본부] 부산의 수돗물 「순수365」 홍보디자인 공모전 개최 ..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511221" data-sub="부산대학교 · 2026-09-22 · 09/28 확인 · 학생과" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="54" data-search="[부산광역시상수도사업본부] 부산의 수돗물 「순수365」 홍보디자인 공모전 개최 ... 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511221" target="_blank" rel="noopener">[부산광역시상수도사업본부] 부산의 수돗물 「순수365」 홍보디자인 공모전 개최 ...</a><div class="sub">부산대학교 · 2026-09-22 · 09/28 확인 · 학생과 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511220" data-site="부산대학교" data-title="[부산광역시 서구] 제17회 부산고등어축제 「송도 스트릿 댄스대회」 홍보 및 참..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511220" data-sub="부산대학교 · 2026-09-22 · 09/28 확인 · 학생과" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="55" data-search="[부산광역시 서구] 제17회 부산고등어축제 「송도 스트릿 댄스대회」 홍보 및 참... 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511220" target="_blank" rel="noopener">[부산광역시 서구] 제17회 부산고등어축제 「송도 스트릿 댄스대회」 홍보 및 참...</a><div class="sub">부산대학교 · 2026-09-22 · 09/28 확인 · 학생과 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511219" data-site="부산대학교" data-title="[부산광역시 글로벌 도시재단] 「2026 부산-아세안 주간」 서포터즈 모집 안내" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511219" data-sub="부산대학교 · 2026-09-22 · 09/28 확인 · 학생과" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="56" data-search="[부산광역시 글로벌 도시재단] 「2026 부산-아세안 주간」 서포터즈 모집 안내 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511219" target="_blank" rel="noopener">[부산광역시 글로벌 도시재단] 「2026 부산-아세안 주간」 서포터즈 모집 안내</a><div class="sub">부산대학교 · 2026-09-22 · 09/28 확인 · 학생과 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511214" data-site="부산대학교" data-title="[언어교육원] 2026학년도 2차 BK21 한국어역량강화 지원 프로그램 수강생 ..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511214" data-sub="부산대학교 · 2026-09-22 · 09/28 확인 · 언어교육원 행정실" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="57" data-search="[언어교육원] 2026학년도 2차 bk21 한국어역량강화 지원 프로그램 수강생 ... 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511214" target="_blank" rel="noopener">[언어교육원] 2026학년도 2차 BK21 한국어역량강화 지원 프로그램 수강생 ...</a><div class="sub">부산대학교 · 2026-09-22 · 09/28 확인 · 언어교육원 행정실 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="374945f5c2db:1463889" data-site="정보컴퓨터공학부" data-title="2026-2학기 교양교육원 비교과프로그램 「디지털문화와인간」특강 안내" data-url="https://cse.pusan.ac.kr/bbs/cse/2055/1463889/artclView.do" data-sub="정보컴퓨터공학부 · 2026-09-22 · 09/28 확인 · 황 * 경" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:00+09:00" data-rank="58" data-search="2026-2학기 교양교육원 비교과프로그램 「디지털문화와인간」특강 안내 정보컴퓨터공학부"><div class="body"><a href="https://cse.pusan.ac.kr/bbs/cse/2055/1463889/artclView.do" target="_blank" rel="noopener">2026-2학기 교양교육원 비교과프로그램 「디지털문화와인간」특강 안내</a><div class="sub">정보컴퓨터공학부 · 2026-09-22 · 09/28 확인 · 황 * 경 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="374945f5c2db:1463857" data-site="정보컴퓨터공학부" data-title="2027학년도 경제통상대학 국제학부 복수전공(GSP) 이수자 선발 안내" data-url="https://cse.pusan.ac.kr/bbs/cse/2055/1463857/artclView.do" data-sub="정보컴퓨터공학부 · 2026-09-22 · 09/28 확인 · 황 * 경" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:00+09:00" data-rank="59" data-search="2027학년도 경제통상대학 국제학부 복수전공(gsp) 이수자 선발 안내 정보컴퓨터공학부"><div class="body"><a href="https://cse.pusan.ac.kr/bbs/cse/2055/1463857/artclView.do" target="_blank" rel="noopener">2027학년도 경제통상대학 국제학부 복수전공(GSP) 이수자 선발 안내</a><div class="sub">정보컴퓨터공학부 · 2026-09-22 · 09/28 확인 · 황 * 경 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="374945f5c2db:1463820" data-site="정보컴퓨터공학부" data-title="[국립대육성] 2026 글로벌 AX-PBL 현장실증 공학교육 프로그램 신청 안내(~9/30" data-url="https://cse.pusan.ac.kr/bbs/cse/2055/1463820/artclView.do" data-sub="정보컴퓨터공학부 · 2026-09-22 · 09/28 확인 · 정 * 랑" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:00+09:00" data-rank="60" data-search="[국립대육성] 2026 글로벌 ax-pbl 현장실증 공학교육 프로그램 신청 안내(~9/30 정보컴퓨터공학부"><div class="body"><a href="https://cse.pusan.ac.kr/bbs/cse/2055/1463820/artclView.do" target="_blank" rel="noopener">[국립대육성] 2026 글로벌 AX-PBL 현장실증 공학교육 프로그램 신청 안내(~9/30</a><div class="sub">정보컴퓨터공학부 · 2026-09-22 · 09/28 확인 · 정 * 랑 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="716a7db65e89:31604" data-site="PLATO" data-title="[교수학습지원센터] 의생명효원교수아카데미 4차 안내" data-url="https://plato.pusan.ac.kr/mod/ubboard/article.php?keyfield&amp;keyword&amp;listsize=15&amp;page=1&amp;categoryid&amp;bwid=31604&amp;id=2624" data-sub="PLATO · 2026-09-21 · 09/28 확인 · 교수학습부" data-bp="1" data-order="2026-09-28|2026-09-28T10:50:15+09:00" data-rank="61" data-search="[교수학습지원센터] 의생명효원교수아카데미 4차 안내 plato"><div class="body"><a href="https://plato.pusan.ac.kr/mod/ubboard/article.php?keyfield&amp;keyword&amp;listsize=15&amp;page=1&amp;categoryid&amp;bwid=31604&amp;id=2624" target="_blank" rel="noopener">[교수학습지원센터] 의생명효원교수아카데미 4차 안내</a><div class="sub">PLATO · 2026-09-21 · 09/28 확인 · 교수학습부 <span class="pin">고정</span></div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="51f3de4349e0:204378" data-site="학생성공개발원" data-title="고용노동부 X 현대홈쇼핑 K-뉴딜아카데미 [MD·커머스 전문가 양성과정 2기]" data-url="https://job.pusan.ac.kr/ko/notice/notice/view/204378?p=2" data-sub="학생성공개발원 · 2026-09-21 · 09/28 확인" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:14+09:00" data-rank="62" data-search="고용노동부 x 현대홈쇼핑 k-뉴딜아카데미 [md·커머스 전문가 양성과정 2기] 학생성공개발원"><div class="body"><a href="https://job.pusan.ac.kr/ko/notice/notice/view/204378?p=2" target="_blank" rel="noopener">고용노동부 X 현대홈쇼핑 K-뉴딜아카데미 [MD·커머스 전문가 양성과정 2기]</a><div class="sub">학생성공개발원 · 2026-09-21 · 09/28 확인 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="51f3de4349e0:204377" data-site="학생성공개발원" data-title="「2026 넥스트 블록체인 교육」 4회차 교육생 모집" data-url="https://job.pusan.ac.kr/ko/notice/notice/view/204377?p=2" data-sub="학생성공개발원 · 2026-09-21 · 09/28 확인" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:14+09:00" data-rank="63" data-search="「2026 넥스트 블록체인 교육」 4회차 교육생 모집 학생성공개발원"><div class="body"><a href="https://job.pusan.ac.kr/ko/notice/notice/view/204377?p=2" target="_blank" rel="noopener">「2026 넥스트 블록체인 교육」 4회차 교육생 모집</a><div class="sub">학생성공개발원 · 2026-09-21 · 09/28 확인 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="51f3de4349e0:204374" data-site="학생성공개발원" data-title="&#x27;2026년 미래내일 일경험사업 프로젝트형&#x27; 8차 프로젝트 참여 청년 모집" data-url="https://job.pusan.ac.kr/ko/notice/notice/view/204374?p=2" data-sub="학생성공개발원 · 2026-09-21 · 09/28 확인" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:14+09:00" data-rank="64" data-search="&#x27;2026년 미래내일 일경험사업 프로젝트형&#x27; 8차 프로젝트 참여 청년 모집 학생성공개발원"><div class="body"><a href="https://job.pusan.ac.kr/ko/notice/notice/view/204374?p=2" target="_blank" rel="noopener">&#x27;2026년 미래내일 일경험사업 프로젝트형&#x27; 8차 프로젝트 참여 청년 모집</a><div class="sub">학생성공개발원 · 2026-09-21 · 09/28 확인 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="51f3de4349e0:204371" data-site="학생성공개발원" data-title="[부산경총] 청년 대상 집단상 프로그램" data-url="https://job.pusan.ac.kr/ko/notice/notice/view/204371?p=2" data-sub="학생성공개발원 · 2026-09-21 · 09/28 확인" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:14+09:00" data-rank="65" data-search="[부산경총] 청년 대상 집단상 프로그램 학생성공개발원"><div class="body"><a href="https://job.pusan.ac.kr/ko/notice/notice/view/204371?p=2" target="_blank" rel="noopener">[부산경총] 청년 대상 집단상 프로그램</a><div class="sub">학생성공개발원 · 2026-09-21 · 09/28 확인 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="51f3de4349e0:204368" data-site="학생성공개발원" data-title="[제2회 글로벌도시관광서밋] 안내" data-url="https://job.pusan.ac.kr/ko/notice/notice/view/204368?p=2" data-sub="학생성공개발원 · 2026-09-21 · 09/28 확인" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:14+09:00" data-rank="66" data-search="[제2회 글로벌도시관광서밋] 안내 학생성공개발원"><div class="body"><a href="https://job.pusan.ac.kr/ko/notice/notice/view/204368?p=2" target="_blank" rel="noopener">[제2회 글로벌도시관광서밋] 안내</a><div class="sub">학생성공개발원 · 2026-09-21 · 09/28 확인 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="51f3de4349e0:204367" data-site="학생성공개발원" data-title="[학생성공개발원] 가장 일하고 싶은 지역기업 TOP10 공모전 안내(~10.7.수)" data-url="https://job.pusan.ac.kr/ko/notice/notice/view/204367?p=1" data-sub="학생성공개발원 · 2026-09-21 · 09/28 확인" data-bp="1" data-order="2026-09-28|2026-09-28T10:50:14+09:00" data-rank="67" data-search="[학생성공개발원] 가장 일하고 싶은 지역기업 top10 공모전 안내(~10.7.수) 학생성공개발원"><div class="body"><a href="https://job.pusan.ac.kr/ko/notice/notice/view/204367?p=1" target="_blank" rel="noopener">[학생성공개발원] 가장 일하고 싶은 지역기업 TOP10 공모전 안내(~10.7.수)</a><div class="sub">학생성공개발원 · 2026-09-21 · 09/28 확인 <span class="pin">고정</span></div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="ca53af7720c5:57854" data-site="도서관" data-title="Web of Science 교외 접속 관련 오류 안내" data-url="https://lib.pusan.ac.kr/guide/notice/57854" data-sub="도서관 · 2026-09-21 · 09/28 확인 · 학술DB" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:10+09:00" data-rank="68" data-search="web of science 교외 접속 관련 오류 안내 도서관"><div class="body"><a href="https://lib.pusan.ac.kr/guide/notice/57854" target="_blank" rel="noopener">Web of Science 교외 접속 관련 오류 안내</a><div class="sub">도서관 · 2026-09-21 · 09/28 확인 · 학술DB </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="aa28cd59ae6d:1463766" data-site="국제처" data-title="[정규파견] 2027학년도 1학기 정규학기 해외파견(교환 및 교비) 프로그램 3차 선발 안내(9/23" data-url="https://international.pusan.ac.kr/bbs/international/2080/1463766/artclView.do" data-sub="국제처 · 2026-09-21 · 09/28 확인 · 최 * 정" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:07+09:00" data-rank="69" data-search="[정규파견] 2027학년도 1학기 정규학기 해외파견(교환 및 교비) 프로그램 3차 선발 안내(9/23 국제처"><div class="body"><a href="https://international.pusan.ac.kr/bbs/international/2080/1463766/artclView.do" target="_blank" rel="noopener">[정규파견] 2027학년도 1학기 정규학기 해외파견(교환 및 교비) 프로그램 3차 선발 안내(9/23</a><div class="sub">국제처 · 2026-09-21 · 09/28 확인 · 최 * 정 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="aa28cd59ae6d:1463763" data-site="국제처" data-title="[정규파견] 2027학년도 1학기 정규학기 해외파견(교환) 프로그램 특별모집 2차[폴리테크니카대학] 선" data-url="https://international.pusan.ac.kr/bbs/international/2080/1463763/artclView.do" data-sub="국제처 · 2026-09-21 · 09/28 확인 · 최 * 정" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:07+09:00" data-rank="70" data-search="[정규파견] 2027학년도 1학기 정규학기 해외파견(교환) 프로그램 특별모집 2차[폴리테크니카대학] 선 국제처"><div class="body"><a href="https://international.pusan.ac.kr/bbs/international/2080/1463763/artclView.do" target="_blank" rel="noopener">[정규파견] 2027학년도 1학기 정규학기 해외파견(교환) 프로그램 특별모집 2차[폴리테크니카대학] 선</a><div class="sub">국제처 · 2026-09-21 · 09/28 확인 · 최 * 정 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="0e920dac2b3c:40969" data-site="창업지원단" data-title="제4차 부산대학교 산학협력단 및 부산교육대학교 Edu Biz Space 입주기업 모집 공고" data-url="https://bi.pusan.ac.kr/community/notice/40969" data-sub="창업지원단 · 2026-09-21 · 09/28 확인 · 담당자 · 기타" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:04+09:00" data-rank="71" data-search="제4차 부산대학교 산학협력단 및 부산교육대학교 edu biz space 입주기업 모집 공고 창업지원단"><div class="body"><a href="https://bi.pusan.ac.kr/community/notice/40969" target="_blank" rel="noopener">제4차 부산대학교 산학협력단 및 부산교육대학교 Edu Biz Space 입주기업 모집 공고</a><div class="sub">창업지원단 · 2026-09-21 · 09/28 확인 · 담당자 · 기타 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="0e920dac2b3c:40968" data-site="창업지원단" data-title="2026년 제2차 중소기업창업보육센터 신규입주 기업 모집 공고" data-url="https://bi.pusan.ac.kr/community/notice/40968" data-sub="창업지원단 · 2026-09-21 · 09/28 확인 · 담당자 · 창업보육" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:04+09:00" data-rank="72" data-search="2026년 제2차 중소기업창업보육센터 신규입주 기업 모집 공고 창업지원단"><div class="body"><a href="https://bi.pusan.ac.kr/community/notice/40968" target="_blank" rel="noopener">2026년 제2차 중소기업창업보육센터 신규입주 기업 모집 공고</a><div class="sub">창업지원단 · 2026-09-21 · 09/28 확인 · 담당자 · 창업보육 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511204" data-site="부산대학교" data-title="제4차 부산대학교 산학협력단 및 부산교육대학교 Edu Biz Space 입주기업..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511204" data-sub="부산대학교 · 2026-09-21 · 09/28 확인 · 창업지원부" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="73" data-search="제4차 부산대학교 산학협력단 및 부산교육대학교 edu biz space 입주기업... 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511204" target="_blank" rel="noopener">제4차 부산대학교 산학협력단 및 부산교육대학교 Edu Biz Space 입주기업...</a><div class="sub">부산대학교 · 2026-09-21 · 09/28 확인 · 창업지원부 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511203" data-site="부산대학교" data-title="[국제처] [정규파견] 2027학년도 1학기 정규학기 해외파견(교환 및 교비) ..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511203" data-sub="부산대학교 · 2026-09-21 · 09/28 확인 · 국제협력실" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="74" data-search="[국제처] [정규파견] 2027학년도 1학기 정규학기 해외파견(교환 및 교비) ... 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511203" target="_blank" rel="noopener">[국제처] [정규파견] 2027학년도 1학기 정규학기 해외파견(교환 및 교비) ...</a><div class="sub">부산대학교 · 2026-09-21 · 09/28 확인 · 국제협력실 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511202" data-site="부산대학교" data-title="[국제처] 2027학년도 1학기 정규학기 해외파견(교환) 프로그램 특별모집 2차..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511202" data-sub="부산대학교 · 2026-09-21 · 09/28 확인 · 국제협력실" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="75" data-search="[국제처] 2027학년도 1학기 정규학기 해외파견(교환) 프로그램 특별모집 2차... 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511202" target="_blank" rel="noopener">[국제처] 2027학년도 1학기 정규학기 해외파견(교환) 프로그램 특별모집 2차...</a><div class="sub">부산대학교 · 2026-09-21 · 09/28 확인 · 국제협력실 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511192" data-site="부산대학교" data-title="[교양교육원] 2026-2학기 독서토론대회 진행요원 모집" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511192" data-sub="부산대학교 · 2026-09-21 · 09/28 확인 · 교양교육원 행정실" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="76" data-search="[교양교육원] 2026-2학기 독서토론대회 진행요원 모집 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511192" target="_blank" rel="noopener">[교양교육원] 2026-2학기 독서토론대회 진행요원 모집</a><div class="sub">부산대학교 · 2026-09-21 · 09/28 확인 · 교양교육원 행정실 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511175" data-site="부산대학교" data-title="양산캠퍼스 특강 &quot;의생명계열 학생의 스트레스와 회복탄력성&quot;(의생명 러닝 UP) ..." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511175" data-sub="부산대학교 · 2026-09-21 · 09/28 확인 · 교수학습지원센터" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="77" data-search="양산캠퍼스 특강 &quot;의생명계열 학생의 스트레스와 회복탄력성&quot;(의생명 러닝 up) ... 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511175" target="_blank" rel="noopener">양산캠퍼스 특강 &quot;의생명계열 학생의 스트레스와 회복탄력성&quot;(의생명 러닝 UP) ...</a><div class="sub">부산대학교 · 2026-09-21 · 09/28 확인 · 교수학습지원센터 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511174" data-site="부산대학교" data-title="[학생성공개발원] 가장 일하고 싶은 지역기업 TOP10 공모전 안내(~10.7...." data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511174" data-sub="부산대학교 · 2026-09-21 · 09/28 확인 · 학생성공개발원행정실" data-bp="1" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="78" data-search="[학생성공개발원] 가장 일하고 싶은 지역기업 top10 공모전 안내(~10.7.... 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511174" target="_blank" rel="noopener">[학생성공개발원] 가장 일하고 싶은 지역기업 TOP10 공모전 안내(~10.7....</a><div class="sub">부산대학교 · 2026-09-21 · 09/28 확인 · 학생성공개발원행정실 <span class="pin">고정</span></div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="51f3de4349e0:204365" data-site="학생성공개발원" data-title="[부산광역시 연제구] 2026년 연제구 구인 구직 만남의 날 안내" data-url="https://job.pusan.ac.kr/ko/notice/notice/view/204365?p=3" data-sub="학생성공개발원 · 2026-09-20 · 09/28 확인" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:14+09:00" data-rank="79" data-search="[부산광역시 연제구] 2026년 연제구 구인 구직 만남의 날 안내 학생성공개발원"><div class="body"><a href="https://job.pusan.ac.kr/ko/notice/notice/view/204365?p=3" target="_blank" rel="noopener">[부산광역시 연제구] 2026년 연제구 구인 구직 만남의 날 안내</a><div class="sub">학생성공개발원 · 2026-09-20 · 09/28 확인 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511166" data-site="부산대학교" data-title="[교육부, 성평등가족부] 여성폭력 2차 피해 방지 지침 안내[카드뉴스 4편]" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511166" data-sub="부산대학교 · 2026-09-19 · 09/28 확인 · 인권센터" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="80" data-search="[교육부, 성평등가족부] 여성폭력 2차 피해 방지 지침 안내[카드뉴스 4편] 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511166" target="_blank" rel="noopener">[교육부, 성평등가족부] 여성폭력 2차 피해 방지 지침 안내[카드뉴스 4편]</a><div class="sub">부산대학교 · 2026-09-19 · 09/28 확인 · 인권센터 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511165" data-site="부산대학교" data-title="[교육부, 성평등가족부] 여성폭력 2차 피해 방지 지침 안내[카드뉴스 3편]" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511165" data-sub="부산대학교 · 2026-09-19 · 09/28 확인 · 인권센터" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="81" data-search="[교육부, 성평등가족부] 여성폭력 2차 피해 방지 지침 안내[카드뉴스 3편] 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511165" target="_blank" rel="noopener">[교육부, 성평등가족부] 여성폭력 2차 피해 방지 지침 안내[카드뉴스 3편]</a><div class="sub">부산대학교 · 2026-09-19 · 09/28 확인 · 인권센터 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511164" data-site="부산대학교" data-title="[교육부, 성평등가족부] 여성폭력 2차 피해 방지 지침 안내[카드뉴스 2편]" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511164" data-sub="부산대학교 · 2026-09-19 · 09/28 확인 · 인권센터" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="82" data-search="[교육부, 성평등가족부] 여성폭력 2차 피해 방지 지침 안내[카드뉴스 2편] 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511164" target="_blank" rel="noopener">[교육부, 성평등가족부] 여성폭력 2차 피해 방지 지침 안내[카드뉴스 2편]</a><div class="sub">부산대학교 · 2026-09-19 · 09/28 확인 · 인권센터 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511163" data-site="부산대학교" data-title="[교육부, 성평등가족부] 여성폭력 2차 피해 방지 지침 안내[카드뉴스 1편]" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511163" data-sub="부산대학교 · 2026-09-19 · 09/28 확인 · 인권센터" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="83" data-search="[교육부, 성평등가족부] 여성폭력 2차 피해 방지 지침 안내[카드뉴스 1편] 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511163" target="_blank" rel="noopener">[교육부, 성평등가족부] 여성폭력 2차 피해 방지 지침 안내[카드뉴스 1편]</a><div class="sub">부산대학교 · 2026-09-19 · 09/28 확인 · 인권센터 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="95390426e921:1511160" data-site="부산대학교" data-title="★2026년 이공 우수인재 성장경로 지원 시범사업 장학생 공모★" data-url="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511160" data-sub="부산대학교 · 2026-09-18 · 09/28 확인 · 대학원혁신실" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:03+09:00" data-rank="84" data-search="★2026년 이공 우수인재 성장경로 지원 시범사업 장학생 공모★ 부산대학교"><div class="body"><a href="https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&amp;page=2&amp;mode=view&amp;mgr_seq=3&amp;board_seq=1511160" target="_blank" rel="noopener">★2026년 이공 우수인재 성장경로 지원 시범사업 장학생 공모★</a><div class="sub">부산대학교 · 2026-09-18 · 09/28 확인 · 대학원혁신실 </div></div><button class="pinbtn" type="button">📌</button></li>
+<li class="post" data-uid="374945f5c2db:1463569" data-site="정보컴퓨터공학부" data-title="강의실 예약 방법 알림" data-url="https://cse.pusan.ac.kr/bbs/cse/2055/1463569/artclView.do" data-sub="정보컴퓨터공학부 · 2026-09-18 · 09/28 확인 · 황 * 경" data-bp="0" data-order="2026-09-28|2026-09-28T10:50:00+09:00" data-rank="85" data-search="강의실 예약 방법 알림 정보컴퓨터공학부"><div class="body"><a href="https://cse.pusan.ac.kr/bbs/cse/2055/1463569/artclView.do" target="_blank" rel="noopener">강의실 예약 방법 알림</a><div class="sub">정보컴퓨터공학부 · 2026-09-18 · 09/28 확인 · 황 * 경 </div></div><button class="pinbtn" type="button">📌</button></li></ul>
+  <div class="empty" id="empty" hidden></div>
+</div>
+
+<script>
+const homes = {"정보컴퓨터공학부": "https://cse.pusan.ac.kr/cse/14221/subview.do", "부산대학교": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095", "창업지원단": "https://bi.pusan.ac.kr/community/notice", "산학협력단": "https://sanhak.pusan.ac.kr/sanhak/board/4", "국제처": "https://international.pusan.ac.kr/international/15225/subview.do", "AI융합교육원": "https://swedu.pusan.ac.kr/swedu/16156/subview.do", "도서관": "https://lib.pusan.ac.kr/guide/notice", "학생성공개발원": "https://job.pusan.ac.kr/ko/notice", "PLATO": "https://plato.pusan.ac.kr/mod/ubboard/view.php?id=2624", "나눔시스템": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007", "AI역량지원시스템": "https://swcss.pusan.ac.kr/"};
+const shortcutNames = ["AI역량지원시스템"];
+const boardLink = document.getElementById('boardLink');
+const list = document.getElementById('list');
+const empty = document.getElementById('empty');
+const q = document.getElementById('q');
+let site = '';
+
+// 핀은 이 브라우저에만 저장된다. 정적 페이지라 서버에 적어 둘 곳이 없다.
+// 글 내용까지 통째로 담아두므로, 보관 기간이 지나 목록에서 빠진 글도
+// 핀을 뽑기 전까지는 여기 저장된 사본으로 계속 보여줄 수 있다.
+const PIN_KEY = 'notice_tap_pins';
+let pins = {};
+try { pins = JSON.parse(localStorage.getItem(PIN_KEY)) || {}; } catch (e) { pins = {}; }
+
+function savePins() {
+  try { localStorage.setItem(PIN_KEY, JSON.stringify(pins)); } catch (e) {}
+}
+
+function isPinned(uid) {
+  return Object.prototype.hasOwnProperty.call(pins, uid);
+}
+
+function snapshot(li) {
+  const d = li.dataset;
+  return { uid: d.uid, title: d.title, url: d.url, site: d.site,
+            sub: d.sub, bp: d.bp, order: d.order };
+}
+
+function pinButton() {
+  const b = document.createElement('button');
+  b.className = 'pinbtn';
+  b.type = 'button';
+  b.textContent = '📌';
+  return b;
+}
+
+// 되살릴 주소는 이 브라우저에 저장돼 있던 값이므로 형식을 한 번 확인하고 쓴다.
+function safeUrl(url) {
+  try {
+    const u = new URL(url, location.href);
+    return (u.protocol === 'http:' || u.protocol === 'https:') ? u.href : '';
+  } catch (e) { return ''; }
+}
+
+// 서버에서 이미 지워진 글을 저장해 둔 사본으로 다시 그린다.
+function buildItem(data) {
+  const href = data && data.uid ? safeUrl(data.url || '') : '';
+  if (!href) return null;
+  const li = document.createElement('li');
+  li.className = 'post';
+  li.dataset.uid = data.uid;
+  li.dataset.site = data.site || '';
+  li.dataset.url = href;
+  li.dataset.title = data.title || '';
+  li.dataset.sub = data.sub || '';
+  li.dataset.bp = data.bp || '0';
+  li.dataset.order = data.order || '';
+  li.dataset.restored = '1';
+  li.dataset.rank = '999999';
+  li.dataset.search = ((data.title || '') + ' ' + (data.site || '')).toLowerCase();
+
+  const body = document.createElement('div');
+  body.className = 'body';
+  const a = document.createElement('a');
+  a.href = href;
+  a.target = '_blank';
+  a.rel = 'noopener';
+  a.textContent = data.title || '(제목 없음)';
+  body.append(a);
+
+  const sub = document.createElement('div');
+  sub.className = 'sub';
+  sub.append(document.createTextNode(data.sub || ''));
+  if (data.bp === '1') {
+    const bp = document.createElement('span');
+    bp.className = 'pin';
+    bp.textContent = '고정';
+    sub.append(bp);
+  }
+  const keep = document.createElement('span');
+  keep.className = 'keep';
+  keep.textContent = '핀으로 보관 중';
+  sub.append(keep);
+  body.append(sub);
+
+  li.append(body, pinButton());
+  return li;
+}
+
+function refresh() {
+  const present = new Set();
+  for (const li of list.children) present.add(li.dataset.uid);
+
+  let dropped = false;
+  for (const uid of Object.keys(pins)) {
+    if (present.has(uid)) continue;
+    const li = buildItem(pins[uid]);
+    if (li) list.append(li);
+    else { delete pins[uid]; dropped = true; }
+  }
+  if (dropped) savePins();
+
+  for (const li of Array.from(list.children)) {
+    const on = isPinned(li.dataset.uid);
+    // 되살린 글은 핀을 뽑는 순간 남겨 둘 근거가 없어진다.
+    if (!on && li.dataset.restored) { li.remove(); continue; }
+    li.classList.toggle('pinned', on);
+    const btn = li.querySelector('.pinbtn');
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.title = on ? '핀 뽑기 (보관 기간이 지났으면 사라집니다)' : '맨 위에 고정해 두기';
+  }
+
+  // 핀만 위로 끌어올리고, 나머지는 서버가 매겨 준 순번(rank)대로 되돌린다.
+  // 여기서 순번을 안 보고 현재 차례를 그대로 두면, 한 번 위로 올라간 글이
+  // 핀을 뽑은 뒤에도 그 자리에 눌러앉는다.
+  const rows = Array.from(list.children);
+  rows.sort((a, b) => {
+    const pa = a.classList.contains('pinned') ? 1 : 0;
+    const pb = b.classList.contains('pinned') ? 1 : 0;
+    if (pa !== pb) return pb - pa;
+    if (pa) return (b.dataset.order || '').localeCompare(a.dataset.order || '');
+    return Number(a.dataset.rank) - Number(b.dataset.rank);
+  });
+  for (const li of rows) list.append(li);
+
+  render();
+}
+
+function render() {
+  const needle = q.value.trim().toLowerCase();
+  let shown = 0;
+  for (const li of list.children) {
+    const okSite = !site || li.dataset.site === site;
+    const okText = !needle || li.dataset.search.includes(needle);
+    const visible = okSite && okText;
+    li.hidden = !visible;
+    if (visible) shown++;
+  }
+  empty.hidden = shown > 0;
+  empty.textContent = shortcutNames.includes(site)
+    ? '이곳은 바로가기만 등록되어 있습니다. 위 링크로 이동하세요.'
+    : '조건에 맞는 글이 없습니다.';
+}
+
+function showBoardLink() {
+  const url = site ? homes[site] : null;
+  if (!url) { boardLink.classList.remove('show'); return; }
+  boardLink.href = url;
+  boardLink.innerHTML = '';
+  const label = shortcutNames.includes(site) ? ' 사이트로 이동' : ' 공지사항 페이지로 이동';
+  boardLink.append(site + label);
+  const arrow = document.createElement('span');
+  arrow.className = 'arrow';
+  arrow.textContent = '↗';
+  boardLink.append(arrow);
+  boardLink.classList.add('show');
+}
+
+q.addEventListener('input', render);
+
+list.addEventListener('click', ev => {
+  const btn = ev.target.closest('.pinbtn');
+  if (!btn) return;
+  const li = btn.closest('li.post');
+  const uid = li.dataset.uid;
+  if (isPinned(uid)) {
+    // 실수로 눌러서 보관해 둔 글을 놓치는 일이 없도록 한 번 물어본다.
+    const warn = li.dataset.restored
+      ? '\n보관 기간이 지난 글이라 목록에서 바로 사라집니다.'
+      : '';
+    if (!confirm('핀을 뽑을까요?' + warn)) return;
+    delete pins[uid];
+  } else {
+    pins[uid] = snapshot(li);
+  }
+  savePins();
+  refresh();
+});
+
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('on'));
+    chip.classList.add('on');
+    site = chip.dataset.site;
+    showBoardLink();
+    render();
+  });
+});
+
+refresh();
+</script>
+</body>
+</html>
