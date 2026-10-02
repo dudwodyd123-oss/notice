@@ -4030,23 +4030,6 @@
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511234"
   },
   {
-   "author": "장영실AI융합연구원",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-23T07:39:03+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1511248",
-   "posted_at": "2026-09-23",
-   "posted_on": "2026-09-23",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "[부산대 AI 콜로퀴엄 2026] 26.10.2(금), 임정환 대표(㈜모티프테크...",
-   "uid": "95390426e921:1511248",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511248"
-  },
-  {
    "author": "도서관 정보운영과",
    "baseline": 0,
    "category": "",
@@ -4734,23 +4717,6 @@
    "muted": 0,
    "notified": 1,
    "pinned": 0,
-   "post_id": "1443663",
-   "posted_at": "2026.06.17",
-   "posted_on": "2026-06-17",
-   "site_key": "9a9cc23bc9b6",
-   "site_name": "정보컴퓨터공학부",
-   "title": "[한국정보보호산업협회] 기업수요기반 화이트해커 양성과정 교육생 모집 안내",
-   "uid": "9a9cc23bc9b6:1443663",
-   "url": "https://cse.pusan.ac.kr/bbs/cse/2061/1443663/artclView.do"
-  },
-  {
-   "author": "정 * 랑",
-   "baseline": 1,
-   "category": "",
-   "first_seen": "2026-08-30T13:47:38+09:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
    "post_id": "1443866",
    "posted_at": "2026.06.19",
    "posted_on": "2026-06-19",
@@ -4912,6 +4878,23 @@
    "title": "PRE-SOMA(AI·SW마에스트로 예비캠프) 설명회 안내",
    "uid": "9a9cc23bc9b6:1461188",
    "url": "https://cse.pusan.ac.kr/bbs/cse/2061/1461188/artclView.do"
+  },
+  {
+   "author": "황 * 경",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-10-02T11:17:11+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1465690",
+   "posted_at": "2026.10.02",
+   "posted_on": "2026-10-02",
+   "site_key": "9a9cc23bc9b6",
+   "site_name": "정보컴퓨터공학부",
+   "title": "2026 AI+X 콘퍼런스 개최 안내",
+   "uid": "9a9cc23bc9b6:1465690",
+   "url": "https://cse.pusan.ac.kr/bbs/cse/2061/1465690/artclView.do"
   },
   {
    "author": "송 * 빈",
@@ -5167,23 +5150,6 @@
    "title": "[책읽는대학] 2026학년도 독서 에세이 공모전 <읽고 쓰다>",
    "uid": "ca53af7720c5:57629",
    "url": "https://lib.pusan.ac.kr/guide/notice/57629"
-  },
-  {
-   "author": "",
-   "baseline": 1,
-   "category": "일반",
-   "first_seen": "2026-09-03T12:34:45+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "57643",
-   "posted_at": "2026-08-28",
-   "posted_on": "2026-08-28",
-   "site_key": "ca53af7720c5",
-   "site_name": "도서관",
-   "title": "[북큐] 9월~11월 '도서관, 책으로 말을 걸다' 전시 안내",
-   "uid": "ca53af7720c5:57643",
-   "url": "https://lib.pusan.ac.kr/guide/notice/57643"
   },
   {
    "author": "",
@@ -5679,6 +5645,23 @@
    "url": "https://lib.pusan.ac.kr/guide/notice/57936"
   },
   {
+   "author": "",
+   "baseline": 0,
+   "category": "학술DB",
+   "first_seen": "2026-10-02T11:17:32+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "57942",
+   "posted_at": "2026-10-02",
+   "posted_on": "2026-10-02",
+   "site_key": "ca53af7720c5",
+   "site_name": "도서관",
+   "title": "CAS BioFinder 시범서비스 안내(~12/31)",
+   "uid": "ca53af7720c5:57942",
+   "url": "https://lib.pusan.ac.kr/guide/notice/57942"
+  },
+  {
    "author": "김요섭",
    "baseline": 0,
    "category": "",
@@ -5762,6 +5745,23 @@
    "title": "[부산동구가족센터] 2026 다문화 아동청소년 진로설계지원사업 참여 멘토 합격자 발표",
    "uid": "fe5b93177fd4:1351",
    "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1351"
+  },
+  {
+   "author": "류지원",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-10-02T11:17:53+00:00",
+   "muted": 1,
+   "notified": 0,
+   "pinned": 0,
+   "post_id": "1352",
+   "posted_at": "2026-10-02",
+   "posted_on": "2026-10-02",
+   "site_key": "fe5b93177fd4",
+   "site_name": "나눔시스템",
+   "title": "[해외봉사] 제39기 부산대학교 산학협력 해외봉사단 면접전형 시간 안내",
+   "uid": "fe5b93177fd4:1352",
+   "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1352"
   }
  ],
  "sites_state": [
