@@ -5825,37 +5825,37 @@
   {
    "fail_since": "2026-10-04T18:21:22+00:00",
    "last_alert": "",
-   "last_error": "https://cse.pusan.ac.kr/bbs/cse/2056/artclList.do 가져오기 실패: HTTPSConnectionPool(host='cse.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/cse/2056/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='cse.pusan.ac.kr', port=443) at 0x7f4aa7d5e990>, 'Connection to cse.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "https://cse.pusan.ac.kr/bbs/cse/2056/artclList.do 가져오기 실패: HTTPSConnectionPool(host='cse.pusan.ac.kr', port=443): Read timed out. (read timeout=20)",
    "site_key": "10062ffd1f9d"
   },
   {
    "fail_since": "2026-10-04T18:23:45+00:00",
    "last_alert": "",
-   "last_error": "https://cse.pusan.ac.kr/bbs/cse/2052/artclList.do 가져오기 실패: HTTPSConnectionPool(host='cse.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/cse/2052/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='cse.pusan.ac.kr', port=443) at 0x7f4aa7d5d970>, 'Connection to cse.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "https://cse.pusan.ac.kr/bbs/cse/2052/artclList.do 가져오기 실패: HTTPSConnectionPool(host='cse.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/cse/2052/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='cse.pusan.ac.kr', port=443) at 0x7f1542c11970>, 'Connection to cse.pusan.ac.kr timed out. (connect timeout=20)'))",
    "site_key": "32530b1606ef"
   },
   {
    "fail_since": "2026-10-04T18:20:15+00:00",
    "last_alert": "",
-   "last_error": "https://cse.pusan.ac.kr/bbs/cse/2055/artclList.do 가져오기 실패: HTTPSConnectionPool(host='cse.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/cse/2055/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='cse.pusan.ac.kr', port=443) at 0x7f4aa7d5f500>, 'Connection to cse.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "https://cse.pusan.ac.kr/bbs/cse/2055/artclList.do 가져오기 실패: HTTPSConnectionPool(host='cse.pusan.ac.kr', port=443): Read timed out. (read timeout=20)",
    "site_key": "374945f5c2db"
   },
   {
    "fail_since": "2026-10-04T18:22:40+00:00",
    "last_alert": "",
-   "last_error": "https://cse.pusan.ac.kr/bbs/cse/2060/artclList.do 가져오기 실패: HTTPSConnectionPool(host='cse.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/cse/2060/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='cse.pusan.ac.kr', port=443) at 0x7f4aa7d5f590>, 'Connection to cse.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "https://cse.pusan.ac.kr/bbs/cse/2060/artclList.do 가져오기 실패: HTTPSConnectionPool(host='cse.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/cse/2060/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='cse.pusan.ac.kr', port=443) at 0x7f1542c136b0>, 'Connection to cse.pusan.ac.kr timed out. (connect timeout=20)'))",
    "site_key": "488205947b84"
   },
   {
    "fail_since": "2026-10-04T18:32:29+00:00",
    "last_alert": "",
-   "last_error": "https://job.pusan.ac.kr/ko/notice/notice/list/1 가져오기 실패: HTTPSConnectionPool(host='job.pusan.ac.kr', port=443): Read timed out. (read timeout=20)",
+   "last_error": "https://job.pusan.ac.kr/ko/notice/notice/list/1 가져오기 실패: HTTPSConnectionPool(host='job.pusan.ac.kr', port=443): Max retries exceeded with url: /ko/notice/notice/list/1 (Caused by ConnectTimeoutError(<HTTPSConnection(host='job.pusan.ac.kr', port=443) at 0x7f154290d610>, 'Connection to job.pusan.ac.kr timed out. (connect timeout=20)'))",
    "site_key": "51f3de4349e0"
   },
   {
    "fail_since": "2026-10-04T18:29:52+00:00",
    "last_alert": "",
-   "last_error": "https://swedu.pusan.ac.kr/bbs/swedu/2265/artclList.do 가져오기 실패: HTTPSConnectionPool(host='swedu.pusan.ac.kr', port=443): Read timed out. (read timeout=20)",
+   "last_error": "https://swedu.pusan.ac.kr/bbs/swedu/2265/artclList.do 가져오기 실패: HTTPSConnectionPool(host='swedu.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/swedu/2265/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='swedu.pusan.ac.kr', port=443) at 0x7f154290e870>, 'Connection to swedu.pusan.ac.kr timed out. (connect timeout=20)'))",
    "site_key": "5287380eed4f"
   },
   {
@@ -5867,7 +5867,7 @@
   {
    "fail_since": "2026-10-04T18:31:03+00:00",
    "last_alert": "",
-   "last_error": "https://cse.pusan.ac.kr/bbs/cse/2064/artclList.do 가져오기 실패: HTTPSConnectionPool(host='cse.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/cse/2064/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='cse.pusan.ac.kr', port=443) at 0x7f4aa7ac8740>, 'Connection to cse.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "https://cse.pusan.ac.kr/bbs/cse/2064/artclList.do 가져오기 실패: HTTPSConnectionPool(host='cse.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/cse/2064/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='cse.pusan.ac.kr', port=443) at 0x7f154290dbe0>, 'Connection to cse.pusan.ac.kr timed out. (connect timeout=20)'))",
    "site_key": "7e4c933f44ff"
   },
   {
@@ -5879,19 +5879,19 @@
   {
    "fail_since": "2026-10-04T18:27:29+00:00",
    "last_alert": "",
-   "last_error": "https://sanhak.pusan.ac.kr/sanhak/board/4 가져오기 실패: HTTPSConnectionPool(host='sanhak.pusan.ac.kr', port=443): Read timed out. (read timeout=20)",
+   "last_error": "https://sanhak.pusan.ac.kr/sanhak/board/4 가져오기 실패: HTTPSConnectionPool(host='sanhak.pusan.ac.kr', port=443): Max retries exceeded with url: /sanhak/board/4 (Caused by ConnectTimeoutError(<HTTPSConnection(host='sanhak.pusan.ac.kr', port=443) at 0x7f154290d880>, 'Connection to sanhak.pusan.ac.kr timed out. (connect timeout=20)'))",
    "site_key": "9872521de15b"
   },
   {
    "fail_since": "2026-10-04T18:25:02+00:00",
    "last_alert": "",
-   "last_error": "https://cse.pusan.ac.kr/bbs/cse/2061/artclList.do 가져오기 실패: HTTPSConnectionPool(host='cse.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/cse/2061/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='cse.pusan.ac.kr', port=443) at 0x7f4aa7d890a0>, 'Connection to cse.pusan.ac.kr timed out. (connect timeout=20)'))",
+   "last_error": "https://cse.pusan.ac.kr/bbs/cse/2061/artclList.do 가져오기 실패: HTTPSConnectionPool(host='cse.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/cse/2061/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='cse.pusan.ac.kr', port=443) at 0x7f1542c38920>, 'Connection to cse.pusan.ac.kr timed out. (connect timeout=20)'))",
    "site_key": "9a9cc23bc9b6"
   },
   {
    "fail_since": "2026-10-04T18:28:38+00:00",
    "last_alert": "",
-   "last_error": "https://international.pusan.ac.kr/bbs/international/2080/artclList.do 가져오기 실패: HTTPSConnectionPool(host='international.pusan.ac.kr', port=443): Read timed out. (read timeout=20)",
+   "last_error": "https://international.pusan.ac.kr/bbs/international/2080/artclList.do 가져오기 실패: HTTPSConnectionPool(host='international.pusan.ac.kr', port=443): Max retries exceeded with url: /bbs/international/2080/artclList.do (Caused by ConnectTimeoutError(<HTTPSConnection(host='international.pusan.ac.kr', port=443) at 0x7f154290c890>, 'Connection to international.pusan.ac.kr timed out. (connect timeout=20)'))",
    "site_key": "aa28cd59ae6d"
   },
   {
