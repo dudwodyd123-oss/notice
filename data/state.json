@@ -5713,23 +5713,6 @@
    "url": "https://lib.pusan.ac.kr/guide/notice/57942"
   },
   {
-   "author": "류지원",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-30T05:53:12+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1349",
-   "posted_at": "2026-09-30",
-   "posted_on": "2026-09-30",
-   "site_key": "fe5b93177fd4",
-   "site_name": "나눔시스템",
-   "title": "[해외봉사] 제39기 부산대학교 산학협력 해외봉사단 서류전형 합격자 공지 및 추후 진행사항 안내",
-   "uid": "fe5b93177fd4:1349",
-   "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1349"
-  },
-  {
    "author": "김소연",
    "baseline": 0,
    "category": "",
@@ -5835,9 +5818,9 @@
    "site_key": "32530b1606ef"
   },
   {
-   "fail_since": "",
+   "fail_since": "2026-10-08T00:08:24+00:00",
    "last_alert": "",
-   "last_error": "",
+   "last_error": "글을 하나도 읽지 못했습니다 (사이트 구조가 바뀌었을 수 있음)",
    "site_key": "374945f5c2db"
   },
   {
@@ -5865,9 +5848,9 @@
    "site_key": "716a7db65e89"
   },
   {
-   "fail_since": "",
+   "fail_since": "2026-10-08T00:08:43+00:00",
    "last_alert": "",
-   "last_error": "",
+   "last_error": "글을 하나도 읽지 못했습니다 (사이트 구조가 바뀌었을 수 있음)",
    "site_key": "7e4c933f44ff"
   },
   {
