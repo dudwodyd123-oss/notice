@@ -3690,23 +3690,6 @@
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1511222"
   },
   {
-   "author": "기술사업부",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-09-28T08:34:28+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 1,
-   "post_id": "1511261",
-   "posted_at": "2026-09-28",
-   "posted_on": "2026-09-28",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "[부산대학교기술지주(주)] PNU Tech Biz Week 2026(Togeth...",
-   "uid": "95390426e921:1511261",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511261"
-  },
-  {
    "author": "학생과",
    "baseline": 0,
    "category": "",
@@ -3773,6 +3756,23 @@
    "title": "[부산대소식 10월호] 넥센그룹 강병중 회장, 개교 80주년 부산대 100억 원...",
    "uid": "95390426e921:1511356",
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1511356"
+  },
+  {
+   "author": "학생과",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-10-15T17:42:15+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1511406",
+   "posted_at": "2026-10-06",
+   "posted_on": "2026-10-06",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "[울산창조경제혁신센터] 2026 창업도시 조성 프로젝트 「청년X로컬 UP(Uls...",
+   "uid": "95390426e921:1511406",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1511406"
   },
   {
    "author": "학생성공개발원행정실",
@@ -5804,7 +5804,7 @@
    "first_seen": "2026-10-02T05:25:45+00:00",
    "muted": 0,
    "notified": 1,
-   "pinned": 1,
+   "pinned": 0,
    "post_id": "57936",
    "posted_at": "2026-10-02",
    "posted_on": "2026-10-02",
