@@ -2622,23 +2622,6 @@
    "author": "SWEC",
    "baseline": 0,
    "category": "",
-   "first_seen": "2026-10-08T06:33:09+00:00",
-   "muted": 1,
-   "notified": 0,
-   "pinned": 0,
-   "post_id": "1466122",
-   "posted_at": "2026.10.08",
-   "posted_on": "2026-10-08",
-   "site_key": "5287380eed4f",
-   "site_name": "AI융합교육원",
-   "title": "[모집] 2026 PNU 「실전 Ready! 모의면접 시뮬레이션」 참가자 모집",
-   "uid": "5287380eed4f:1466122",
-   "url": "https://swedu.pusan.ac.kr/bbs/swedu/2265/1466122/artclView.do"
-  },
-  {
-   "author": "SWEC",
-   "baseline": 0,
-   "category": "",
    "first_seen": "2026-10-12T09:42:35+00:00",
    "muted": 0,
    "notified": 1,
@@ -2804,6 +2787,23 @@
    "title": "[모집] [Microsoft] 청년 취·창업을 위한「AI 실전 프로젝트 과정 in 부산」교육생 모집",
    "uid": "5287380eed4f:1467925",
    "url": "https://swedu.pusan.ac.kr/bbs/swedu/2265/1467925/artclView.do"
+  },
+  {
+   "author": "SWEC",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-10-23T11:25:06+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1468018",
+   "posted_at": "2026.10.23",
+   "posted_on": "2026-10-23",
+   "site_key": "5287380eed4f",
+   "site_name": "AI융합교육원",
+   "title": "[설문] SW융합과정을 이수 중이거나 포기한 학생들 대상으로 설문조사를 실시합니다.",
+   "uid": "5287380eed4f:1468018",
+   "url": "https://swedu.pusan.ac.kr/bbs/swedu/2265/1468018/artclView.do"
   },
   {
    "author": "사이트관리자",
@@ -4693,6 +4693,23 @@
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511722"
   },
   {
+   "author": "",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-10-23T11:24:53+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1511733",
+   "posted_at": "2026-10-23",
+   "posted_on": "2026-10-23",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "[소비자생활협동조합] 창립20주년 기념행사 안내 (10/26)",
+   "uid": "95390426e921:1511733",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511733"
+  },
+  {
    "author": "산학협력단 관리자",
    "baseline": 1,
    "category": "",
@@ -5272,23 +5289,6 @@
   },
   {
    "author": "",
-   "baseline": 1,
-   "category": "일반",
-   "first_seen": "2026-09-03T12:34:45+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 1,
-   "post_id": "56040",
-   "posted_at": "2026-04-10",
-   "posted_on": "2026-04-10",
-   "site_key": "ca53af7720c5",
-   "site_name": "도서관",
-   "title": "[부산캠퍼스]2026학년도 학부 신입생 도서관 이용교육 안내",
-   "uid": "ca53af7720c5:56040",
-   "url": "https://lib.pusan.ac.kr/guide/notice/56040"
-  },
-  {
-   "author": "",
    "baseline": 0,
    "category": "행사",
    "first_seen": "2026-10-16T09:13:36+00:00",
@@ -5320,6 +5320,23 @@
    "title": "[책읽는대학] 2026학년도 독서 에세이 공모전 <읽고 쓰다>",
    "uid": "ca53af7720c5:57629",
    "url": "https://lib.pusan.ac.kr/guide/notice/57629"
+  },
+  {
+   "author": "",
+   "baseline": 0,
+   "category": "일반",
+   "first_seen": "2026-10-23T11:25:07+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "57816",
+   "posted_at": "2026-09-14",
+   "posted_on": "2026-09-14",
+   "site_key": "ca53af7720c5",
+   "site_name": "도서관",
+   "title": "[양산캠퍼스] 2026학년도 2학기 의생명과학도서관 이용교육 안내",
+   "uid": "ca53af7720c5:57816",
+   "url": "https://lib.pusan.ac.kr/guide/notice/57816"
   },
   {
    "author": "",
@@ -5832,6 +5849,23 @@
    "url": "https://lib.pusan.ac.kr/guide/notice/58109"
   },
   {
+   "author": "",
+   "baseline": 0,
+   "category": "일반",
+   "first_seen": "2026-10-23T11:25:07+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "58118",
+   "posted_at": "2026-10-23",
+   "posted_on": "2026-10-23",
+   "site_key": "ca53af7720c5",
+   "site_name": "도서관",
+   "title": "[조치완료] 학술자료 서비스 기능 복구 안내",
+   "uid": "ca53af7720c5:58118",
+   "url": "https://lib.pusan.ac.kr/guide/notice/58118"
+  },
+  {
    "author": "이준호",
    "baseline": 0,
    "category": "",
@@ -5847,6 +5881,23 @@
    "title": "[전공봉사 활동] 2026학년도 동계 전공봉사단 모집 공고",
    "uid": "fe5b93177fd4:1357",
    "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1357"
+  },
+  {
+   "author": "임세연",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-10-23T11:25:23+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1358",
+   "posted_at": "2026-10-23",
+   "posted_on": "2026-10-23",
+   "site_key": "fe5b93177fd4",
+   "site_name": "나눔시스템",
+   "title": "[문화가 온 DAY] 2026학년도 P&U 문화가 온 DAY 7차 단체 문화체험 프로그램 신청 안내",
+   "uid": "fe5b93177fd4:1358",
+   "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1358"
   }
  ],
  "sites_state": [
