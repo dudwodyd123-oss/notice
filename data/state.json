@@ -5817,9 +5817,9 @@
  ],
  "sites_state": [
   {
-   "fail_since": "",
+   "fail_since": "2026-10-24T06:22:12+00:00",
    "last_alert": "",
-   "last_error": "",
+   "last_error": "HTTPSConnectionPool(host='bi.pusan.ac.kr', port=443): Max retries exceeded with url: /community/notice (Caused by ConnectTimeoutError(<HTTPSConnection(host='bi.pusan.ac.kr', port=443) at 0x7f27884c5460>, 'Connection to bi.pusan.ac.kr timed out. (connect timeout=20)'))",
    "site_key": "0e920dac2b3c"
   },
   {
@@ -5895,9 +5895,9 @@
    "site_key": "aa28cd59ae6d"
   },
   {
-   "fail_since": "",
+   "fail_since": "2026-10-24T06:23:22+00:00",
    "last_alert": "",
-   "last_error": "",
+   "last_error": "HTTPSConnectionPool(host='lib.pusan.ac.kr', port=443): Max retries exceeded with url: /pyxis-api/1/bulletin-boards/2/bulletins?nameOption=&onlyWriter=false&onlyNoticableBulletin=true&max=30 (Caused by ConnectTimeoutError(<HTTPSConnection(host='lib.pusan.ac.kr', port=443) at 0x7f2787fa7530>, 'Connection to lib.pusan.ac.kr timed out. (connect timeout=20)'))",
    "site_key": "ca53af7720c5"
   },
   {
