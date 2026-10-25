@@ -2908,23 +2908,6 @@
    "url": "https://plato.pusan.ac.kr/mod/ubboard/article.php?keyfield&keyword&listsize=15&page=1&categoryid&bwid=22290&id=2624"
   },
   {
-   "author": "교수학습부",
-   "baseline": 1,
-   "category": "",
-   "first_seen": "2026-09-10T01:42:07+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "2274",
-   "posted_at": "2026-08-12",
-   "posted_on": "2026-08-12",
-   "site_key": "716a7db65e89",
-   "site_name": "PLATO",
-   "title": "[의생명효원교수아카데미 3차] 양산캠퍼스 대면특강 안내",
-   "uid": "716a7db65e89:2274",
-   "url": "https://plato.pusan.ac.kr/mod/ubboard/article.php?keyfield&keyword&listsize=15&page=1&categoryid&bwid=2274&id=2624"
-  },
-  {
    "author": "사이트관리자",
    "baseline": 1,
    "category": "",
@@ -3237,7 +3220,7 @@
    "first_seen": "2026-10-23T00:52:11+00:00",
    "muted": 0,
    "notified": 1,
-   "pinned": 1,
+   "pinned": 0,
    "post_id": "53966",
    "posted_at": "2026-10-23",
    "posted_on": "2026-10-23",
@@ -5813,6 +5796,23 @@
    "title": "[문화가 온 DAY] 2026학년도 P&U 문화가 온 DAY 7차 단체 문화체험 프로그램 신청 안내",
    "uid": "fe5b93177fd4:1358",
    "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1358"
+  },
+  {
+   "author": "이준호",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-10-25T05:52:42+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1359",
+   "posted_at": "2026-10-25",
+   "posted_on": "2026-10-25",
+   "site_key": "fe5b93177fd4",
+   "site_name": "나눔시스템",
+   "title": "[전공봉사 활동] 2026학년도 동계 너의 재능이 보여 모집 공고",
+   "uid": "fe5b93177fd4:1359",
+   "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1359"
   }
  ],
  "sites_state": [
