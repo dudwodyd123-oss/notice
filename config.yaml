@@ -151,6 +151,14 @@ sites:
   start_seq: 1341
   key: fe5b93177fd4
   home: https://nanum.pusan.ac.kr/page?menuCD=000000000000007
+# 학생지원시스템(원스톱). 학사·등록·장학·예비군 공지가 올라온다.
+# 나눔시스템과 같은 틀이라 목록은 못 받아오고 글 번호를 짚어 찾는다.
+- name: 학생지원시스템
+  url: https://onestop.pusan.ac.kr/page?menuCD=000000000000386
+  parser: nanum
+  start_seq: 2210
+  key: 6c85bb222b01
+  home: https://onestop.pusan.ac.kr/page?menuCD=000000000000386
 shortcuts:
 - name: AI역량지원시스템
   url: https://swcss.pusan.ac.kr/
