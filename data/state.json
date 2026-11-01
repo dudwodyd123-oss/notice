@@ -2010,6 +2010,23 @@
    "author": "",
    "baseline": 0,
    "category": "",
+   "first_seen": "2026-11-01T23:51:51+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "204488",
+   "posted_at": "2026-10-22",
+   "posted_on": "2026-10-22",
+   "site_key": "51f3de4349e0",
+   "site_name": "학생성공개발원",
+   "title": "스펙을 더하는 첫걸음(금융편)_재경관리사 자격증 기출 문제 풀이반 과정",
+   "uid": "51f3de4349e0:204488",
+   "url": "https://job.pusan.ac.kr/ko/notice/notice/view/204488?p=3"
+  },
+  {
+   "author": "",
+   "baseline": 0,
+   "category": "",
    "first_seen": "2026-10-22T04:22:03+00:00",
    "muted": 0,
    "notified": 1,
@@ -2489,7 +2506,7 @@
    "first_seen": "2026-10-27T10:20:44+00:00",
    "muted": 1,
    "notified": 0,
-   "pinned": 1,
+   "pinned": 0,
    "post_id": "204517",
    "posted_at": "2026-10-27",
    "posted_on": "2026-10-27",
@@ -2523,7 +2540,7 @@
    "first_seen": "2026-10-28T05:16:40+00:00",
    "muted": 1,
    "notified": 0,
-   "pinned": 1,
+   "pinned": 0,
    "post_id": "204519",
    "posted_at": "2026-10-28",
    "posted_on": "2026-10-28",
@@ -6038,9 +6055,9 @@
  ],
  "sites_state": [
   {
-   "fail_since": "",
+   "fail_since": "2026-11-01T23:50:17+00:00",
    "last_alert": "",
-   "last_error": "",
+   "last_error": "HTTPSConnectionPool(host='bi.pusan.ac.kr', port=443): Max retries exceeded with url: /community/notice (Caused by ConnectTimeoutError(<HTTPSConnection(host='bi.pusan.ac.kr', port=443) at 0x7657e46dd1c0>, 'Connection to bi.pusan.ac.kr timed out. (connect timeout=20)'))",
    "site_key": "0e920dac2b3c"
   },
   {
@@ -6122,9 +6139,9 @@
    "site_key": "aa28cd59ae6d"
   },
   {
-   "fail_since": "",
+   "fail_since": "2026-11-01T23:51:25+00:00",
    "last_alert": "",
-   "last_error": "",
+   "last_error": "HTTPSConnectionPool(host='lib.pusan.ac.kr', port=443): Max retries exceeded with url: /pyxis-api/1/bulletin-boards/2/bulletins?nameOption=&onlyWriter=false&onlyNoticableBulletin=true&max=30 (Caused by ConnectTimeoutError(<HTTPSConnection(host='lib.pusan.ac.kr', port=443) at 0x7657e41dedb0>, 'Connection to lib.pusan.ac.kr timed out. (connect timeout=20)'))",
    "site_key": "ca53af7720c5"
   },
   {
