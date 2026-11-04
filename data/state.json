@@ -5223,23 +5223,6 @@
    "author": "노 * 리",
    "baseline": 0,
    "category": "",
-   "first_seen": "2026-10-15T12:48:28+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1467246",
-   "posted_at": "2026.10.15",
-   "posted_on": "2026-10-15",
-   "site_key": "aa28cd59ae6d",
-   "site_name": "국제처",
-   "title": "[단기파견] 2026학년도 동계 단기파견(영어연수) 프로그램 지원자 모집 안내",
-   "uid": "aa28cd59ae6d:1467246",
-   "url": "https://international.pusan.ac.kr/bbs/international/2080/1467246/artclView.do"
-  },
-  {
-   "author": "노 * 리",
-   "baseline": 0,
-   "category": "",
    "first_seen": "2026-10-16T09:13:32+00:00",
    "muted": 0,
    "notified": 1,
@@ -5388,6 +5371,23 @@
    "title": "[단기파견] 2026 동계 KNU <부산대×서울대> in the World Program(K",
    "uid": "aa28cd59ae6d:1471318",
    "url": "https://international.pusan.ac.kr/bbs/international/2080/1471318/artclView.do"
+  },
+  {
+   "author": "노 * 리",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-11-04T15:18:49+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1471505",
+   "posted_at": "2026.11.04",
+   "posted_on": "2026-11-04",
+   "site_key": "aa28cd59ae6d",
+   "site_name": "국제처",
+   "title": "[단기파견] 2026학년도 동계 단기파견(영어연수) 프로그램 합격자 발표 지연 안내",
+   "uid": "aa28cd59ae6d:1471505",
+   "url": "https://international.pusan.ac.kr/bbs/international/2080/1471505/artclView.do"
   },
   {
    "author": "",
@@ -6139,9 +6139,9 @@
    "site_key": "aa28cd59ae6d"
   },
   {
-   "fail_since": "",
+   "fail_since": "2026-11-04T15:18:53+00:00",
    "last_alert": "",
-   "last_error": "",
+   "last_error": "HTTPSConnectionPool(host='error.inek.kr', port=18999): Max retries exceeded with url: /error.html (Caused by NameResolutionError(\"HTTPSConnection(host='error.inek.kr', port=18999): Failed to resolve 'error.inek.kr' ([Errno -2] Name or service not known)\"))",
    "site_key": "ca53af7720c5"
   },
   {
