@@ -3557,6 +3557,23 @@
    "author": "학생과",
    "baseline": 0,
    "category": "",
+   "first_seen": "2026-11-14T08:51:30+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1511874",
+   "posted_at": "2026-11-02",
+   "posted_on": "2026-11-02",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "[금정구] 2026년 금정구 청소년어울림마당 [금샘런웨이페스타] 개최 및 참가팀...",
+   "uid": "95390426e921:1511874",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1511874"
+  },
+  {
+   "author": "학생과",
+   "baseline": 0,
+   "category": "",
    "first_seen": "2026-11-13T21:21:04+00:00",
    "muted": 0,
    "notified": 1,
@@ -3875,23 +3892,6 @@
    "title": "[도서관] 도서관에 하고 싶었던 이야기! 2026 이용자 만족도 조사(~11/2...",
    "uid": "95390426e921:1511965",
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511965"
-  },
-  {
-   "author": "반도체설계교육센터",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-11-04T06:55:01+00:00",
-   "muted": 1,
-   "notified": 0,
-   "pinned": 0,
-   "post_id": "1511971",
-   "posted_at": "2026-11-04",
-   "posted_on": "2026-11-04",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "[취업] IDEC 제14기 시스템반도체설계실무인력양성 장기교육과정 수강생 모집",
-   "uid": "95390426e921:1511971",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511971"
   },
   {
    "author": "학생과",
@@ -5813,6 +5813,23 @@
    "title": "[초록우산] 2026년 한국남부발전 <KOSPO 드림라이트 멘토링 2기 > 모집 공고",
    "uid": "fe5b93177fd4:1368",
    "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1368"
+  },
+  {
+   "author": "김요섭",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-11-14T08:51:55+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1369",
+   "posted_at": "2026-11-14",
+   "posted_on": "2026-11-14",
+   "site_key": "fe5b93177fd4",
+   "site_name": "나눔시스템",
+   "title": "[학생과] 2026학년도 제5기 'Arise PNU 글로벌 사회공헌단' 참여자 모집",
+   "uid": "fe5b93177fd4:1369",
+   "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1369"
   }
  ],
  "sites_state": [
