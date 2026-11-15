@@ -5866,9 +5866,9 @@
    "site_key": "95390426e921"
   },
   {
-   "fail_since": "2026-11-15T07:03:59+00:00",
+   "fail_since": "",
    "last_alert": "",
-   "last_error": "https://sanhak.pusan.ac.kr/sanhak/board/4 가져오기 실패: HTTPSConnectionPool(host='sanhak.pusan.ac.kr', port=443): Read timed out. (read timeout=20)",
+   "last_error": "",
    "site_key": "9872521de15b"
   },
   {
@@ -5884,9 +5884,9 @@
    "site_key": "aa28cd59ae6d"
   },
   {
-   "fail_since": "",
+   "fail_since": "2026-11-15T14:40:05+00:00",
    "last_alert": "",
-   "last_error": "",
+   "last_error": "403 Client Error: Forbidden for url: https://lib.pusan.ac.kr/pyxis-api/1/bulletin-boards/2/bulletins?nameOption=&onlyWriter=false&onlyNoticableBulletin=true&max=30",
    "site_key": "ca53af7720c5"
   },
   {
