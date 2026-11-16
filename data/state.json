@@ -2421,7 +2421,7 @@
    "first_seen": "2026-11-10T10:57:17+00:00",
    "muted": 0,
    "notified": 1,
-   "pinned": 1,
+   "pinned": 0,
    "post_id": "204576",
    "posted_at": "2026-11-10",
    "posted_on": "2026-11-10",
@@ -2634,6 +2634,23 @@
    "title": "[대학일자리플러스센터] 2026학년도 항만·해양산업 진로설계 캠프 참가자 모집",
    "uid": "51f3de4349e0:204590",
    "url": "https://job.pusan.ac.kr/ko/notice/notice/view/204590?p=1"
+  },
+  {
+   "author": "",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-11-16T00:15:16+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "204591",
+   "posted_at": "2026-11-16",
+   "posted_on": "2026-11-16",
+   "site_key": "51f3de4349e0",
+   "site_name": "학생성공개발원",
+   "title": "[부산경제진흥원] 2026 부울경 광역이음 프로젝트 내일설계 현장투어(기업탐방) 안내",
+   "uid": "51f3de4349e0:204591",
+   "url": "https://job.pusan.ac.kr/ko/notice/notice/view/204591?p=1"
   },
   {
    "author": "",
@@ -3467,23 +3484,6 @@
    "title": "[장학]2027년도 한국지도자육성장학재단 장학생 선발 공고",
    "uid": "95390426e921:1511805",
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1511805"
-  },
-  {
-   "author": "학사과",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-11-08T18:27:18+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1511808",
-   "posted_at": "2026-10-28",
-   "posted_on": "2026-10-28",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "[학사과] 2026학년도 겨울계절수업 교류 수학 안내(울산대학교)",
-   "uid": "95390426e921:1511808",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1511808"
   },
   {
    "author": "디지털인문학센터",
