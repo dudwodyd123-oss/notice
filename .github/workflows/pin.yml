@@ -1,0 +1,72 @@
+name: 핀 고치기
+
+# 화면의 핀 단추가 이 저장소에 쪽지(이슈)를 미리 채워 남긴다.
+# 사람이 Create 만 누르면 여기서 받아 data/pins.json 을 고친다.
+# 브라우저에 깃허브 토큰을 두지 않으려는 것이 요점이다. '이 사람이 주인이
+# 맞다'는 확인은 깃허브 로그인이 대신해 준다.
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  contents: write
+  issues: write
+
+# 공지 확인과 같은 순번을 쓴다. 둘이 겹치면 되커밋이 서로 엉킨다.
+concurrency:
+  group: notice-tap
+  cancel-in-progress: false
+
+jobs:
+  pin:
+    # 공개 저장소라 누구나 이슈를 열 수 있다. 주인이 남긴 핀 쪽지만 처리하고,
+    # 그 밖의 이슈는 건드리지 않는다(사람이 쓴 글을 멋대로 닫지 않도록).
+    if: >-
+      github.event.issue.user.login == github.repository_owner &&
+      contains(github.event.issue.body, 'pin:')
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      - name: 쪽지를 읽어 핀 목록 고치기
+        # 이슈 본문을 쉘 명령에 직접 붙이지 않고 환경변수로 넘긴다.
+        # 본문에 따옴표나 세미콜론이 섞이면 명령이 조작될 수 있기 때문이다.
+        env:
+          BODY: ${{ github.event.issue.body }}
+        run: |
+          printf '%s' "$BODY" > issue.txt
+          python -m notice_tap pin --body issue.txt | tee result.txt
+          rm -f issue.txt
+
+      - name: 핀 목록 되커밋
+        # 되커밋하면 '공지 확인' 작업이 따라 돌면서 화면을 다시 그려 올린다.
+        # 여기서 또 그리면 Pages 배포가 두 군데로 갈라져 서로 엉킨다.
+        env:
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          if git diff --quiet -- data/pins.json; then
+            echo "바뀐 것이 없어 커밋할 것이 없습니다."
+            exit 0
+          fi
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/pins.json
+          git commit -m "핀 목록 갱신"
+          git pull --rebase --autostash origin "$BRANCH" || true
+          git push origin "HEAD:$BRANCH"
+
+      - name: 쪽지에 결과를 적고 닫기
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NUMBER: ${{ github.event.issue.number }}
+        run: |
+          gh issue comment "$NUMBER" --body-file result.txt
+          gh issue close "$NUMBER"

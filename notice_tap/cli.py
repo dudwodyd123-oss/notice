@@ -8,7 +8,7 @@ import sys
 import webbrowser
 from pathlib import Path
 
-from . import __version__
+from . import __version__, pins
 from .checker import CheckResult, Checker
 from .config import DEFAULT_PATH, Config
 from .dashboard import render_dashboard
@@ -141,6 +141,8 @@ def cmd_check(args) -> int:
         sites=config.sites,
         days=config.get("retention_days", 7),
         shortcuts=config.shortcuts,
+        pins=pins.load(config.get("pins_path", pins.DEFAULT_PATH)),
+        pin_repo=config.get("pin_repo", ""),
     )
     # 경고에 붙일 주소. 올려둔 주소가 있으면 그쪽을 쓴다 - 내 컴퓨터 안의
     # 경로(file://)는 남의 기기에서 열리지도 않고 디스코드도 받지 않는다.
@@ -271,6 +273,8 @@ def cmd_dashboard(args) -> int:
         sites=config.sites,
         days=config.get("retention_days", 7),
         shortcuts=config.shortcuts,
+        pins=pins.load(config.get("pins_path", pins.DEFAULT_PATH)),
+        pin_repo=config.get("pin_repo", ""),
     )
     store.close()
     print(f"모아보기 페이지: {path.resolve()}")
@@ -306,6 +310,25 @@ def cmd_import(args) -> int:
     count = store.import_state(json.loads(path.read_text(encoding="utf-8")))
     store.close()
     print(f"{path} 에서 글 {count}건을 불러왔습니다.")
+    return 0
+
+
+def cmd_pin(args) -> int:
+    """깃허브 이슈 본문을 읽어 핀 목록을 고친다. 자동 실행이 부른다.
+
+    사람이 쓴 글이 아니라 화면의 핀 단추가 미리 채워 넣은 쪽지를 읽는 것이다.
+    알아듣지 못하면 목록을 건드리지 않고 그 사실만 알린다.
+    """
+    config = Config.load(args.config)
+    path = config.get("pins_path", pins.DEFAULT_PATH)
+    body = Path(args.body).read_text(encoding="utf-8") if args.body else args.text or ""
+
+    before = pins.load(path)
+    after, message = pins.apply_issue(body, before)
+    if after != before:
+        pins.save(after, path)
+    print(message)
+    print(f"핀 {len(after)}건")
     return 0
 
 
@@ -403,6 +426,11 @@ def build_parser() -> argparse.ArgumentParser:
     p = subs.add_parser("import", help="내보낸 JSON 기록을 되돌려 넣는다")
     p.add_argument("--path", default="data/state.json")
     p.set_defaults(func=cmd_import)
+
+    p = subs.add_parser("pin", help="깃허브 이슈를 읽어 핀 목록을 고친다 (자동 실행용)")
+    p.add_argument("--body", help="이슈 본문이 담긴 파일")
+    p.add_argument("--text", help="이슈 본문을 직접 넘길 때")
+    p.set_defaults(func=cmd_pin)
 
     p = subs.add_parser("test-notify", help="알림 채널 설정이 맞는지 시험 전송한다")
     p.set_defaults(func=cmd_test_notify)

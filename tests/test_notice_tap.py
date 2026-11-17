@@ -22,6 +22,7 @@ from notice_tap.cli import _alert_stale  # noqa: E402
 from notice_tap.config import Config  # noqa: E402
 from notice_tap.dashboard import TEMPLATE, render_dashboard  # noqa: E402
 from notice_tap.dates import to_iso_date  # noqa: E402
+from notice_tap import pins  # noqa: E402
 from notice_tap.models import Post, Site  # noqa: E402
 from notice_tap.notify import discord as discord_module  # noqa: E402
 from notice_tap.notify.discord import DiscordNotifier  # noqa: E402
@@ -166,18 +167,43 @@ class ShortcutTest(TempDirCase):
 
 
 class PinTest(TempDirCase):
-    """핀 기능은 브라우저가 저장한 사본으로 글을 되살린다.
+    """핀은 저장소에 적어 두고 모든 기기에서 같이 본다.
 
     되살리는 데 필요한 값이 하나라도 빠지면 보관 기간이 지난 순간
     핀을 꽂아 둔 글이 조용히 사라진다. 그래서 표시를 못 박아 둔다.
     """
 
-    def _page(self, post):
+    def _page(self, post, **kw):
         store = Store(self.tmp / "t.db")
         store.record([post], notified=True)
-        out = render_dashboard(store, self.tmp / "d.html")
+        out = render_dashboard(store, self.tmp / "d.html", **kw)
         store.close()
         return out.read_text(encoding="utf-8")
+
+    def test_핀은_브라우저가_아니라_저장소에서_온다(self):
+        """예전에는 localStorage 에만 적어서 폰에서 꽂은 핀이 컴에서 안 보였다."""
+        page = self._page(make_post("42"), pins=[{"uid": "s:42", "title": "장학금"}])
+        self.assertNotIn("localStorage", page)
+        self.assertIn('"s:42"', page)
+
+    def test_핀_단추는_깃허브_쪽지를_연다(self):
+        """브라우저에 토큰을 두지 않으려고 깃허브 로그인에 확인을 맡긴다."""
+        page = self._page(make_post("42"), pin_repo="https://github.com/me/notice")
+        self.assertIn("https://github.com/me/notice", page)
+        self.assertIn("/issues/new?title=", page)
+        self.assertIn("'pin:' + action", page)
+
+    def test_제목에_스크립트_닫는_태그가_있어도_안_새어_나간다(self):
+        """핀 제목은 남의 사이트에서 온 글자다.
+
+        그대로 <script> 안에 넣으면 거기서 스크립트가 끊기고 뒤가 태그로 읽힌다.
+        """
+        page = self._page(
+            make_post("1"),
+            pins=[{"uid": "s:1", "title": "</script><img src=x onerror=alert(1)>"}],
+        )
+        self.assertNotIn("</script><img", page)
+        self.assertIn(chr(92) + "u003c/script", page)
 
     def test_글마다_핀_단추와_되살릴_값이_붙는다(self):
         page = self._page(make_post("42", title="장학금 안내"))
@@ -219,11 +245,7 @@ class PinTest(TempDirCase):
 
     def test_핀을_뽑기_전에_한_번_물어본다(self):
         page = self._page(make_post("5"))
-        self.assertIn("confirm('핀을 뽑을까요?'", page)
-        # 줄바꿈은 자바스크립트 쪽 이스케이프로 남아야 한다. 파이썬에서 진짜
-        # 줄바꿈으로 새어 나가면 따옴표가 끊겨 페이지 전체가 죽는다.
-        self.assertNotIn("? " + chr(39) + chr(10), page)
-        self.assertIn(chr(92) + "n보관 기간이 지난 글이라", page)
+        self.assertIn("confirm('핀을 뽑을까요?')", page)
 
     def test_핀은_숨기기가_먹도록_display를_되살린다(self):
         # li.post 에 display:flex 를 준 뒤로 hidden 속성이 무시될 뻔했다.
@@ -1197,6 +1219,93 @@ class ListOrderTest(TempDirCase):
         page = render_dashboard(self.store, self.tmp / "d.html").read_text(encoding="utf-8")
         self.assertNotIn("확인 ·", page)
         self.assertNotIn("확인</div>", page)
+
+
+class PinFileTest(TempDirCase):
+    """핀 쪽지(깃허브 이슈)를 읽어 목록을 고친다.
+
+    쪽지는 공개 저장소에 올라오는 글이므로 내용을 그대로 믿으면 안 된다.
+    """
+
+    def _snap(self, uid="s:1", **kw):
+        base = {"uid": uid, "title": "장학금", "url": "https://example.ac.kr/1",
+                "site": "부산대", "sub": "부산대 · 2026-11-17", "bp": "0"}
+        base.update(kw)
+        return base
+
+    def _issue(self, action, payload):
+        body = payload if isinstance(payload, str) else json.dumps(payload, ensure_ascii=False)
+        return f"pin:{action} {body}"
+
+    def test_꽂고_뺀다(self):
+        after, _ = pins.apply_issue(self._issue("add", self._snap()), [])
+        self.assertEqual([p["uid"] for p in after], ["s:1"])
+        after, _ = pins.apply_issue(self._issue("remove", self._snap()), after)
+        self.assertEqual(after, [])
+
+    def test_뺄_때는_번호만_적어도_된다(self):
+        after, _ = pins.apply_issue(self._issue("remove", "s:1"), [self._snap()])
+        self.assertEqual(after, [])
+
+    def test_같은_글을_두_번_꽂아도_하나다(self):
+        after, _ = pins.apply_issue(self._issue("add", self._snap()), [self._snap()])
+        self.assertEqual(len(after), 1)
+
+    def test_핀은_맨_나중_것이_살아_있다(self):
+        """제목이 바뀐 채로 다시 꽂으면 새 것으로 갈린다."""
+        after, _ = pins.apply_issue(
+            self._issue("add", self._snap(title="새 제목")), [self._snap()]
+        )
+        self.assertEqual(after[0]["title"], "새 제목")
+
+    def test_알아듣지_못한_쪽지는_목록을_건드리지_않는다(self):
+        """넘겨짚어 핀을 건드리느니 아무것도 안 하는 편이 낫다."""
+        before = [self._snap()]
+        for body in ("안녕하세요 질문있습니다", "pin:add", "pin:add 이상한글",
+                     "pin:add {깨진 JSON", "pin:삭제 s:1"):
+            after, message = pins.apply_issue(body, before)
+            self.assertEqual(after, before, body)
+            self.assertTrue(message)
+
+    def test_누를_수_없는_주소는_버린다(self):
+        """핀은 화면에서 눌러 여는 링크가 된다."""
+        after, _ = pins.apply_issue(
+            self._issue("add", self._snap(url="javascript:alert(1)")), []
+        )
+        self.assertEqual(after[0]["url"], "")
+
+    def test_터무니없이_긴_제목은_잘린다(self):
+        after, _ = pins.apply_issue(self._issue("add", self._snap(title="가" * 5000)), [])
+        self.assertLessEqual(len(after[0]["title"]), 300)
+
+    def test_저장했다_읽으면_그대로다(self):
+        path = self.tmp / "pins.json"
+        pins.save([self._snap()], path)
+        self.assertEqual(pins.load(path), [self._snap()])
+
+    def test_파일이_없거나_깨져도_빈_목록으로_돈다(self):
+        self.assertEqual(pins.load(self.tmp / "없는파일.json"), [])
+        broken = self.tmp / "broken.json"
+        broken.write_text("{{{", encoding="utf-8")
+        self.assertEqual(pins.load(broken), [])
+
+
+class PinSurvivalTest(TempDirCase):
+    """핀을 꽂아 둔 글은 보관 기간이 지나도 사라지면 안 된다."""
+
+    def test_목록에서_빠진_글도_사본으로_되살린다(self):
+        store = Store(self.tmp / "t.db")
+        store.record([make_post("1", title="오늘 글")], notified=True)
+        kept = {"uid": "s:99", "title": "지난달에 꽂아 둔 글",
+                "url": "https://example.ac.kr/99", "site": "부산대", "sub": "부산대", "bp": "0"}
+        page = render_dashboard(store, self.tmp / "d.html", pins=[kept]).read_text(
+            encoding="utf-8"
+        )
+        store.close()
+        # 화면 목록(li)에는 없지만 되살릴 사본은 실려 있어야 한다.
+        self.assertNotIn('data-uid="s:99"', page)
+        self.assertIn("지난달에 꽂아 둔 글", page)
+        self.assertIn("핀으로 보관 중", page)
 
 
 if __name__ == "__main__":

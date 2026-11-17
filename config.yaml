@@ -10,6 +10,10 @@ database: data/notices.db
 dashboard_path: public/index.html
 # 경고 알림(게시판 고장, 글 누락 의심)에 붙일 주소.
 dashboard_url: https://dudwodyd123-oss.github.io/notice/
+# 핀 단추를 누르면 이 저장소에 쪽지(이슈)를 남기고, 자동 실행이 그것을 읽어
+# data/pins.json 을 고친다. 덕분에 브라우저에 토큰을 두지 않아도 폰에서 꽂은
+# 핀이 컴에서도 보인다.
+pin_repo: https://github.com/dudwodyd123-oss/notice
 notify_on_pinned: true
 stale_alert_days: 2
 retention_days: 7

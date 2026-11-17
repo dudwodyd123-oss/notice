@@ -115,16 +115,13 @@ const empty = document.getElementById('empty');
 const q = document.getElementById('q');
 let site = '';
 
-// 핀은 이 브라우저에만 저장된다. 정적 페이지라 서버에 적어 둘 곳이 없다.
-// 글 내용까지 통째로 담아두므로, 보관 기간이 지나 목록에서 빠진 글도
-// 핀을 뽑기 전까지는 여기 저장된 사본으로 계속 보여줄 수 있다.
-const PIN_KEY = 'notice_tap_pins';
-let pins = {{}};
-try {{ pins = JSON.parse(localStorage.getItem(PIN_KEY)) || {{}}; }} catch (e) {{ pins = {{}}; }}
-
-function savePins() {{
-  try {{ localStorage.setItem(PIN_KEY, JSON.stringify(pins)); }} catch (e) {{}}
-}}
+// 핀은 저장소에 적혀 있다. 예전에는 이 브라우저에만 적어서 폰에서 꽂은 것이
+// 컴에서 안 보였다. 글 내용까지 통째로 담아두므로, 보관 기간이 지나 목록에서
+// 빠진 글도 핀을 뽑기 전까지는 이 사본으로 계속 보여줄 수 있다.
+const pins = {server_pins};
+// 핀 단추는 깃허브 이슈를 연다. 브라우저에 토큰을 두지 않으려는 것으로,
+// '주인이 맞다'는 확인은 깃허브 로그인이 대신해 준다.
+const pinRepo = {pin_repo};
 
 function isPinned(uid) {{
   return Object.prototype.hasOwnProperty.call(pins, uid);
@@ -201,14 +198,11 @@ function refresh() {{
   const present = new Set();
   for (const li of list.children) present.add(li.dataset.uid);
 
-  let dropped = false;
   for (const uid of Object.keys(pins)) {{
     if (present.has(uid)) continue;
     const li = buildItem(pins[uid]);
     if (li) list.append(li);
-    else {{ delete pins[uid]; dropped = true; }}
   }}
-  if (dropped) savePins();
 
   for (const li of Array.from(list.children)) {{
     const on = isPinned(li.dataset.uid);
@@ -268,23 +262,26 @@ function showBoardLink() {{
 
 q.addEventListener('input', render);
 
+// 깃허브에 '이 글을 꽂아 달라/빼 달라'는 쪽지를 미리 적어 둔 채로 연다.
+// 사람이 Create 만 누르면 자동 실행이 받아 목록을 고친다.
+function issueUrl(action, data) {{
+  const head = (action === 'add' ? '핀 꽂기 — ' : '핀 뽑기 — ') + (data.title || data.uid);
+  // 줄바꿈 없이 한 줄로 적는다. 여러 줄로 적으려다 글자가 깨진 적이 있다.
+  const body = 'pin:' + action + ' ' + JSON.stringify(data);
+  return pinRepo + '/issues/new?title=' + encodeURIComponent(head.slice(0, 80))
+    + '&body=' + encodeURIComponent(body);
+}}
+
 list.addEventListener('click', ev => {{
   const btn = ev.target.closest('.pinbtn');
   if (!btn) return;
+  if (!pinRepo) {{ alert('핀을 적어 둘 저장소가 설정돼 있지 않습니다.'); return; }}
+
   const li = btn.closest('li.post');
-  const uid = li.dataset.uid;
-  if (isPinned(uid)) {{
-    // 실수로 눌러서 보관해 둔 글을 놓치는 일이 없도록 한 번 물어본다.
-    const warn = li.dataset.restored
-      ? '\\n보관 기간이 지난 글이라 목록에서 바로 사라집니다.'
-      : '';
-    if (!confirm('핀을 뽑을까요?' + warn)) return;
-    delete pins[uid];
-  }} else {{
-    pins[uid] = snapshot(li);
-  }}
-  savePins();
-  refresh();
+  const on = isPinned(li.dataset.uid);
+  // 실수로 눌러서 보관해 둔 글을 놓치는 일이 없도록 한 번 물어본다.
+  if (on && !confirm('핀을 뽑을까요?')) return;
+  location.href = issueUrl(on ? 'remove' : 'add', snapshot(li));
 }});
 
 document.querySelectorAll('.chip').forEach(chip => {{
@@ -347,6 +344,8 @@ def render_dashboard(
     sites=None,
     days: int = 7,
     shortcuts=None,
+    pins=None,
+    pin_repo: str = "",
 ) -> Path:
     """sites 를 주면 분류마다 실제 게시판으로 가는 링크가 함께 붙는다.
 
@@ -390,9 +389,11 @@ def render_dashboard(
             days=days,
             chips=chips,
             shortcut_chips=shortcut_chips,
-            shortcut_names=json.dumps(shortcut_names, ensure_ascii=False),
+            shortcut_names=_js(shortcut_names),
+            server_pins=_js({pin["uid"]: pin for pin in pins or []}),
+            pin_repo=_js(pin_repo.rstrip("/")),
             items=items or "",
-            homes=json.dumps(homes, ensure_ascii=False),
+            homes=_js(homes),
         ),
         encoding="utf-8",
     )
@@ -442,6 +443,20 @@ def _item(row, cutoff: str, rank: int) -> str:
         f"{html.escape(row['title'])}</a>"
         f'<div class="sub">{html.escape(sub)} {board_pin}</div></div>'
         f'<button class="pinbtn" type="button">📌</button></li>'
+    )
+
+
+def _js(value) -> str:
+    """<script> 안에 끼워 넣을 값.
+
+    제목은 남의 사이트에서 온 글자라 '</script>' 같은 것이 섞여 있을 수 있다.
+    그대로 넣으면 그 자리에서 스크립트가 끊기고 뒤가 태그로 읽힌다.
+    """
+    return (
+        json.dumps(value, ensure_ascii=False)
+        .replace("<", "\\u003c")
+        .replace(">", "\\u003e")
+        .replace("&", "\\u0026")
     )
 
 

@@ -19,6 +19,9 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "dashboard_path": "dashboard.html",
     # 모아보기 페이지를 올려둔 주소. 경고 알림에 이 주소를 붙인다.
     "dashboard_url": "",
+    # 핀 목록 파일과, 핀 단추가 쪽지를 남길 저장소 주소.
+    "pins_path": "data/pins.json",
+    "pin_repo": "",
     "notify_on_pinned": True,
     "stale_alert_days": 2,
     "retention_days": 7,
