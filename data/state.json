@@ -1123,23 +1123,6 @@
    "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1444261/artclView.do"
   },
   {
-   "author": "정 * 랑",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-11-06T03:19:50+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1471704",
-   "posted_at": "2026.11.06",
-   "posted_on": "2026-11-06",
-   "site_key": "374945f5c2db",
-   "site_name": "정보컴퓨터공학부",
-   "title": "[장학] 2026 발전기금회계 목적사업 산학협력단 창업장학금 신청 안내(~11/20)",
-   "uid": "374945f5c2db:1471704",
-   "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1471704/artclView.do"
-  },
-  {
    "author": "S **** 학",
    "baseline": 0,
    "category": "",
@@ -1291,6 +1274,23 @@
    "title": "[국제협력실] 2026 해외파견 프로그램 정기설명회 및 해외파견 성과공유회 개최 안내(12",
    "uid": "374945f5c2db:1473217",
    "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1473217/artclView.do"
+  },
+  {
+   "author": "S **** 학",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-11-17T06:15:16+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1473813",
+   "posted_at": "2026.11.17",
+   "posted_on": "2026-11-17",
+   "site_key": "374945f5c2db",
+   "site_name": "정보컴퓨터공학부",
+   "title": "[AI융합교육원] 2026학년도 첨단산업 인재양성 부트캠프 마일스톤 장학생 선발 안내",
+   "uid": "374945f5c2db:1473813",
+   "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1473813/artclView.do"
   },
   {
    "author": "조 **** 화",
@@ -3554,23 +3554,6 @@
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&page=3&mode=view&mgr_seq=3&board_seq=1511878"
   },
   {
-   "author": "학생과",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-11-02T05:40:06+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1511880",
-   "posted_at": "2026-11-02",
-   "posted_on": "2026-11-02",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "[국립중앙청소년디딤센터] 단기과정(힐링캠프) 2027년 1차 멘토(자원봉사단) ...",
-   "uid": "95390426e921:1511880",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511880"
-  },
-  {
    "author": "홍보실",
    "baseline": 0,
    "category": "",
@@ -4589,6 +4572,23 @@
    "title": "[학사과] 2026학년도 겨울계절수업 교류 수학 안내(고려대학교 HUSS)",
    "uid": "95390426e921:1512239",
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1512239"
+  },
+  {
+   "author": "사학과",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-11-17T06:15:23+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1512240",
+   "posted_at": "2026-11-17",
+   "posted_on": "2026-11-17",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "[사학과] Pre-BK 해외학자 초청강연 개최",
+   "uid": "95390426e921:1512240",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1512240"
   },
   {
    "author": "산학협력단 관리자",
@@ -5850,9 +5850,9 @@
    "site_key": "aa28cd59ae6d"
   },
   {
-   "fail_since": "",
+   "fail_since": "2026-11-17T06:15:32+00:00",
    "last_alert": "",
-   "last_error": "",
+   "last_error": "403 Client Error: Forbidden for url: https://lib.pusan.ac.kr/pyxis-api/1/bulletin-boards/2/bulletins?nameOption=&onlyWriter=false&onlyNoticableBulletin=true&max=30",
    "site_key": "ca53af7720c5"
   },
   {
