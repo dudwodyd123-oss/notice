@@ -11,6 +11,7 @@ on:
 permissions:
   contents: write
   issues: write
+  actions: write   # 고친 뒤 '공지 확인' 을 손으로 부르기 위해 필요하다
 
 # 공지 확인과 같은 순번을 쓴다. 둘이 겹치면 되커밋이 서로 엉킨다.
 concurrency:
@@ -47,8 +48,7 @@ jobs:
           rm -f issue.txt
 
       - name: 핀 목록 되커밋
-        # 되커밋하면 '공지 확인' 작업이 따라 돌면서 화면을 다시 그려 올린다.
-        # 여기서 또 그리면 Pages 배포가 두 군데로 갈라져 서로 엉킨다.
+        id: commit
         env:
           BRANCH: ${{ github.ref_name }}
         run: |
@@ -62,6 +62,18 @@ jobs:
           git commit -m "핀 목록 갱신"
           git pull --rebase --autostash origin "$BRANCH" || true
           git push origin "HEAD:$BRANCH"
+          echo "changed=yes" >> "$GITHUB_OUTPUT"
+
+      - name: 화면 다시 그리도록 '공지 확인' 부르기
+        # 여기서 push 를 해도 '공지 확인' 이 저절로 따라 돌지 않는다. 깃허브는
+        # 자동 실행이 기본 토큰으로 만든 push 를 무시한다 - 작업이 서로를
+        # 끝없이 부르는 것을 막기 위해서다. 손으로 부르는 것(workflow_dispatch)
+        # 은 그 예외라서, 이렇게 직접 불러 줘야 화면이 다시 그려진다.
+        if: steps.commit.outputs.changed == 'yes'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: ${{ github.ref_name }}
+        run: gh workflow run check.yml --ref "$BRANCH"
 
       - name: 쪽지에 결과를 적고 닫기
         env:
