@@ -1,4 +1,13 @@
 {
- "pins": [],
+ "pins": [
+  {
+   "bp": "0",
+   "site": "부산대학교",
+   "sub": "부산대학교 · 2026-11-17 · 법학과",
+   "title": "도약수업 (법학전문대학원 교수 및 AI튜터와 함께하는 맞춤형 민법) 신청안내",
+   "uid": "95390426e921:1512235",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1512235"
+  }
+ ],
  "version": 1
 }
