@@ -85,6 +85,11 @@ TEMPLATE = """<!doctype html>
   li.post.pinned .pinbtn {{ border-color: var(--accent); background: var(--card);
     filter: none; opacity: 1; }}
   .keep {{ color: var(--accent); font-size: 11px; font-weight: 600; }}
+  /* 방금 눌러서 아직 저장소에 올라가지 않은 핀. 1~3분 뒤 평소 핀으로 바뀐다.
+     끝까지 이 모습으로 남아 있으면 뭔가 잘못된 것이다 - 평소 핀과 눈에
+     다르게 해 두는 까닭이 그것이다(실패를 가리지 않으려고). */
+  li.post.waiting {{ border-style: dashed; }}
+  .waitmark {{ color: var(--accent); font-size: 11px; font-weight: 600; }}
   .empty {{ color: var(--muted); text-align: center; padding: 48px 0; }}
 </style>
 </head>
@@ -123,8 +128,94 @@ const pins = {server_pins};
 // '주인이 맞다'는 확인은 깃허브 로그인이 대신해 준다.
 const pinRepo = {pin_repo};
 
-function isPinned(uid) {{
+// 핀을 누르면 깃허브에 쪽지를 남기고 자동 실행이 목록을 고치는데, 화면이
+// 다시 만들어져 나오기까지 2분쯤 걸린다. 그동안 '내가 방금 누른 것' 을 이
+// 기기에만 적어 두고 평소 핀과 다른 모습으로 미리 보여준다. 저장소가
+// 따라잡으면 적어둔 것을 지운다 - 핀의 근거는 어디까지나 저장소다.
+// 누른 기기에서만 즉시 보이는 것이고, 다른 기기는 저장소를 기다린다.
+const WAIT_KEY = 'notice_tap.waiting';
+const WAIT_MS = 6 * 60 * 60 * 1000;  // 여섯 시간이 지나면 떨어낸다
+const WAIT_MAX = 50;
+let waiting = {{}};
+
+function serverPinned(uid) {{
   return Object.prototype.hasOwnProperty.call(pins, uid);
+}}
+
+// 글 번호는 '게시판키:글번호' 꼴이다. 이 틀은 {{ }} 를 특별하게 읽어서
+// 정규식 횟수 표기를 못 쓰므로, 모양만 눈으로 보듯 확인한다.
+function okUid(uid) {{
+  if (typeof uid !== 'string' || !uid || uid.length > 160) return false;
+  const at = uid.indexOf(':');
+  return at > 0 && at < uid.length - 1 && !/\\s/.test(uid);
+}}
+
+// 기다리는 것 중 이미 끝난 것과 너무 오래된 것을 떨어낸다. 남겨 두면
+// 다른 기기에서 뽑은 핀을 이 기기가 되살려 보여준다.
+function readWaiting() {{
+  let saved = null;
+  try {{
+    saved = JSON.parse(localStorage.getItem(WAIT_KEY) || '{{}}');
+  }} catch (e) {{ saved = null; }}
+
+  const live = {{}};
+  const now = Date.now();
+  if (saved && typeof saved === 'object') {{
+    for (const uid of Object.keys(saved).slice(0, WAIT_MAX)) {{
+      const w = saved[uid];
+      if (!okUid(uid) || !w || typeof w !== 'object') continue;
+      if (w.action !== 'add' && w.action !== 'remove') continue;
+      if (!Number.isFinite(w.at) || w.at > now || now - w.at > WAIT_MS) continue;
+      // 저장소가 이미 같은 결론이면 더 기다릴 것이 없다.
+      if ((w.action === 'add') === serverPinned(uid)) continue;
+      live[uid] = {{ action: w.action, at: w.at, data: w.data || null }};
+    }}
+  }}
+  waiting = live;
+  writeWaiting();
+}}
+
+function writeWaiting() {{
+  // 사생활 보호 모드처럼 적을 수 없는 곳도 있다. 못 적으면 즉시 보이는
+  // 것만 포기하고 저장소 쪽은 그대로 돈다.
+  try {{
+    if (Object.keys(waiting).length) {{
+      localStorage.setItem(WAIT_KEY, JSON.stringify(waiting));
+    }} else {{
+      localStorage.removeItem(WAIT_KEY);
+    }}
+  }} catch (e) {{}}
+}}
+
+function waitingFor(uid) {{
+  const w = waiting[uid];
+  return w ? w.action : '';
+}}
+
+function isPinned(uid) {{
+  const act = waitingFor(uid);
+  if (act) return act === 'add';
+  return serverPinned(uid);
+}}
+
+// 되살릴 때 쓸 글 사본. 저장소 사본이 먼저고, 없으면 눌러둔 사본을 쓴다.
+function pinData(uid) {{
+  const w = waiting[uid];
+  return pins[uid] || (w && w.data) || null;
+}}
+
+// '올리는 중' 표시. 2~3분 뒤에도 이 글자가 그대로면 잘못된 것이다.
+function markWaiting(li, act) {{
+  const sub = li.querySelector('.sub');
+  if (!sub) return;
+  let tag = sub.querySelector('.waitmark');
+  if (!act) {{ if (tag) tag.remove(); return; }}
+  if (!tag) {{
+    tag = document.createElement('span');
+    tag.className = 'waitmark';
+    sub.append(tag);
+  }}
+  tag.textContent = act === 'add' ? '핀 올리는 중…' : '핀 빼는 중…';
 }}
 
 function snapshot(li) {{
@@ -198,20 +289,27 @@ function refresh() {{
   const present = new Set();
   for (const li of list.children) present.add(li.dataset.uid);
 
-  for (const uid of Object.keys(pins)) {{
+  // 저장소에 적힌 핀과, 방금 눌러서 기다리는 것 둘 다 자리를 만들어 준다.
+  for (const uid of new Set(Object.keys(pins).concat(Object.keys(waiting)))) {{
     if (present.has(uid)) continue;
-    const li = buildItem(pins[uid]);
+    const li = buildItem(pinData(uid));
     if (li) list.append(li);
   }}
 
   for (const li of Array.from(list.children)) {{
+    const act = waitingFor(li.dataset.uid);
     const on = isPinned(li.dataset.uid);
-    // 되살린 글은 핀을 뽑는 순간 남겨 둘 근거가 없어진다.
-    if (!on && li.dataset.restored) {{ li.remove(); continue; }}
+    // 되살린 글은 핀을 뽑는 순간 남겨 둘 근거가 없어진다. 다만 빼는 중이면
+    // 저장소에 제대로 올라갔는지 눈으로 볼 수 있게 남겨 둔다.
+    if (!on && !act && li.dataset.restored) {{ li.remove(); continue; }}
     li.classList.toggle('pinned', on);
+    li.classList.toggle('waiting', !!act);
+    markWaiting(li, act);
     const btn = li.querySelector('.pinbtn');
     btn.setAttribute('aria-pressed', on ? 'true' : 'false');
-    btn.title = on ? '핀 뽑기 (보관 기간이 지났으면 사라집니다)' : '맨 위에 고정해 두기';
+    btn.title = act
+      ? '저장소에 올리는 중입니다 (1~3분)'
+      : (on ? '핀 뽑기 (보관 기간이 지났으면 사라집니다)' : '맨 위에 고정해 두기');
   }}
 
   // 핀만 위로 끌어올리고, 나머지는 서버가 매겨 준 순번(rank)대로 되돌린다.
@@ -281,7 +379,18 @@ list.addEventListener('click', ev => {{
   const on = isPinned(li.dataset.uid);
   // 실수로 눌러서 보관해 둔 글을 놓치는 일이 없도록 한 번 물어본다.
   if (on && !confirm('핀을 뽑을까요?')) return;
-  location.href = issueUrl(on ? 'remove' : 'add', snapshot(li));
+
+  const action = on ? 'remove' : 'add';
+  const data = snapshot(li);
+  // 깃허브로 떠나기 전에 이 기기에 적고 화면을 미리 맞춰 둔다. 폰은 뒤로
+  // 돌아올 때 얼려 둔 화면을 그대로 되살리는 경우가 있어서, 그때도 이미
+  // 맞는 모습이 보이게 하려는 것이다.
+  if (okUid(data.uid)) {{
+    waiting[data.uid] = {{ action: action, at: Date.now(), data: data }};
+    writeWaiting();
+    refresh();
+  }}
+  location.href = issueUrl(action, data);
 }});
 
 document.querySelectorAll('.chip').forEach(chip => {{
@@ -294,6 +403,13 @@ document.querySelectorAll('.chip').forEach(chip => {{
   }});
 }});
 
+// 얼려 뒀던 화면이 되살아난 경우에는 코드가 처음부터 다시 돌지 않는다.
+// 그때도 한 번 맞춰 준다(끝난 것과 오래된 것을 떨어내기 위해서다).
+window.addEventListener('pageshow', ev => {{
+  if (ev.persisted) {{ readWaiting(); refresh(); }}
+}});
+
+readWaiting();
 refresh();
 </script>
 </body>

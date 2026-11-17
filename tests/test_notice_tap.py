@@ -8,6 +8,8 @@
 import json
 import os
 import re
+import shutil
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -181,10 +183,16 @@ class PinTest(TempDirCase):
         return out.read_text(encoding="utf-8")
 
     def test_핀은_브라우저가_아니라_저장소에서_온다(self):
-        """예전에는 localStorage 에만 적어서 폰에서 꽂은 핀이 컴에서 안 보였다."""
+        """예전에는 localStorage 에만 적어서 폰에서 꽂은 핀이 컴에서 안 보였다.
+
+        지금 브라우저에 적는 것은 '방금 눌러서 아직 안 올라간 것' 뿐이고,
+        핀의 근거는 저장소에서 내려온 목록이다.
+        """
         page = self._page(make_post("42"), pins=[{"uid": "s:42", "title": "장학금"}])
-        self.assertNotIn("localStorage", page)
         self.assertIn('"s:42"', page)
+        # 브라우저에 적는 곳은 기다리는 것을 담는 한 군데뿐이어야 한다.
+        keys = set(re.findall(r"localStorage\.\w+\((\w+)", page))
+        self.assertEqual(keys, {"WAIT_KEY"})
 
     def test_핀_단추는_깃허브_쪽지를_연다(self):
         """브라우저에 토큰을 두지 않으려고 깃허브 로그인에 확인을 맡긴다."""
@@ -250,6 +258,73 @@ class PinTest(TempDirCase):
     def test_핀은_숨기기가_먹도록_display를_되살린다(self):
         # li.post 에 display:flex 를 준 뒤로 hidden 속성이 무시될 뻔했다.
         self.assertIn("li.post[hidden] {{ display: none; }}", TEMPLATE)
+
+
+class WaitingPinTest(TempDirCase):
+    """핀을 누르면 저장소에 올라가기까지 2분쯤 걸린다.
+
+    그동안 누른 기기에서만 '올리는 중' 으로 미리 보여준다. 눈으로 다르게
+    보여야 하는 것이 요점이다 - 평소 핀과 똑같이 그리면 저번처럼 핀이
+    조용히 취소돼도 알아챌 수가 없다.
+    """
+
+    def _page(self):
+        store = Store(self.tmp / "t.db")
+        store.record([make_post("42", title="장학금 안내")], notified=True)
+        out = render_dashboard(
+            store, self.tmp / "d.html", pin_repo="https://github.com/me/notice"
+        )
+        store.close()
+        return out.read_text(encoding="utf-8")
+
+    def test_떠나기_전에_적고_화면을_먼저_맞춘다(self):
+        """폰은 뒤로 돌아올 때 얼려 둔 화면을 그대로 되살리기도 한다.
+
+        그래서 깃허브로 넘어가기 전에 미리 그려 둔다. 되살아난 화면이
+        이미 맞는 모습이면 코드가 다시 안 돌아도 된다.
+        """
+        page = self._page()
+        wrote = page.index("writeWaiting();\n    refresh();")
+        left = page.index("location.href = issueUrl(action, data);")
+        self.assertLess(wrote, left)
+
+    def test_평소_핀과_다르게_보인다(self):
+        page = self._page()
+        self.assertIn("li.post.waiting { border-style: dashed; }", page)
+        self.assertIn("핀 올리는 중…", page)
+        self.assertIn("핀 빼는 중…", page)
+
+    def test_저장소가_따라잡으면_적어둔_것을_지운다(self):
+        """남겨 두면 다른 기기에서 뽑은 핀을 이 기기가 되살려 보여준다."""
+        self.assertIn("if ((w.action === 'add') === serverPinned(uid)) continue;", TEMPLATE)
+
+    def test_오래된_것은_떨어낸다(self):
+        """Create 를 안 누르고 나오면 유령이 남는다. 제한 시간을 둔다."""
+        page = self._page()
+        self.assertIn("const WAIT_MS = 6 * 60 * 60 * 1000;", page)
+        self.assertIn("now - w.at > WAIT_MS", page)
+
+    def test_핀을_빼는_중인_글은_지우지_않고_남긴다(self):
+        """되살린 글을 바로 지우면 빼기가 실패해도 알 길이 없다."""
+        self.assertIn("if (!on && !act && li.dataset.restored)", TEMPLATE)
+
+    def test_브라우저에_못_적어도_저장소_쪽은_돈다(self):
+        """사생활 보호 모드에서는 localStorage 가 예외를 던진다."""
+        page = self._page()
+        for call in ("localStorage.getItem", "localStorage.setItem"):
+            where = page.index(call)
+            self.assertIn("try {", page[max(0, where - 200):where])
+
+    def test_만들어진_화면의_자바스크립트_문법이_맞다(self):
+        """이 틀은 {{ }} 를 특별하게 읽어서, 괄호 하나로 조용히 깨진 적이 있다."""
+        node = shutil.which("node")
+        if not node:
+            self.skipTest("node 가 없어 건너뜀")
+        script = re.search(r"<script>(.*)</script>", self._page(), re.S).group(1)
+        path = self.tmp / "page.js"
+        path.write_text(script, encoding="utf-8")
+        done = subprocess.run([node, "--check", str(path)], capture_output=True, text=True)
+        self.assertEqual(done.returncode, 0, done.stderr)
 
 
 # --- 알림 전달 -------------------------------------------------------------
