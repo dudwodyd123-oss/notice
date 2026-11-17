@@ -6,17 +6,18 @@ name: 핀 고치기
 # 맞다'는 확인은 깃허브 로그인이 대신해 준다.
 on:
   issues:
-    types: [opened]
+    # 닫았다 다시 열면 한 번 더 처리한다. 겹쳐서 놓친 핀을 되살릴 길이다.
+    types: [opened, reopened]
 
 permissions:
   contents: write
   issues: write
   actions: write   # 고친 뒤 '공지 확인' 을 손으로 부르기 위해 필요하다
 
-# 공지 확인과 같은 순번을 쓴다. 둘이 겹치면 되커밋이 서로 엉킨다.
-concurrency:
-  group: notice-tap
-  cancel-in-progress: false
+# 순번(concurrency)을 두지 않는다. 깃허브는 한 순번에 '기다리는 작업' 을
+# 하나만 두기 때문에, 핀을 연달아 꽂으면 먼저 기다리던 것이 밀려나 조용히
+# 취소된다. 실제로 핀 셋을 잇달아 꽂았다가 셋째가 그렇게 사라졌다.
+# 대신 아래에서 최신 상태를 다시 읽어 다시 시도하는 식으로 겹침을 견딘다.
 
 jobs:
   pin:
@@ -37,48 +38,64 @@ jobs:
 
       - run: pip install -r requirements.txt
 
-      - name: 쪽지를 읽어 핀 목록 고치기
+      - name: 쪽지를 읽어 핀 목록 고치고 되커밋
+        id: apply
         # 이슈 본문을 쉘 명령에 직접 붙이지 않고 환경변수로 넘긴다.
         # 본문에 따옴표나 세미콜론이 섞이면 명령이 조작될 수 있기 때문이다.
         env:
           BODY: ${{ github.event.issue.body }}
-        run: |
-          printf '%s' "$BODY" > issue.txt
-          python -m notice_tap pin --body issue.txt | tee result.txt
-          rm -f issue.txt
-
-      - name: 핀 목록 되커밋
-        id: commit
-        env:
           BRANCH: ${{ github.ref_name }}
         run: |
-          if git diff --quiet -- data/pins.json; then
-            echo "바뀐 것이 없어 커밋할 것이 없습니다."
-            exit 0
-          fi
+          printf '%s' "$BODY" > "$RUNNER_TEMP/issue.txt"
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/pins.json
-          git commit -m "핀 목록 갱신"
-          git pull --rebase --autostash origin "$BRANCH" || true
-          git push origin "HEAD:$BRANCH"
-          echo "changed=yes" >> "$GITHUB_OUTPUT"
+
+          # 다른 핀이 먼저 올라가 밀리면, 그 최신 목록 위에서 처음부터 다시
+          # 계산한다. 밀린 것을 억지로 끼워 맞추면 핀 하나가 사라질 수 있다.
+          for attempt in 1 2 3; do
+            git fetch -q origin "$BRANCH"
+            git reset -q --hard "origin/$BRANCH"
+            python -m notice_tap pin --body "$RUNNER_TEMP/issue.txt" | tee "$RUNNER_TEMP/result.txt"
+
+            if git diff --quiet -- data/pins.json; then
+              echo "바뀐 것이 없어 커밋할 것이 없습니다."
+              exit 0
+            fi
+
+            git add data/pins.json
+            git commit -q -m "핀 목록 갱신"
+            if git push -q origin "HEAD:$BRANCH"; then
+              echo "changed=yes" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            echo "다른 핀과 겹쳤습니다. 최신 목록을 다시 읽습니다 ($attempt/3)"
+          done
+
+          echo "세 번 시도했지만 올리지 못했습니다." | tee "$RUNNER_TEMP/result.txt"
+          exit 1
 
       - name: 화면 다시 그리도록 '공지 확인' 부르기
         # 여기서 push 를 해도 '공지 확인' 이 저절로 따라 돌지 않는다. 깃허브는
         # 자동 실행이 기본 토큰으로 만든 push 를 무시한다 - 작업이 서로를
         # 끝없이 부르는 것을 막기 위해서다. 손으로 부르는 것(workflow_dispatch)
         # 은 그 예외라서, 이렇게 직접 불러 줘야 화면이 다시 그려진다.
-        if: steps.commit.outputs.changed == 'yes'
+        if: steps.apply.outputs.changed == 'yes'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: ${{ github.ref_name }}
         run: gh workflow run check.yml --ref "$BRANCH"
 
-      - name: 쪽지에 결과를 적고 닫기
+      - name: 쪽지 닫기
+        # 잘 됐을 때는 댓글을 달지 않는다. 댓글이 달릴 때마다 메일이 와서,
+        # 핀 하나 꽂을 때마다 알림이 쌓였다. 핀이 꽂혔는지는 화면을 보면 안다.
+        if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NUMBER: ${{ github.event.issue.number }}
+          OK: ${{ steps.apply.outcome }}
         run: |
-          gh issue comment "$NUMBER" --body-file result.txt
+          # 잘못됐을 때만 까닭을 적어 남긴다. 그때는 알려 주는 편이 낫다.
+          if [ "$OK" != "success" ] || [ -z "${{ steps.apply.outputs.changed }}" ]; then
+            gh issue comment "$NUMBER" --body-file "$RUNNER_TEMP/result.txt" || true
+          fi
           gh issue close "$NUMBER"
