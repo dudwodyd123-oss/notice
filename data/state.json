@@ -1310,6 +1310,23 @@
    "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1473857/artclView.do"
   },
   {
+   "author": "정 * 랑",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-11-17T18:22:54+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1473911",
+   "posted_at": "2026.11.17",
+   "posted_on": "2026-11-17",
+   "site_key": "374945f5c2db",
+   "site_name": "정보컴퓨터공학부",
+   "title": "[언어교육원] 2026 하반기 모의 시험(토익, 토플, 토익스피킹, 오픽) 경시대회 실시",
+   "uid": "374945f5c2db:1473911",
+   "url": "https://cse.pusan.ac.kr/bbs/cse/2055/1473911/artclView.do"
+  },
+  {
    "author": "조 **** 화",
    "baseline": 0,
    "category": "일반공지",
@@ -2840,6 +2857,23 @@
    "url": "https://onestop.pusan.ac.kr/page?menuCD=000000000000386&mode=DETAIL&seq=2228"
   },
   {
+   "author": "관리자",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-11-17T18:24:38+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "2229",
+   "posted_at": "2026-11-17",
+   "posted_on": "2026-11-17",
+   "site_key": "6c85bb222b01",
+   "site_name": "학생지원시스템",
+   "title": "[학사]제7회 국립대학육성사업 영상 콘텐츠 공모전 개최 안내",
+   "uid": "6c85bb222b01:2229",
+   "url": "https://onestop.pusan.ac.kr/page?menuCD=000000000000386&mode=DETAIL&seq=2229"
+  },
+  {
    "author": "사이트관리자",
    "baseline": 0,
    "category": "",
@@ -3688,23 +3722,6 @@
    "title": "[농어촌 특별활동] 2026학년도 2학기 한국장학재단 농어촌 특별활동 프로그램 ...",
    "uid": "95390426e921:1511953",
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511953"
-  },
-  {
-   "author": "효원상담원",
-   "baseline": 0,
-   "category": "",
-   "first_seen": "2026-11-03T11:47:50+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "1511961",
-   "posted_at": "2026-11-03",
-   "posted_on": "2026-11-03",
-   "site_key": "95390426e921",
-   "site_name": "부산대학교",
-   "title": "[효원상담원] 힐링캠프_ 아로마힐링 (2) 🫧(11/6(금) 9:30-11:3...",
-   "uid": "95390426e921:1511961",
-   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1511961"
   },
   {
    "author": "교양교육원 행정실",
@@ -4640,6 +4657,23 @@
    "title": "[공학교육혁신센터] 글로벌 AI 생활 에이전트 메이커톤 참가팀 모집",
    "uid": "95390426e921:1512245",
    "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1512245"
+  },
+  {
+   "author": "학생과",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-11-17T18:22:59+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1512291",
+   "posted_at": "2026-11-17",
+   "posted_on": "2026-11-17",
+   "site_key": "95390426e921",
+   "site_name": "부산대학교",
+   "title": "[학생과] 2026학년도 동계 전공봉사단 추가 모집 공고",
+   "uid": "95390426e921:1512291",
+   "url": "https://www.pusan.ac.kr/kor/CMS/Board/Board.do?mCode=MN095&mode=view&mgr_seq=3&board_seq=1512291"
   },
   {
    "author": "산학협력단 관리자",
@@ -5813,6 +5847,23 @@
    "title": "[전공봉사 활동] 2026학년도 동계 전공봉사 활동(전공봉사단, 너의 재능이 보여) 합격 팀 공고",
    "uid": "fe5b93177fd4:1370",
    "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1370"
+  },
+  {
+   "author": "이준호",
+   "baseline": 0,
+   "category": "",
+   "first_seen": "2026-11-17T18:24:32+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "1371",
+   "posted_at": "2026-11-17",
+   "posted_on": "2026-11-17",
+   "site_key": "fe5b93177fd4",
+   "site_name": "나눔시스템",
+   "title": "[전공봉사 활동] 2026학년도 동계 전공봉사단 추가 모집 공고",
+   "uid": "fe5b93177fd4:1371",
+   "url": "https://nanum.pusan.ac.kr/page?menuCD=000000000000007&mode=DETAIL&seq=1371"
   }
  ],
  "sites_state": [
@@ -5883,9 +5934,9 @@
    "site_key": "95390426e921"
   },
   {
-   "fail_since": "",
+   "fail_since": "2026-11-17T18:24:07+00:00",
    "last_alert": "",
-   "last_error": "",
+   "last_error": "https://sanhak.pusan.ac.kr/sanhak/board/4 가져오기 실패: HTTPSConnectionPool(host='sanhak.pusan.ac.kr', port=443): Read timed out. (read timeout=20)",
    "site_key": "9872521de15b"
   },
   {
