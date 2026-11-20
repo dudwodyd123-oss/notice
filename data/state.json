@@ -5952,9 +5952,9 @@
    "site_key": "aa28cd59ae6d"
   },
   {
-   "fail_since": "",
+   "fail_since": "2026-11-20T22:35:17+00:00",
    "last_alert": "",
-   "last_error": "",
+   "last_error": "403 Client Error: Forbidden for url: https://lib.pusan.ac.kr/pyxis-api/1/bulletin-boards/2/bulletins?nameOption=&onlyWriter=false&onlyNoticableBulletin=true&max=30",
    "site_key": "ca53af7720c5"
   },
   {
