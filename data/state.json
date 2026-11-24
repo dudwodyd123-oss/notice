@@ -5342,23 +5342,6 @@
    "author": "",
    "baseline": 0,
    "category": "일반",
-   "first_seen": "2026-11-16T07:09:44+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "dvo5fv2a9uvrbld8",
-   "posted_at": "2026-11-16",
-   "posted_on": "2026-11-16",
-   "site_key": "ca53af7720c5",
-   "site_name": "도서관",
-   "title": "2027학년도 대학수학능력시험일(11. 19.(목)) 도서관 개관시간 변경 안내",
-   "uid": "ca53af7720c5:dvo5fv2a9uvrbld8",
-   "url": "https://lib.pusan.ac.kr/guide/notice/dvo5fv2a9uvrbld8"
-  },
-  {
-   "author": "",
-   "baseline": 0,
-   "category": "일반",
    "first_seen": "2026-11-09T09:34:50+00:00",
    "muted": 0,
    "notified": 1,
@@ -5405,6 +5388,23 @@
    "title": "[휴관] 2026년 12월 중앙도서관 임시 휴관 안내(12. 16. ~ 12. 28.)",
    "uid": "ca53af7720c5:lgdxkdnw8z9s7ght",
    "url": "https://lib.pusan.ac.kr/guide/notice/lgdxkdnw8z9s7ght"
+  },
+  {
+   "author": "",
+   "baseline": 0,
+   "category": "일반",
+   "first_seen": "2026-11-24T06:21:11+00:00",
+   "muted": 0,
+   "notified": 1,
+   "pinned": 0,
+   "post_id": "n3oda77lzvud4obk",
+   "posted_at": "2026-11-24",
+   "posted_on": "2026-11-24",
+   "site_key": "ca53af7720c5",
+   "site_name": "도서관",
+   "title": "[부산캠퍼스] 2026학년도 2학기 노션(Notion) 이용교육 안내 (12월)",
+   "uid": "ca53af7720c5:n3oda77lzvud4obk",
+   "url": "https://lib.pusan.ac.kr/guide/notice/n3oda77lzvud4obk"
   },
   {
    "author": "",
@@ -5524,23 +5524,6 @@
    "title": "[설문조사] 2026 부산대학교 도서관 이용자 서비스 만족도 조사(~ 11/24)",
    "uid": "ca53af7720c5:r88usrmeckd9tzz7",
    "url": "https://lib.pusan.ac.kr/guide/notice/r88usrmeckd9tzz7"
-  },
-  {
-   "author": "",
-   "baseline": 0,
-   "category": "일반",
-   "first_seen": "2026-11-16T07:09:44+00:00",
-   "muted": 0,
-   "notified": 1,
-   "pinned": 0,
-   "post_id": "rtmi35wk57i918id",
-   "posted_at": "2026-11-16",
-   "posted_on": "2026-11-16",
-   "site_key": "ca53af7720c5",
-   "site_name": "도서관",
-   "title": "잉글리쉬앤(공인영어시험 모의테스트) 접속 오류 안내",
-   "uid": "ca53af7720c5:rtmi35wk57i918id",
-   "url": "https://lib.pusan.ac.kr/guide/notice/rtmi35wk57i918id"
   },
   {
    "author": "",
@@ -5850,9 +5833,9 @@
    "site_key": "aa28cd59ae6d"
   },
   {
-   "fail_since": "2026-11-23T01:30:22+00:00",
+   "fail_since": "",
    "last_alert": "",
-   "last_error": "403 Client Error: Forbidden for url: https://lib.pusan.ac.kr/pyxis-api/1/bulletin-boards/2/bulletins?nameOption=&onlyWriter=false&onlyNoticableBulletin=true&max=30",
+   "last_error": "",
    "site_key": "ca53af7720c5"
   },
   {
