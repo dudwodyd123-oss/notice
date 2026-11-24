@@ -36,6 +36,11 @@ permissions:
   contents: write
   pages: write
   id-token: write
+  # 화면을 올리는 단계가 '올려둔 꾸러미' 를 Actions 목록에서 찾아본다.
+  # 이 권한이 없으면 목록이 비어 보여 "github-pages 라는 꾸러미가 없다"고
+  # 하며 죽는다. permissions 를 한 줄이라도 적으면 안 적은 권한은 전부
+  # 없는 것이 되므로, 읽기 권한을 여기 따로 적어 줘야 한다.
+  actions: read
 
 # 앞선 실행이 아직 돌고 있으면 겹치지 않게 기다린다.
 concurrency:
@@ -47,7 +52,8 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+      # 한 번 실패해 두 번째 시도로 올라간 경우에는 그쪽 주소를 쓴다.
+      url: ${{ steps.deploy.outputs.page_url || steps.deploy_again.outputs.page_url }}
 
     steps:
       - uses: actions/checkout@v4
@@ -105,7 +111,24 @@ jobs:
         with:
           path: public
 
+      # 올린 꾸러미가 목록에 뜨기 전에 물어보면 "그런 꾸러미 없다"며 죽는다.
+      # 2026-11-21·24 에 그렇게 세 번 실패했다 - 꾸러미는 멀쩡히 올라가
+      # 있었다(66,634바이트). 그래서 한 번 실패해도 바로 포기하지 않는다.
+      # 여기서는 계속 진행만 하고, 실패 여부는 아래에서 다시 가린다.
       - id: deploy
+        uses: actions/deploy-pages@v4
+        continue-on-error: true
+
+      - name: 잠시 쉬었다 다시 올리기
+        if: steps.deploy.outcome == 'failure'
+        run: |
+          echo "화면 올리기가 한 번 실패했습니다. 30초 쉬었다 다시 해 봅니다."
+          sleep 30
+
+      # 이쪽은 봐주지 않는다. 두 번째도 실패하면 작업 전체가 실패로 남아야
+      # 아래 '전체 실패 알림' 이 돌고 깃허브 메일도 온다.
+      - id: deploy_again
+        if: steps.deploy.outcome == 'failure'
         uses: actions/deploy-pages@v4
 
       # 여기까지 오지 못하고 앞 단계에서 죽으면 확인 자체가 안 돌아간다.
@@ -122,7 +145,7 @@ jobs:
             exit 0
           fi
           python - <<'PY'
-          import json, os, urllib.request
+          import json, os, time, urllib.error, urllib.request
 
           payload = {
               "content": "⚠️ 공지 확인이 실패했습니다",
@@ -133,11 +156,30 @@ jobs:
                   "color": 0xD92D20,
               }],
           }
-          request = urllib.request.Request(
-              os.environ["WEBHOOK"],
-              data=json.dumps(payload).encode("utf-8"),
-              headers={"Content-Type": "application/json"},
-          )
-          with urllib.request.urlopen(request, timeout=15) as response:
-              print("실패 알림 전송:", response.status)
+          data = json.dumps(payload).encode("utf-8")
+
+          # 2026-11-24 에 이 단계가 조용히 죽어서, 작업이 실패했는데도
+          # 디스코드로는 아무것도 오지 않았다(깃허브 메일만 왔다). 까닭을
+          # 로그에 남기지 않아 무엇 때문인지 끝내 알 수 없었다. 그래서
+          # 몇 번 다시 해 보고, 실패하면 까닭을 적어 둔다.
+          for attempt in (1, 2, 3):
+              try:
+                  request = urllib.request.Request(
+                      os.environ["WEBHOOK"], data=data,
+                      headers={"Content-Type": "application/json"},
+                  )
+                  with urllib.request.urlopen(request, timeout=15) as response:
+                      print("실패 알림 전송:", response.status)
+                  break
+              except urllib.error.HTTPError as exc:
+                  body = exc.read().decode("utf-8", "replace")[:300]
+                  print(f"디스코드가 거절했습니다 ({attempt}/3): {exc.code} {body}")
+              except Exception as exc:
+                  print(f"보내지 못했습니다 ({attempt}/3): {exc!r}")
+              time.sleep(5)
+          else:
+              print("세 번 다 실패했습니다. 이번에는 깃허브 메일로만 알게 됩니다.")
+
+          # 여기서 또 죽으면 '실패를 알리려다 실패' 가 겹쳐 무엇이 원래
+          # 문제였는지 흐려진다. 알림은 알림일 뿐이므로 조용히 끝낸다.
           PY
